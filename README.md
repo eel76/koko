@@ -49,7 +49,12 @@ GitHub Pages (siehe [`.github/workflows/deploy.yml`](.github/workflows/deploy.ym
 
 **Einmalige Einrichtung:** In den Repo-Einstellungen unter
 **Settings → Pages → Build and deployment** die Source auf **„GitHub Actions"**
-stellen — sonst schlägt der Deploy-Schritt fehl.
+stellen — sonst schlägt der Deploy-Schritt fehl. Danach den fehlgeschlagenen
+Workflow-Lauf unter **Actions** einfach per „Re-run" neu starten.
+
+⚠️ Bei einem **privaten** Repository ist GitHub Pages nur mit einem
+bezahlten GitHub-Plan (Pro/Team) verfügbar. Alternative: das Repository
+unter **Settings → General → Danger Zone** auf **public** stellen.
 
 Hinweis: Der Service Worker (Offline-Modus) funktioniert nur über HTTPS,
 also über die echte Pages-URL — nicht beim Testen über eine lokale
