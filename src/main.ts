@@ -1,16 +1,10 @@
 import Phaser from 'phaser';
-
-class HelloScene extends Phaser.Scene {
-  create(): void {
-    this.add
-      .text(480, 270, 'KOKO RUN', {
-        fontFamily: 'monospace',
-        fontSize: '64px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-  }
-}
+import { GAME_HEIGHT, GAME_WIDTH, GRAVITY } from './config';
+import { BootScene } from './scenes/BootScene';
+import { MenuScene } from './scenes/MenuScene';
+import { GameScene } from './scenes/GameScene';
+import { LevelCompleteScene } from './scenes/LevelCompleteScene';
+import { GameOverScene } from './scenes/GameOverScene';
 
 new Phaser.Game({
   type: Phaser.AUTO,
@@ -19,8 +13,17 @@ new Phaser.Game({
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 960,
-    height: 540,
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
   },
-  scene: [HelloScene],
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { x: 0, y: GRAVITY },
+      debug: false,
+    },
+  },
+  // Three pointers so running and jumping can be touched at the same time
+  input: { activePointers: 3 },
+  scene: [BootScene, MenuScene, GameScene, LevelCompleteScene, GameOverScene],
 });

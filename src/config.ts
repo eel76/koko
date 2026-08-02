@@ -1,0 +1,23 @@
+export const GAME_WIDTH = 960;
+export const GAME_HEIGHT = 540;
+export const TILE = 32;
+
+export const GRAVITY = 1000;
+export const PLAYER_SPEED = 220;
+export const JUMP_VELOCITY = -470;
+// Releasing jump while rising caps upward speed at this value (variable jump height)
+export const JUMP_CUT_VELOCITY = -160;
+export const COYOTE_MS = 90;
+export const JUMP_BUFFER_MS = 120;
+
+export const ENEMY_SPEED = 60;
+export const STOMP_BOUNCE = -320;
+
+export const COIN_SCORE = 10;
+export const BLOCK_COIN_SCORE = 50;
+export const ENEMY_SCORE = 100;
+export const FLAG_SCORE = 500;
+export const START_LIVES = 3;
+
+export const SKY_COLOR = 0x5c94fc;
+export const NIGHT_COLOR = 0x1a1a2e;
