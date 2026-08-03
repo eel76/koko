@@ -1,65 +1,64 @@
 # Koko Run 🐦
 
-Ein kleines Jump'n'Run im Stil klassischer Plattformer — spielbar im Browser
-und auf dem Handy, installierbar als PWA und offline spielbar.
+A small jump'n'run in the style of classic platformers — playable in the
+browser and on your phone, installable as a PWA, and playable offline.
 
-**Spielen:** https://eel76.github.io/koko/
+**Play:** https://eel76.github.io/koko/
 
-## Steuerung
+## Controls
 
-| | Laufen | Springen |
+| | Move | Jump |
 |---|---|---|
-| **Desktop** | Pfeiltasten / A + D | Leertaste / W / Pfeil hoch |
-| **Handy** | ◀ ▶ Buttons links | Sprung-Button rechts |
+| **Desktop** | Arrow keys / A + D | Space / W / Arrow up |
+| **Phone** | ◀ ▶ buttons on the left | Jump button on the right |
 
-Kurz tippen = kleiner Sprung, gedrückt halten = hoher Sprung. Gegner besiegt
-man, indem man auf sie springt. Münzen und ?-Blöcke geben Punkte, die Flagge
-beendet das Level. Der Highscore wird lokal im Browser gespeichert.
+Tap briefly for a small hop, hold for a high jump. Defeat enemies by jumping
+on top of them. Coins and ?-blocks give points, the flag finishes the level.
+The highscore is stored locally in your browser.
 
-## Entwicklung
+## Development
 
 ```bash
 npm install
-npm run dev      # Dev-Server mit Hot Reload
-npm run build    # Typecheck + Produktions-Build nach dist/
-npm run preview  # Produktions-Build lokal testen
-npm run icons    # PWA-Icons neu generieren (public/)
+npm run dev      # dev server with hot reload
+npm run build    # typecheck + production build into dist/
+npm run preview  # test the production build locally
+npm run icons    # regenerate the PWA icons (public/)
 ```
 
-Technik: [Phaser 3](https://phaser.io/) + TypeScript + [Vite](https://vite.dev/) +
-[vite-plugin-pwa](https://vite-pwa-org.netlify.app/). Alle Grafiken werden zur
-Laufzeit generiert — das Spiel hat keine Bild-Assets.
+Tech: [Phaser 3](https://phaser.io/) + TypeScript + [Vite](https://vite.dev/) +
+[vite-plugin-pwa](https://vite-pwa-org.netlify.app/). All graphics are
+generated at runtime — the game ships zero image assets.
 
-### Level bearbeiten
+### Editing levels
 
-Die Level liegen als ASCII-Karten in [`src/levels.ts`](src/levels.ts) — ein
-Zeichen pro 32-px-Kachel:
+Levels live as ASCII maps in [`src/levels.ts`](src/levels.ts) — one character
+per 32px tile:
 
 ```
-#  Boden      B  Ziegelblock   ?  Münzblock   C  Münze
-E  Gegner     P  Startpunkt    F  Ziel-Flagge
+#  ground     B  brick block   ?  coin block   C  coin
+E  enemy      P  player start  F  goal flag
 ```
 
-Neues Level = neues String-Array, in `LEVELS` eintragen, fertig.
+New level = new string array, add it to `LEVELS`, done.
 
 ## Deployment
 
-Jeder Push baut das Spiel per GitHub Actions und veröffentlicht es auf
-GitHub Pages (siehe [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)).
+Every push builds the game via GitHub Actions and publishes it to
+GitHub Pages (see [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)).
 
-**Einmalige Einrichtung:** In den Repo-Einstellungen unter
-**Settings → Pages → Build and deployment** die Source auf **„GitHub Actions"**
-stellen — sonst schlägt der Deploy-Schritt fehl. Danach den fehlgeschlagenen
-Workflow-Lauf unter **Actions** einfach per „Re-run" neu starten.
+**One-time setup:** In the repository settings under
+**Settings → Pages → Build and deployment**, set the source to
+**"GitHub Actions"** — otherwise the deploy step fails. Afterwards simply
+re-run the failed workflow run under **Actions**.
 
-⚠️ Bei einem **privaten** Repository ist GitHub Pages nur mit einem
-bezahlten GitHub-Plan (Pro/Team) verfügbar. Alternative: das Repository
-unter **Settings → General → Danger Zone** auf **public** stellen.
+⚠️ For a **private** repository, GitHub Pages is only available on a paid
+GitHub plan (Pro/Team). Alternative: make the repository **public** under
+**Settings → General → Danger Zone**.
 
-Hinweis: Der Service Worker (Offline-Modus) funktioniert nur über HTTPS,
-also über die echte Pages-URL — nicht beim Testen über eine lokale
-IP-Adresse im WLAN.
+Note: The service worker (offline mode) only works over HTTPS, i.e. via the
+real Pages URL — not when testing over a local IP address on your Wi-Fi.
 
-## Lizenz
+## License
 
 [MIT](LICENSE)
