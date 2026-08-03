@@ -59,3 +59,7 @@ unter **Settings → General → Danger Zone** auf **public** stellen.
 Hinweis: Der Service Worker (Offline-Modus) funktioniert nur über HTTPS,
 also über die echte Pages-URL — nicht beim Testen über eine lokale
 IP-Adresse im WLAN.
+
+## Lizenz
+
+[MIT](LICENSE)
