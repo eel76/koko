@@ -13,6 +13,14 @@ export const JUMP_BUFFER_MS = 120;
 export const ENEMY_SPEED = 60;
 export const STOMP_BOUNCE = -320;
 
+// Spiders hang from the ceiling and bob up and down on a thread
+export const SPIDER_DROP = 384;
+export const SPIDER_SPEED_MS = 1600;
+// Bats patrol horizontally with a slight vertical wobble
+export const BAT_RANGE_X = 96;
+export const BAT_RANGE_Y = 20;
+export const BAT_SPEED_MS = 1800;
+
 export const COIN_SCORE = 10;
 export const BLOCK_COIN_SCORE = 50;
 export const ENEMY_SCORE = 100;
@@ -20,4 +28,5 @@ export const FLAG_SCORE = 500;
 export const START_LIVES = 3;
 
 export const SKY_COLOR = 0x5c94fc;
+export const CAVE_BG_COLOR = 0x171226;
 export const NIGHT_COLOR = 0x1a1a2e;

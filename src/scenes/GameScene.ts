@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import * as C from '../config';
 import { Controls } from '../controls';
-import { LEVELS } from '../levels';
+import { LEVELS, LevelTheme } from '../levels';
 
 interface GameData {
   levelIndex?: number;
@@ -15,6 +15,8 @@ export class GameScene extends Phaser.Scene {
   private blocks!: Phaser.Physics.Arcade.StaticGroup;
   private coins!: Phaser.Physics.Arcade.StaticGroup;
   private enemies!: Phaser.Physics.Arcade.Group;
+  private spiders!: Phaser.Physics.Arcade.Group;
+  private bats!: Phaser.Physics.Arcade.Group;
   private controls!: Controls;
   private scoreText!: Phaser.GameObjects.Text;
 
@@ -45,17 +47,19 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
-    const rows = LEVELS[this.levelIndex];
+    const { map: rows, theme } = LEVELS[this.levelIndex];
     const levelWidth = Math.max(...rows.map((r) => r.length)) * C.TILE;
     this.levelHeight = rows.length * C.TILE;
 
-    this.cameras.main.setBackgroundColor(C.SKY_COLOR);
-    this.addBackdrop(levelWidth);
+    this.cameras.main.setBackgroundColor(theme === 'cave' ? C.CAVE_BG_COLOR : C.SKY_COLOR);
+    this.addBackdrop(levelWidth, theme);
 
     this.solids = this.physics.add.staticGroup();
     this.blocks = this.physics.add.staticGroup();
     this.coins = this.physics.add.staticGroup();
     this.enemies = this.physics.add.group();
+    this.spiders = this.physics.add.group({ allowGravity: false });
+    this.bats = this.physics.add.group({ allowGravity: false });
 
     let spawnX = 64;
     let spawnY = 64;
@@ -69,7 +73,8 @@ export class GameScene extends Phaser.Scene {
         switch (row[c]) {
           case '#': {
             const above = r > 0 && rows[r - 1][c] === '#';
-            this.solids.create(x, y, above ? 'dirt' : 'ground');
+            const texture = theme === 'cave' ? 'rock' : above ? 'dirt' : 'ground';
+            this.solids.create(x, y, texture);
             this.solidTiles.add(`${c},${r}`);
             break;
           }
@@ -85,6 +90,12 @@ export class GameScene extends Phaser.Scene {
             break;
           case 'E':
             enemySpawns.push({ x, y });
+            break;
+          case 'S':
+            this.spawnSpider(x, r);
+            break;
+          case 'V':
+            this.spawnBat(x, y);
             break;
           case 'P':
             spawnX = x;
@@ -131,6 +142,9 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.enemies, (_playerObj, enemyObj) =>
       this.touchEnemy(enemyObj as Phaser.Physics.Arcade.Sprite),
     );
+    // Spiders and bats cannot be stomped — any contact is deadly
+    this.physics.add.overlap(this.player, this.spiders, () => this.touchHazard());
+    this.physics.add.overlap(this.player, this.bats, () => this.touchHazard());
     if (flagZone) {
       this.physics.add.overlap(this.player, flagZone, () => this.reachFlag());
     }
@@ -139,7 +153,26 @@ export class GameScene extends Phaser.Scene {
     this.controls = new Controls(this);
   }
 
-  private addBackdrop(levelWidth: number): void {
+  private addBackdrop(levelWidth: number, theme: LevelTheme): void {
+    if (theme === 'cave') {
+      for (let x = 40; x < levelWidth; x += 180) {
+        this.add
+          .image(x, 2 * C.TILE, 'stalactite')
+          .setOrigin(0.5, 0)
+          .setScale(0.7 + ((x / 180) % 3) * 0.35)
+          .setScrollFactor(0.6, 1)
+          .setDepth(0);
+      }
+      for (let x = 120; x < levelWidth; x += 300) {
+        this.add
+          .image(x, this.levelHeight - 2 * C.TILE, 'crystal')
+          .setOrigin(0.5, 1)
+          .setScrollFactor(0.6, 1)
+          .setDepth(0)
+          .setAlpha(0.7);
+      }
+      return;
+    }
     for (let x = 60; x < levelWidth; x += 260) {
       this.add
         .image(x, 70 + ((x / 260) % 3) * 45, 'cloud')
@@ -152,6 +185,69 @@ export class GameScene extends Phaser.Scene {
         .setOrigin(0.5, 1)
         .setScrollFactor(0.5, 1)
         .setDepth(0);
+    }
+  }
+
+  // Spider: hangs below the ceiling and bobs up and down on its thread
+  private spawnSpider(x: number, anchorRow: number): void {
+    const anchorY = anchorRow * C.TILE;
+    const thread = this.add.image(x, anchorY, 'thread').setOrigin(0.5, 0).setDepth(5);
+    const spider = this.spiders.create(x, anchorY + 24, 'spider') as Phaser.Physics.Arcade.Sprite;
+    spider.setSize(20, 16).setDepth(6);
+    spider.setData('thread', thread);
+    spider.setData('anchorY', anchorY);
+    this.tweens.add({
+      targets: spider,
+      y: anchorY + C.SPIDER_DROP,
+      duration: C.SPIDER_SPEED_MS,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+      delay: (x * 7) % 1300,
+    });
+  }
+
+  // Bat: patrols horizontally with a slight vertical wobble
+  private spawnBat(x: number, y: number): void {
+    const bat = this.bats.create(x, y, 'bat') as Phaser.Physics.Arcade.Sprite;
+    bat.setSize(24, 12).setDepth(6);
+    bat.setData('prevX', x);
+    this.tweens.add({
+      targets: bat,
+      x: { from: x - C.BAT_RANGE_X, to: x + C.BAT_RANGE_X },
+      duration: C.BAT_SPEED_MS,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+      delay: (x * 3) % 900,
+    });
+    this.tweens.add({
+      targets: bat,
+      y: y + C.BAT_RANGE_Y,
+      duration: 700,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+  }
+
+  private touchHazard(): void {
+    if (this.dead || this.finished) return;
+    this.playerDie();
+  }
+
+  // Keep spider threads attached and bats facing their flight direction
+  private updateHazards(): void {
+    for (const child of this.spiders.getChildren()) {
+      const spider = child as Phaser.Physics.Arcade.Sprite;
+      const thread = spider.getData('thread') as Phaser.GameObjects.Image;
+      thread.displayHeight = spider.y - (spider.getData('anchorY') as number);
+    }
+    for (const child of this.bats.getChildren()) {
+      const bat = child as Phaser.Physics.Arcade.Sprite;
+      const prevX = bat.getData('prevX') as number;
+      if (bat.x !== prevX) bat.setFlipX(bat.x > prevX);
+      bat.setData('prevX', bat.x);
     }
   }
 
@@ -186,6 +282,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time: number): void {
+    this.updateHazards();
     if (this.dead) return;
 
     this.controls.update();

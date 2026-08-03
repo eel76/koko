@@ -46,6 +46,67 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('brick', 32, 32);
     g.clear();
 
+    // Cave rock tile
+    g.fillStyle(0x4a4257);
+    g.fillRect(0, 0, 32, 32);
+    g.fillStyle(0x5d5470);
+    g.fillRect(0, 0, 32, 4);
+    g.fillStyle(0x352f42);
+    g.fillRect(5, 10, 7, 5);
+    g.fillRect(20, 18, 8, 5);
+    g.fillRect(10, 25, 6, 4);
+    g.generateTexture('rock', 32, 32);
+    g.clear();
+
+    // Spider (hangs from a thread)
+    g.lineStyle(2, 0x2b2b35);
+    g.lineBetween(13, 10, 2, 4);
+    g.lineBetween(13, 12, 1, 12);
+    g.lineBetween(13, 14, 2, 19);
+    g.lineBetween(13, 10, 24, 4);
+    g.lineBetween(13, 12, 25, 12);
+    g.lineBetween(13, 14, 24, 19);
+    g.fillStyle(0x2b2b35);
+    g.fillCircle(13, 12, 8);
+    g.fillStyle(0xff5544);
+    g.fillCircle(10, 10, 2);
+    g.fillCircle(16, 10, 2);
+    g.generateTexture('spider', 26, 20);
+    g.clear();
+
+    // Spider thread (stretched to the current thread length at runtime)
+    g.fillStyle(0xdddddd, 0.7);
+    g.fillRect(0, 0, 2, 8);
+    g.generateTexture('thread', 2, 8);
+    g.clear();
+
+    // Bat
+    g.fillStyle(0x3a2f52);
+    g.fillTriangle(0, 2, 12, 6, 6, 14);
+    g.fillTriangle(30, 2, 18, 6, 24, 14);
+    g.fillStyle(0x241c38);
+    g.fillCircle(15, 8, 6);
+    g.fillStyle(0xffd700);
+    g.fillCircle(12, 7, 1.5);
+    g.fillCircle(18, 7, 1.5);
+    g.generateTexture('bat', 30, 16);
+    g.clear();
+
+    // Stalactite (cave backdrop decoration)
+    g.fillStyle(0x241d33);
+    g.fillTriangle(0, 0, 24, 0, 12, 48);
+    g.generateTexture('stalactite', 24, 48);
+    g.clear();
+
+    // Crystal (cave backdrop decoration)
+    g.fillStyle(0x7de3ff, 0.9);
+    g.fillTriangle(8, 0, 16, 14, 0, 14);
+    g.fillTriangle(0, 14, 16, 14, 8, 22);
+    g.fillStyle(0xd6f6ff, 0.9);
+    g.fillTriangle(8, 4, 11, 12, 5, 12);
+    g.generateTexture('crystal', 16, 22);
+    g.clear();
+
     // Coin block ("?" style block, drawn as a glowing dot block)
     g.fillStyle(0xf7b32b);
     g.fillRect(0, 0, 32, 32);
