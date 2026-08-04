@@ -37,14 +37,16 @@ per 32px tile:
 
 ```
 #  ground     B  brick block    ?  coin block   C  coin
-E  enemy      S  spider anchor  V  bat          P  player start
-F  goal flag
+E  enemy      S  spider anchor  V  bat          G  giant fly
+P  player start                 F  goal flag
 ```
 
-Each level has a `theme` (`meadow` or `cave`) that picks tiles, background
-color, and backdrop decoration. Spiders (`S`) hang from the ceiling and bob
-up and down on a thread; bats (`V`) fly around their spawn point. Both are
-dodge-only hazards — any contact is deadly.
+Each level has a `theme` (`meadow`, `cave`, or `forest`) that picks tiles,
+background color, and backdrop decoration. Spiders (`S`) hang from the
+ceiling and bob up and down on a thread; bats (`V`) and giant flies (`G`)
+fly around their spawn point. All three are dodge-only hazards — any
+contact is deadly. The player is an animated stick figure, tinted light or
+dark to contrast each theme.
 
 New level = new string array, add it to `LEVELS`, done.
 

@@ -23,10 +23,11 @@ export class MenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    const bird = this.add.image(cx, 260, 'player').setScale(2);
+    const figure = this.add.sprite(cx, 260, 'player-idle').setScale(2).setTint(0xf5f5f5);
+    figure.play('player-walk');
     this.tweens.add({
-      targets: bird,
-      y: 240,
+      targets: figure,
+      y: 250,
       duration: 500,
       yoyo: true,
       repeat: -1,

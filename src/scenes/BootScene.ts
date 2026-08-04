@@ -92,6 +92,62 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('bat', 30, 16);
     g.clear();
 
+    // Giant fly, two frames for the wing flap (faces left, flipped at runtime)
+    const flyFrame = (name: string, wingY: number, wingRy: number): void => {
+      g.fillStyle(0xcfe8ff, 0.55);
+      g.fillEllipse(16, wingY, 20, wingRy * 2);
+      g.fillEllipse(32, wingY, 20, wingRy * 2);
+      g.fillStyle(0x33303c);
+      g.fillEllipse(24, 20, 28, 18);
+      g.lineStyle(2, 0x33303c);
+      g.lineBetween(16, 28, 12, 32);
+      g.lineBetween(24, 29, 22, 32);
+      g.lineBetween(32, 28, 36, 32);
+      g.fillStyle(0xe23b3b);
+      g.fillCircle(11, 16, 5);
+      g.fillStyle(0xff8f8f);
+      g.fillCircle(9, 14, 2);
+      g.generateTexture(name, 44, 32);
+      g.clear();
+    };
+    flyFrame('fly-0', 8, 5);
+    flyFrame('fly-1', 13, 3);
+
+    // Wood log tile (forest bricks)
+    g.fillStyle(0x8a6035);
+    g.fillRect(0, 0, 32, 32);
+    g.fillStyle(0x6b4527);
+    g.fillRect(0, 0, 32, 2);
+    g.fillRect(0, 10, 32, 2);
+    g.fillRect(0, 21, 32, 2);
+    g.fillRect(0, 30, 32, 2);
+    g.fillStyle(0x75512c);
+    g.fillRect(6, 4, 4, 4);
+    g.fillRect(20, 14, 5, 4);
+    g.fillRect(10, 25, 4, 3);
+    g.generateTexture('log', 32, 32);
+    g.clear();
+
+    // Tree (forest backdrop)
+    g.fillStyle(0x6b4a2b);
+    g.fillRect(42, 85, 12, 65);
+    g.fillStyle(0x2f7a3d);
+    g.fillCircle(48, 58, 34);
+    g.fillCircle(26, 80, 25);
+    g.fillCircle(70, 80, 25);
+    g.fillStyle(0x3f9a4f);
+    g.fillCircle(38, 52, 16);
+    g.generateTexture('tree', 96, 150);
+    g.clear();
+
+    // Bush (forest ground decoration)
+    g.fillStyle(0x2f7a3d);
+    g.fillCircle(12, 16, 11);
+    g.fillCircle(28, 14, 13);
+    g.fillCircle(42, 17, 10);
+    g.generateTexture('bush', 52, 28);
+    g.clear();
+
     // Stalactite (cave backdrop decoration)
     g.fillStyle(0x241d33);
     g.fillTriangle(0, 0, 24, 0, 12, 48);
@@ -143,20 +199,32 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('coin', 22, 22);
     g.clear();
 
-    // Player (Koko — a plucky orange bird)
-    g.fillStyle(0xff8c42);
-    g.fillRoundedRect(0, 4, 28, 28, 8);
-    g.fillStyle(0xe86a17);
-    g.fillRect(4, 28, 8, 4);
-    g.fillRect(16, 28, 8, 4);
-    g.fillStyle(0xffffff);
-    g.fillCircle(19, 13, 6);
-    g.fillStyle(0x222222);
-    g.fillCircle(21, 13, 3);
-    g.fillStyle(0xffc93c);
-    g.fillTriangle(26, 17, 34, 20, 26, 23);
-    g.generateTexture('player', 34, 32);
-    g.clear();
+    // Player: stick figure, drawn in white so themes can tint it.
+    // Far limbs are dimmed so the walk cycle reads clearly from the side.
+    const stickFrame = (
+      name: string,
+      nearArm: number[],
+      farArm: number[],
+      nearLeg: number[],
+      farLeg: number[],
+    ): void => {
+      g.lineStyle(3, 0xffffff, 0.5);
+      g.lineBetween(14, 15, farArm[0], farArm[1]);
+      g.lineBetween(14, 24, farLeg[0], farLeg[1]);
+      g.lineStyle(3, 0xffffff, 1);
+      g.lineBetween(14, 11, 14, 24);
+      g.lineBetween(14, 15, nearArm[0], nearArm[1]);
+      g.lineBetween(14, 24, nearLeg[0], nearLeg[1]);
+      g.fillStyle(0xffffff);
+      g.fillCircle(14, 6, 5);
+      g.generateTexture(name, 28, 36);
+      g.clear();
+    };
+    stickFrame('player-idle', [20, 22], [8, 22], [19, 35], [9, 35]);
+    stickFrame('player-walk-0', [7, 21], [21, 21], [22, 34], [6, 34]);
+    stickFrame('player-walk-1', [17, 22], [11, 22], [16, 35], [11, 34]);
+    stickFrame('player-walk-2', [21, 21], [7, 21], [6, 34], [22, 34]);
+    stickFrame('player-jump', [22, 7], [6, 7], [21, 30], [7, 31]);
 
     // Enemy (grumpy purple blob)
     g.fillStyle(0x7d4ce0);
@@ -224,6 +292,24 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('particle', 6, 6);
 
     g.destroy();
+
+    this.anims.create({
+      key: 'player-walk',
+      frames: [
+        { key: 'player-walk-0' },
+        { key: 'player-walk-1' },
+        { key: 'player-walk-2' },
+        { key: 'player-walk-1' },
+      ],
+      frameRate: 12,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'fly-buzz',
+      frames: [{ key: 'fly-0' }, { key: 'fly-1' }],
+      frameRate: 20,
+      repeat: -1,
+    });
 
     this.scene.start('Menu');
   }

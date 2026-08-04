@@ -17,6 +17,7 @@ export class GameScene extends Phaser.Scene {
   private enemies!: Phaser.Physics.Arcade.Group;
   private spiders!: Phaser.Physics.Arcade.Group;
   private bats!: Phaser.Physics.Arcade.Group;
+  private flies!: Phaser.Physics.Arcade.Group;
   private controls!: Controls;
   private scoreText!: Phaser.GameObjects.Text;
 
@@ -51,7 +52,8 @@ export class GameScene extends Phaser.Scene {
     const levelWidth = Math.max(...rows.map((r) => r.length)) * C.TILE;
     this.levelHeight = rows.length * C.TILE;
 
-    this.cameras.main.setBackgroundColor(theme === 'cave' ? C.CAVE_BG_COLOR : C.SKY_COLOR);
+    const bgColors = { cave: C.CAVE_BG_COLOR, meadow: C.SKY_COLOR, forest: C.FOREST_BG_COLOR };
+    this.cameras.main.setBackgroundColor(bgColors[theme]);
     this.addBackdrop(levelWidth, theme);
 
     this.solids = this.physics.add.staticGroup();
@@ -60,6 +62,7 @@ export class GameScene extends Phaser.Scene {
     this.enemies = this.physics.add.group();
     this.spiders = this.physics.add.group({ allowGravity: false });
     this.bats = this.physics.add.group({ allowGravity: false });
+    this.flies = this.physics.add.group({ allowGravity: false });
 
     let spawnX = 64;
     let spawnY = 64;
@@ -79,7 +82,7 @@ export class GameScene extends Phaser.Scene {
             break;
           }
           case 'B':
-            this.solids.create(x, y, 'brick');
+            this.solids.create(x, y, theme === 'forest' ? 'log' : 'brick');
             this.solidTiles.add(`${c},${r}`);
             break;
           case '?':
@@ -97,6 +100,9 @@ export class GameScene extends Phaser.Scene {
           case 'V':
             this.spawnBat(x, y);
             break;
+          case 'G':
+            this.spawnFly(x, y);
+            break;
           case 'P':
             spawnX = x;
             spawnY = y;
@@ -111,10 +117,11 @@ export class GameScene extends Phaser.Scene {
       }
     });
 
-    this.player = this.physics.add.sprite(spawnX, spawnY, 'player');
-    this.player.setSize(24, 30).setOffset(4, 2);
+    this.player = this.physics.add.sprite(spawnX, spawnY, 'player-idle');
+    this.player.setSize(16, 34).setOffset(6, 2);
     this.player.setCollideWorldBounds(true);
     this.player.setDepth(10);
+    this.player.setTint(theme === 'cave' ? C.PLAYER_TINT_LIGHT : C.PLAYER_TINT_DARK);
 
     this.physics.world.setBounds(0, -320, levelWidth, this.levelHeight + 640);
     this.physics.world.setBoundsCollision(true, true, false, false);
@@ -142,9 +149,10 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.enemies, (_playerObj, enemyObj) =>
       this.touchEnemy(enemyObj as Phaser.Physics.Arcade.Sprite),
     );
-    // Spiders and bats cannot be stomped — any contact is deadly
+    // Spiders, bats, and giant flies cannot be stomped — any contact is deadly
     this.physics.add.overlap(this.player, this.spiders, () => this.touchHazard());
     this.physics.add.overlap(this.player, this.bats, () => this.touchHazard());
+    this.physics.add.overlap(this.player, this.flies, () => this.touchHazard());
     if (flagZone) {
       this.physics.add.overlap(this.player, flagZone, () => this.reachFlag());
     }
@@ -154,6 +162,25 @@ export class GameScene extends Phaser.Scene {
   }
 
   private addBackdrop(levelWidth: number, theme: LevelTheme): void {
+    if (theme === 'forest') {
+      for (let x = 70; x < levelWidth; x += 220) {
+        this.add
+          .image(x, this.levelHeight - 2 * C.TILE, 'tree')
+          .setOrigin(0.5, 1)
+          .setScale(0.8 + ((x / 220) % 3) * 0.25)
+          .setScrollFactor(0.5, 1)
+          .setDepth(0)
+          .setAlpha(0.55);
+      }
+      for (let x = 160, i = 0; x < levelWidth; x += 260, i++) {
+        this.add
+          .image(x, this.levelHeight - 2 * C.TILE, i % 3 === 2 ? 'bush' : 'tree')
+          .setOrigin(0.5, 1)
+          .setScrollFactor(0.7, 1)
+          .setDepth(0);
+      }
+      return;
+    }
     if (theme === 'cave') {
       for (let x = 40; x < levelWidth; x += 180) {
         this.add
@@ -231,6 +258,31 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  // Giant fly: buzzes around its spawn point, faster and wider than a bat
+  private spawnFly(x: number, y: number): void {
+    const fly = this.flies.create(x, y, 'fly-0') as Phaser.Physics.Arcade.Sprite;
+    fly.setSize(36, 24).setDepth(6);
+    fly.setData('prevX', x);
+    fly.play('fly-buzz');
+    this.tweens.add({
+      targets: fly,
+      x: { from: x - C.FLY_RANGE_X, to: x + C.FLY_RANGE_X },
+      duration: C.FLY_SPEED_MS,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+      delay: (x * 5) % 1100,
+    });
+    this.tweens.add({
+      targets: fly,
+      y: y + C.FLY_RANGE_Y,
+      duration: C.FLY_SPEED_MS * 0.37,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+  }
+
   private touchHazard(): void {
     if (this.dead || this.finished) return;
     this.playerDie();
@@ -243,11 +295,11 @@ export class GameScene extends Phaser.Scene {
       const thread = spider.getData('thread') as Phaser.GameObjects.Image;
       thread.displayHeight = spider.y - (spider.getData('anchorY') as number);
     }
-    for (const child of this.bats.getChildren()) {
-      const bat = child as Phaser.Physics.Arcade.Sprite;
-      const prevX = bat.getData('prevX') as number;
-      if (bat.x !== prevX) bat.setFlipX(bat.x > prevX);
-      bat.setData('prevX', bat.x);
+    for (const child of [...this.bats.getChildren(), ...this.flies.getChildren()]) {
+      const flyer = child as Phaser.Physics.Arcade.Sprite;
+      const prevX = flyer.getData('prevX') as number;
+      if (flyer.x !== prevX) flyer.setFlipX(flyer.x > prevX);
+      flyer.setData('prevX', flyer.x);
     }
   }
 
@@ -306,6 +358,17 @@ export class GameScene extends Phaser.Scene {
 
     // Jumping with coyote time and a small input buffer
     const grounded = body.blocked.down || body.touching.down;
+
+    // Stick-figure animation: walk cycle on the ground, jump pose in the air
+    if (!grounded) {
+      this.player.stop();
+      this.player.setTexture('player-jump');
+    } else if (body.velocity.x !== 0) {
+      this.player.play('player-walk', true);
+    } else {
+      this.player.stop();
+      this.player.setTexture('player-idle');
+    }
     if (grounded) this.lastGrounded = time;
     if (this.controls.jumpPressed) this.lastJumpPress = time;
 
