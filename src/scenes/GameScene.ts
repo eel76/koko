@@ -321,7 +321,7 @@ export class GameScene extends Phaser.Scene {
   // Giant fly: buzzes around its spawn point, faster and wider than a bat
   private spawnFly(x: number, y: number): void {
     const fly = this.flies.create(x, y, 'fly-0') as Phaser.Physics.Arcade.Sprite;
-    fly.setSize(36, 24).setDepth(6);
+    fly.setSize(30, 18).setDepth(6);
     fly.setData('prevX', x);
     fly.play('fly-buzz');
     this.tweens.add({
@@ -347,6 +347,7 @@ export class GameScene extends Phaser.Scene {
   private spawnFish(x: number, surfaceY: number): void {
     const fish = this.fishes.create(x, surfaceY + 28, 'fish') as Phaser.Physics.Arcade.Sprite;
     fish.setSize(16, 26).setDepth(4);
+    fish.setData('prevY', fish.y);
     this.tweens.add({
       targets: fish,
       y: surfaceY - C.FISH_JUMP_HEIGHT,
@@ -356,8 +357,6 @@ export class GameScene extends Phaser.Scene {
       ease: 'Quad.easeOut',
       loopDelay: C.FISH_PAUSE_MS,
       delay: (x * 3) % 1400,
-      onYoyo: () => fish.setFlipY(true),
-      onLoop: () => fish.setFlipY(false),
     });
   }
 
@@ -378,6 +377,13 @@ export class GameScene extends Phaser.Scene {
       const prevX = flyer.getData('prevX') as number;
       if (flyer.x !== prevX) flyer.setFlipX(flyer.x > prevX);
       flyer.setData('prevX', flyer.x);
+    }
+    // Fish look up while rising and down while falling
+    for (const child of this.fishes.getChildren()) {
+      const fish = child as Phaser.Physics.Arcade.Sprite;
+      const prevY = fish.getData('prevY') as number;
+      if (fish.y !== prevY) fish.setFlipY(fish.y > prevY);
+      fish.setData('prevY', fish.y);
     }
   }
 

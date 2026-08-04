@@ -92,26 +92,30 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('bat', 30, 16);
     g.clear();
 
-    // Giant fly, two frames for the wing flap (faces left, flipped at runtime)
+    // Giant mosquito, two frames for the wing flap (faces left, flipped at runtime)
     const flyFrame = (name: string, wingY: number, wingRy: number): void => {
-      g.fillStyle(0xcfe8ff, 0.55);
-      g.fillEllipse(16, wingY, 20, wingRy * 2);
-      g.fillEllipse(32, wingY, 20, wingRy * 2);
-      g.fillStyle(0x33303c);
-      g.fillEllipse(24, 20, 28, 18);
-      g.lineStyle(2, 0x33303c);
-      g.lineBetween(16, 28, 12, 32);
-      g.lineBetween(24, 29, 22, 32);
-      g.lineBetween(32, 28, 36, 32);
+      g.fillStyle(0xdcebf2, 0.5);
+      g.fillEllipse(26, wingY, 22, wingRy * 2);
+      g.fillEllipse(33, wingY + 4, 18, wingRy * 2);
+      g.fillStyle(0x5a4f47);
+      g.fillEllipse(30, 20, 18, 8);
+      g.fillStyle(0x4a4340);
+      g.fillCircle(19, 16, 5);
+      g.fillCircle(12, 13, 4);
       g.fillStyle(0xe23b3b);
-      g.fillCircle(11, 16, 5);
-      g.fillStyle(0xff8f8f);
-      g.fillCircle(9, 14, 2);
+      g.fillCircle(10, 12, 1.5);
+      g.lineStyle(2, 0x2f2a26);
+      g.lineBetween(9, 15, 0, 22);
+      g.lineStyle(1.5, 0x2f2a26);
+      g.lineBetween(15, 19, 8, 27);
+      g.lineBetween(18, 20, 14, 29);
+      g.lineBetween(21, 21, 20, 30);
+      g.lineBetween(24, 21, 28, 30);
       g.generateTexture(name, 44, 32);
       g.clear();
     };
-    flyFrame('fly-0', 8, 5);
-    flyFrame('fly-1', 13, 3);
+    flyFrame('fly-0', 6, 4);
+    flyFrame('fly-1', 12, 3);
 
     // Wood log tile (forest bricks)
     g.fillStyle(0x8a6035);
