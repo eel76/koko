@@ -125,8 +125,18 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.world.setBounds(0, -320, levelWidth, this.levelHeight + 640);
     this.physics.world.setBoundsCollision(true, true, false, false);
-    this.cameras.main.setBounds(0, 0, levelWidth, Math.max(this.levelHeight, C.GAME_HEIGHT));
+    // Camera bounds extend half a screen past both level ends so the player
+    // stays centered even at the world bounds and never reaches a screen edge.
+    // The area beyond the ends is filled with visual-only terrain padding.
+    const pad = C.GAME_WIDTH / 2;
+    this.cameras.main.setBounds(
+      -pad,
+      0,
+      levelWidth + 2 * pad,
+      Math.max(this.levelHeight, C.GAME_HEIGHT),
+    );
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
+    this.addEdgePadding(rows, theme, levelWidth);
 
     for (const spawn of enemySpawns) {
       const enemy = this.enemies.create(spawn.x, spawn.y, 'enemy') as Phaser.Physics.Arcade.Sprite;
@@ -161,18 +171,44 @@ export class GameScene extends Phaser.Scene {
     this.controls = new Controls(this);
   }
 
+  // Continues '#' terrain rows as non-physical images half a screen past both
+  // level ends, so the extended camera range never shows a void.
+  private addEdgePadding(rows: string[], theme: LevelTheme, levelWidth: number): void {
+    const padTiles = C.GAME_WIDTH / 2 / C.TILE;
+    const maxCols = levelWidth / C.TILE;
+    const texFor = (above: boolean): string =>
+      theme === 'cave' ? 'rock' : above ? 'dirt' : 'ground';
+    rows.forEach((row, r) => {
+      const solidAbove = r > 0 && rows[r - 1];
+      for (const [edgeCol, dir] of [
+        [0, -1],
+        [maxCols - 1, 1],
+      ] as const) {
+        if (row[edgeCol] !== '#') continue;
+        const texture = texFor(!!solidAbove && rows[r - 1][edgeCol] === '#');
+        for (let i = 1; i <= padTiles; i++) {
+          const x = (edgeCol + dir * i) * C.TILE + C.TILE / 2;
+          this.add.image(x, r * C.TILE + C.TILE / 2, texture).setDepth(1);
+        }
+      }
+    });
+  }
+
   private addBackdrop(levelWidth: number, theme: LevelTheme): void {
+    // Cover the camera's full range, including the edge padding on both sides
+    const from = -C.GAME_WIDTH / 2;
+    const to = levelWidth + C.GAME_WIDTH / 2;
     if (theme === 'forest') {
-      for (let x = 70; x < levelWidth; x += 220) {
+      for (let x = from + 70, i = 0; x < to; x += 220, i++) {
         this.add
           .image(x, this.levelHeight - 2 * C.TILE, 'tree')
           .setOrigin(0.5, 1)
-          .setScale(0.8 + ((x / 220) % 3) * 0.25)
+          .setScale(0.8 + (i % 3) * 0.25)
           .setScrollFactor(0.5, 1)
           .setDepth(0)
           .setAlpha(0.55);
       }
-      for (let x = 160, i = 0; x < levelWidth; x += 260, i++) {
+      for (let x = from + 160, i = 0; x < to; x += 260, i++) {
         this.add
           .image(x, this.levelHeight - 2 * C.TILE, i % 3 === 2 ? 'bush' : 'tree')
           .setOrigin(0.5, 1)
@@ -182,15 +218,15 @@ export class GameScene extends Phaser.Scene {
       return;
     }
     if (theme === 'cave') {
-      for (let x = 40; x < levelWidth; x += 180) {
+      for (let x = from + 40, i = 0; x < to; x += 180, i++) {
         this.add
           .image(x, 2 * C.TILE, 'stalactite')
           .setOrigin(0.5, 0)
-          .setScale(0.7 + ((x / 180) % 3) * 0.35)
+          .setScale(0.7 + (i % 3) * 0.35)
           .setScrollFactor(0.6, 1)
           .setDepth(0);
       }
-      for (let x = 120; x < levelWidth; x += 300) {
+      for (let x = from + 120; x < to; x += 300) {
         this.add
           .image(x, this.levelHeight - 2 * C.TILE, 'crystal')
           .setOrigin(0.5, 1)
@@ -200,13 +236,13 @@ export class GameScene extends Phaser.Scene {
       }
       return;
     }
-    for (let x = 60; x < levelWidth; x += 260) {
+    for (let x = from + 60, i = 0; x < to; x += 260, i++) {
       this.add
-        .image(x, 70 + ((x / 260) % 3) * 45, 'cloud')
+        .image(x, 70 + (i % 3) * 45, 'cloud')
         .setScrollFactor(0.25, 1)
         .setDepth(0);
     }
-    for (let x = 90; x < levelWidth; x += 340) {
+    for (let x = from + 90; x < to; x += 340) {
       this.add
         .image(x, this.levelHeight - 2 * C.TILE, 'hill')
         .setOrigin(0.5, 1)
