@@ -24,6 +24,8 @@ export class GameScene extends Phaser.Scene {
   private controls!: Controls;
   private character!: CharacterDef;
   private scoreText!: Phaser.GameObjects.Text;
+  private timeText!: Phaser.GameObjects.Text;
+  private timeLeft = C.LEVEL_TIME_SECONDS;
 
   private solidTiles = new Set<string>();
   private levelIndex = 0;
@@ -49,6 +51,7 @@ export class GameScene extends Phaser.Scene {
     this.lastJumpPress = -10000;
     this.dead = false;
     this.finished = false;
+    this.timeLeft = C.LEVEL_TIME_SECONDS;
   }
 
   create(): void {
@@ -408,7 +411,13 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0.5, 0)
       .setScrollFactor(0)
       .setDepth(100);
-    placeOnHud(levelText, C.GAME_WIDTH / 2, 12);
+    placeOnHud(levelText, C.GAME_WIDTH * 0.38, 12);
+    this.timeText = this.add
+      .text(0, 0, `TIME ${this.timeLeft}`, style)
+      .setOrigin(0.5, 0)
+      .setScrollFactor(0)
+      .setDepth(100);
+    placeOnHud(this.timeText, C.GAME_WIDTH * 0.62, 12);
     const livesText = this.add
       .text(0, 0, `LIVES ${this.lives}`, style)
       .setOrigin(1, 0)
@@ -422,7 +431,7 @@ export class GameScene extends Phaser.Scene {
     this.scoreText.setText(`SCORE ${this.score}`);
   }
 
-  update(time: number): void {
+  update(time: number, delta: number): void {
     this.updateHazards();
     if (this.dead) return;
 
@@ -431,6 +440,29 @@ export class GameScene extends Phaser.Scene {
 
     if (this.finished) {
       this.player.setVelocityX(0);
+      return;
+    }
+
+    // Level timer: running out costs a life
+    this.timeLeft -= delta / 1000;
+    const seconds = Math.max(0, Math.ceil(this.timeLeft));
+    this.timeText.setText(`TIME ${seconds}`);
+    this.timeText.setColor(seconds <= 10 ? '#ff5544' : '#ffffff');
+    if (this.timeLeft <= 0) {
+      const timeUp = this.add
+        .text(0, 0, 'TIME UP!', {
+          fontFamily: 'monospace',
+          fontSize: '56px',
+          fontStyle: 'bold',
+          color: '#ff5544',
+          stroke: '#000000',
+          strokeThickness: 8,
+        })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(150);
+      placeOnHud(timeUp, C.GAME_WIDTH / 2, C.GAME_HEIGHT / 2 - 60);
+      this.playerDie();
       return;
     }
 
@@ -591,7 +623,9 @@ export class GameScene extends Phaser.Scene {
   private reachFlag(): void {
     if (this.finished || this.dead) return;
     this.finished = true;
-    this.addScore(C.FLAG_SCORE);
+    const secondsLeft = Math.max(0, Math.ceil(this.timeLeft));
+    const timeBonus = secondsLeft * C.TIME_BONUS_PER_SECOND;
+    this.addScore(C.FLAG_SCORE + timeBonus);
     this.player.setVelocityX(0);
 
     this.time.delayedCall(900, () => {
@@ -599,6 +633,8 @@ export class GameScene extends Phaser.Scene {
         levelIndex: this.levelIndex,
         score: this.score,
         lives: this.lives,
+        secondsLeft,
+        timeBonus,
       });
     });
   }

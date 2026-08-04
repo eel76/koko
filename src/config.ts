@@ -39,6 +39,11 @@ export const ENEMY_SCORE = 100;
 export const FLAG_SCORE = 500;
 export const START_LIVES = 3;
 
+// Each level must be finished within the time limit; remaining seconds
+// are converted into bonus points at the flag.
+export const LEVEL_TIME_SECONDS = 120;
+export const TIME_BONUS_PER_SECOND = 10;
+
 export const SKY_COLOR = 0x5c94fc;
 export const CAVE_BG_COLOR = 0x171226;
 export const FOREST_BG_COLOR = 0x74975f;

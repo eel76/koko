@@ -31,6 +31,9 @@ the appropriate section. Requirement IDs are stable and never reused.
   Super Mario Bros.: running, jumping, collecting coins, defeating ground
   enemies by jumping on them, reaching a goal flag; lives and a locally
   stored highscore.
+- **R19** — Each level has a timer: the level must be finished within the
+  time limit. Finishing early grants a bonus — the more seconds remain, the
+  more bonus points are awarded.
 
 ## Levels
 

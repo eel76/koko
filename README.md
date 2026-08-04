@@ -14,7 +14,9 @@ browser and on your phone, installable as a PWA, and playable offline.
 
 Tap briefly for a small hop, hold for a high jump. Defeat enemies by jumping
 on top of them. Coins and ?-blocks give points, the flag finishes the level.
-The highscore is stored locally in your browser.
+Each level has a time limit — running out costs a life, and every second
+left at the flag is worth bonus points. The highscore is stored locally in
+your browser.
 
 On the title screen you can pick your character — the stick figure, Koko
 the bird, or Pup the dachshund. The choice is remembered locally.

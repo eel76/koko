@@ -7,6 +7,8 @@ interface CompleteData {
   levelIndex: number;
   score: number;
   lives: number;
+  secondsLeft: number;
+  timeBonus: number;
 }
 
 export class LevelCompleteScene extends Phaser.Scene {
@@ -37,9 +39,19 @@ export class LevelCompleteScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
+    if (data.timeBonus > 0) {
+      this.add
+        .text(cx, 300, `TIME BONUS +${data.timeBonus} (${data.secondsLeft} s left)`, {
+          fontFamily: 'monospace',
+          fontSize: '26px',
+          color: '#7fc4b4',
+        })
+        .setOrigin(0.5);
+    }
+
     if (!hasNext && submitScore(data.score)) {
       this.add
-        .text(cx, 310, 'NEW BEST!', {
+        .text(cx, 350, 'NEW BEST!', {
           fontFamily: 'monospace',
           fontSize: '32px',
           fontStyle: 'bold',
