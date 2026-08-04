@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { CharacterDef, getSelectedCharacter } from '../characters';
 import * as C from '../config';
 import { Controls } from '../controls';
 import { LEVELS, LevelTheme } from '../levels';
@@ -19,6 +20,7 @@ export class GameScene extends Phaser.Scene {
   private bats!: Phaser.Physics.Arcade.Group;
   private flies!: Phaser.Physics.Arcade.Group;
   private controls!: Controls;
+  private character!: CharacterDef;
   private scoreText!: Phaser.GameObjects.Text;
 
   private solidTiles = new Set<string>();
@@ -117,11 +119,14 @@ export class GameScene extends Phaser.Scene {
       }
     });
 
-    this.player = this.physics.add.sprite(spawnX, spawnY, 'player-idle');
-    this.player.setSize(16, 34).setOffset(6, 2);
+    this.character = getSelectedCharacter();
+    this.player = this.physics.add.sprite(spawnX, spawnY, this.character.idleTexture);
+    this.player.setSize(...this.character.bodySize).setOffset(...this.character.bodyOffset);
     this.player.setCollideWorldBounds(true);
     this.player.setDepth(10);
-    this.player.setTint(theme === 'cave' ? C.PLAYER_TINT_LIGHT : C.PLAYER_TINT_DARK);
+    if (this.character.tintByTheme) {
+      this.player.setTint(theme === 'cave' ? C.PLAYER_TINT_LIGHT : C.PLAYER_TINT_DARK);
+    }
 
     this.physics.world.setBounds(0, -320, levelWidth, this.levelHeight + 640);
     this.physics.world.setBoundsCollision(true, true, false, false);
@@ -395,15 +400,15 @@ export class GameScene extends Phaser.Scene {
     // Jumping with coyote time and a small input buffer
     const grounded = body.blocked.down || body.touching.down;
 
-    // Stick-figure animation: walk cycle on the ground, jump pose in the air
+    // Character animation: walk cycle on the ground, jump pose in the air
     if (!grounded) {
       this.player.stop();
-      this.player.setTexture('player-jump');
+      this.player.setTexture(this.character.jumpTexture);
     } else if (body.velocity.x !== 0) {
-      this.player.play('player-walk', true);
+      this.player.play(this.character.walkAnim, true);
     } else {
       this.player.stop();
-      this.player.setTexture('player-idle');
+      this.player.setTexture(this.character.idleTexture);
     }
     if (grounded) this.lastGrounded = time;
     if (this.controls.jumpPressed) this.lastJumpPress = time;

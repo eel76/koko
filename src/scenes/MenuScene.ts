@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { CHARACTERS, getSelectedCharacter, setSelectedCharacter } from '../characters';
 import { GAME_HEIGHT, GAME_WIDTH, START_LIVES } from '../config';
 import { isDevMode } from '../devmode';
 import { getHighscore } from '../highscore';
@@ -23,19 +24,10 @@ export class MenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    const figure = this.add.sprite(cx, 260, 'player-idle').setScale(2).setTint(0xf5f5f5);
-    figure.play('player-walk');
-    this.tweens.add({
-      targets: figure,
-      y: 250,
-      duration: 500,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-    });
+    this.addCharacterSelect(cx);
 
     const start = this.add
-      .text(cx, 360, 'TAP TO START', {
+      .text(cx, 385, 'TAP TO START', {
         fontFamily: 'monospace',
         fontSize: '36px',
         fontStyle: 'bold',
@@ -47,7 +39,7 @@ export class MenuScene extends Phaser.Scene {
     const highscore = getHighscore();
     if (highscore > 0) {
       this.add
-        .text(cx, 420, `BEST: ${highscore}`, {
+        .text(cx, 435, `BEST: ${highscore}`, {
           fontFamily: 'monospace',
           fontSize: '28px',
           color: '#ffd700',
@@ -75,18 +67,54 @@ export class MenuScene extends Phaser.Scene {
 
     if (isDevMode()) {
       this.addLevelSelect(startGame);
-      // Only start on taps that miss the level buttons
-      this.input.on(
-        'pointerdown',
-        (_pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
-          if (over.length === 0) startGame();
-        },
-      );
-    } else {
-      this.input.once('pointerdown', () => startGame());
     }
+    // Only start on taps that miss the character (and dev level) buttons
+    this.input.on(
+      'pointerdown',
+      (_pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
+        if (over.length === 0) startGame();
+      },
+    );
     this.input.keyboard!.once('keydown-SPACE', () => startGame());
     this.input.keyboard!.once('keydown-ENTER', () => startGame());
+  }
+
+  private addCharacterSelect(cx: number): void {
+    const y = 275;
+    const spacing = 150;
+    let selectedId = getSelectedCharacter().id;
+
+    const ring = this.add.image(0, y, 'select-ring');
+    const sprites = CHARACTERS.map((character, i) => {
+      const x = cx + (i - 1) * spacing;
+      const sprite = this.add
+        .sprite(x, y, character.idleTexture)
+        .setScale(2)
+        .setInteractive({ useHandCursor: true });
+      if (character.tintByTheme) sprite.setTint(0xf5f5f5);
+      sprite.play(character.walkAnim);
+      this.add
+        .text(x, y + 58, character.name, {
+          fontFamily: 'monospace',
+          fontSize: '20px',
+          fontStyle: 'bold',
+          color: '#8899cc',
+        })
+        .setOrigin(0.5);
+      sprite.on('pointerdown', () => {
+        selectedId = character.id;
+        setSelectedCharacter(character.id);
+        refresh();
+      });
+      return sprite;
+    });
+
+    const refresh = (): void => {
+      const index = CHARACTERS.findIndex((c) => c.id === selectedId);
+      ring.setX(cx + (index - 1) * spacing);
+      sprites.forEach((sprite, i) => sprite.setAlpha(CHARACTERS[i].id === selectedId ? 1 : 0.45));
+    };
+    refresh();
   }
 
   private addLevelSelect(startGame: (levelIndex: number) => void): void {

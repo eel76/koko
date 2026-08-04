@@ -226,6 +226,60 @@ export class BootScene extends Phaser.Scene {
     stickFrame('player-walk-2', [21, 21], [7, 21], [6, 34], [22, 34]);
     stickFrame('player-jump', [22, 7], [6, 7], [21, 30], [7, 31]);
 
+    // Koko, the plucky orange bird — feet positions make the walk cycle
+    const birdFrame = (name: string, feet: [number, number][], bodyY = 0): void => {
+      g.fillStyle(0xe86a17);
+      for (const [fx, fy] of feet) g.fillRect(fx, fy, 8, 32 - fy);
+      g.fillStyle(0xff8c42);
+      g.fillRoundedRect(0, 4 + bodyY, 28, 24, 8);
+      g.fillStyle(0xffffff);
+      g.fillCircle(19, 13 + bodyY, 6);
+      g.fillStyle(0x222222);
+      g.fillCircle(21, 13 + bodyY, 3);
+      g.fillStyle(0xffc93c);
+      g.fillTriangle(26, 17 + bodyY, 34, 20 + bodyY, 26, 23 + bodyY);
+      g.generateTexture(name, 34, 32);
+      g.clear();
+    };
+    birdFrame('koko-idle', [[4, 28], [16, 28]]);
+    birdFrame('koko-walk-0', [[0, 28], [18, 28]]);
+    birdFrame('koko-walk-1', [[10, 28], [12, 28]], 2);
+    birdFrame('koko-walk-2', [[18, 28], [0, 28]]);
+    birdFrame('koko-jump', [[7, 26], [14, 26]]);
+
+    // Pup, a cuddly little dachshund — long body, stubby legs, red collar
+    const dogFrame = (name: string, legs: number[], tailTip: [number, number]): void => {
+      g.fillStyle(0x7d5631);
+      g.fillTriangle(6, 16, tailTip[0], tailTip[1], 9, 12);
+      g.fillStyle(0xb5854f);
+      for (const lx of legs) g.fillRect(lx, 22, 4, 8);
+      g.fillRoundedRect(4, 12, 34, 12, 6);
+      g.fillCircle(38, 12, 8);
+      g.fillRect(42, 11, 4, 5);
+      g.fillStyle(0xd94a4a);
+      g.fillRect(30, 12, 4, 11);
+      g.fillStyle(0x7d5631);
+      g.fillEllipse(34, 11, 8, 13);
+      g.fillStyle(0x222222);
+      g.fillCircle(40, 9, 2);
+      g.fillCircle(46, 12, 3);
+      g.fillStyle(0xff8fa3);
+      g.fillRect(43, 16, 3, 4);
+      g.generateTexture(name, 48, 30);
+      g.clear();
+    };
+    dogFrame('dog-idle', [12, 18, 30, 36], [0, 6]);
+    dogFrame('dog-walk-0', [8, 20, 28, 40], [0, 4]);
+    dogFrame('dog-walk-1', [13, 17, 31, 35], [0, 10]);
+    dogFrame('dog-walk-2', [14, 22, 26, 38], [0, 4]);
+    dogFrame('dog-jump', [6, 12, 38, 44], [2, 2]);
+
+    // Golden frame marking the selected character on the menu
+    g.lineStyle(4, 0xffd700);
+    g.strokeRoundedRect(2, 2, 108, 96, 16);
+    g.generateTexture('select-ring', 112, 100);
+    g.clear();
+
     // Enemy (grumpy purple blob)
     g.fillStyle(0x7d4ce0);
     g.fillRoundedRect(0, 4, 30, 20, { tl: 14, tr: 14, bl: 4, br: 4 });
@@ -300,6 +354,28 @@ export class BootScene extends Phaser.Scene {
         { key: 'player-walk-1' },
         { key: 'player-walk-2' },
         { key: 'player-walk-1' },
+      ],
+      frameRate: 12,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'koko-walk',
+      frames: [
+        { key: 'koko-walk-0' },
+        { key: 'koko-walk-1' },
+        { key: 'koko-walk-2' },
+        { key: 'koko-walk-1' },
+      ],
+      frameRate: 12,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'dog-walk',
+      frames: [
+        { key: 'dog-walk-0' },
+        { key: 'dog-walk-1' },
+        { key: 'dog-walk-2' },
+        { key: 'dog-walk-1' },
       ],
       frameRate: 12,
       repeat: -1,

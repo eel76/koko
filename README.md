@@ -16,6 +16,9 @@ Tap briefly for a small hop, hold for a high jump. Defeat enemies by jumping
 on top of them. Coins and ?-blocks give points, the flag finishes the level.
 The highscore is stored locally in your browser.
 
+On the title screen you can pick your character — the stick figure, Koko
+the bird, or Pup the dachshund. The choice is remembered locally.
+
 ## Development
 
 ```bash
