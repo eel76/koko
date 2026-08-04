@@ -62,6 +62,9 @@ the appropriate section. Requirement IDs are stable and never reused.
   can never reach the left screen edge.
 - **R15** — At level start, all level content (coins, enemies, platforms)
   appears to the right of the player; nothing appears to their left.
+- **R18** — The gameplay camera is zoomed in (150 %) so the level content
+  fills at least about two thirds of the screen instead of only the lower
+  half. HUD and touch controls keep their apparent size and position.
 
 ## Developer Tools
 

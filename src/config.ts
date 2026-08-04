@@ -2,6 +2,10 @@ export const GAME_WIDTH = 960;
 export const GAME_HEIGHT = 540;
 export const TILE = 32;
 
+// Gameplay camera zoom so level content fills most of the screen.
+// HUD and touch controls are compensated to keep their apparent size.
+export const CAMERA_ZOOM = 1.5;
+
 export const GRAVITY = 1000;
 export const PLAYER_SPEED = 220;
 export const JUMP_VELOCITY = -470;

@@ -3,6 +3,7 @@ import { CharacterDef, getSelectedCharacter } from '../characters';
 import * as C from '../config';
 import { Controls } from '../controls';
 import { LEVELS, LevelTheme } from '../levels';
+import { placeOnHud } from '../ui';
 
 interface GameData {
   levelIndex?: number;
@@ -151,6 +152,7 @@ export class GameScene extends Phaser.Scene {
       Math.max(this.levelHeight, C.GAME_HEIGHT),
     );
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
+    this.cameras.main.setZoom(C.CAMERA_ZOOM);
     this.addEdgePadding(rows, theme, levelWidth);
 
     for (const spawn of enemySpawns) {
@@ -397,19 +399,22 @@ export class GameScene extends Phaser.Scene {
       strokeThickness: 5,
     };
     this.scoreText = this.add
-      .text(16, 12, `SCORE ${this.score}`, style)
+      .text(0, 0, `SCORE ${this.score}`, style)
       .setScrollFactor(0)
       .setDepth(100);
-    this.add
-      .text(C.GAME_WIDTH / 2, 12, `LEVEL ${this.levelIndex + 1}`, style)
+    placeOnHud(this.scoreText, 16, 12);
+    const levelText = this.add
+      .text(0, 0, `LEVEL ${this.levelIndex + 1}`, style)
       .setOrigin(0.5, 0)
       .setScrollFactor(0)
       .setDepth(100);
-    this.add
-      .text(C.GAME_WIDTH - 16, 12, `LIVES ${this.lives}`, style)
+    placeOnHud(levelText, C.GAME_WIDTH / 2, 12);
+    const livesText = this.add
+      .text(0, 0, `LIVES ${this.lives}`, style)
       .setOrigin(1, 0)
       .setScrollFactor(0)
       .setDepth(100);
+    placeOnHud(livesText, C.GAME_WIDTH - 16, 12);
   }
 
   private addScore(points: number): void {

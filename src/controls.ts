@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from './config';
+import { placeOnHud } from './ui';
 
 interface TouchZone {
   x: number;
@@ -39,11 +40,14 @@ export class Controls {
       { x: GAME_WIDTH - 96, y, r: 72, kind: 'jump', texture: 'btn-jump', flip: false },
     ];
     for (const b of buttons) {
-      this.scene.add
-        .image(b.x, b.y, b.texture)
+      const image = this.scene.add
+        .image(0, 0, b.texture)
         .setScrollFactor(0)
         .setDepth(200)
         .setFlipX(b.flip);
+      // Compensate the camera zoom so the button appears at (x, y) full size;
+      // hit zones use logical screen coordinates and stay unchanged.
+      placeOnHud(image, b.x, b.y);
       this.zones.push({ x: b.x, y: b.y, r: b.r, kind: b.kind });
     }
   }
