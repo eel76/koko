@@ -128,24 +128,70 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('log', 32, 32);
     g.clear();
 
-    // Tree (forest backdrop)
-    g.fillStyle(0x6b4a2b);
+    // Jungle tree (swampy forest backdrop) with hanging vines
+    g.fillStyle(0x5d4023);
     g.fillRect(42, 85, 12, 65);
-    g.fillStyle(0x2f7a3d);
+    g.fillStyle(0x2a5d34);
     g.fillCircle(48, 58, 34);
     g.fillCircle(26, 80, 25);
     g.fillCircle(70, 80, 25);
-    g.fillStyle(0x3f9a4f);
+    g.fillStyle(0x35743f);
     g.fillCircle(38, 52, 16);
+    g.lineStyle(3, 0x2a5d34);
+    g.lineBetween(14, 92, 14, 128);
+    g.lineBetween(80, 94, 80, 124);
+    g.fillStyle(0x35743f);
+    g.fillCircle(14, 130, 4);
+    g.fillCircle(80, 126, 4);
     g.generateTexture('tree', 96, 150);
     g.clear();
 
-    // Bush (forest ground decoration)
-    g.fillStyle(0x2f7a3d);
+    // Bush (swamp ground decoration)
+    g.fillStyle(0x2a5d34);
     g.fillCircle(12, 16, 11);
     g.fillCircle(28, 14, 13);
     g.fillCircle(42, 17, 10);
     g.generateTexture('bush', 52, 28);
+    g.clear();
+
+    // Swamp mist strip (drawn faint, stretched over the ground)
+    g.fillStyle(0xffffff, 0.5);
+    g.fillEllipse(80, 14, 150, 20);
+    g.generateTexture('mist', 160, 28);
+    g.clear();
+
+    // Water: surface tile (light ripple on top) and deep fill tile
+    g.fillStyle(0x4a8c82);
+    g.fillRect(0, 0, 32, 32);
+    g.fillStyle(0x7fc4b4);
+    g.fillRect(0, 0, 32, 3);
+    g.fillRect(3, 6, 8, 2);
+    g.fillRect(18, 9, 9, 2);
+    g.generateTexture('water', 32, 32);
+    g.clear();
+    g.fillStyle(0x3a6e66);
+    g.fillRect(0, 0, 32, 32);
+    g.fillStyle(0x33615a);
+    g.fillRect(5, 8, 8, 3);
+    g.fillRect(20, 18, 7, 3);
+    g.generateTexture('water-deep', 32, 32);
+    g.clear();
+
+    // Leaping fish (drawn nose-up; flipped vertically while falling)
+    g.fillStyle(0xb86a2e);
+    g.fillTriangle(11, 20, 3, 31, 19, 31);
+    g.fillStyle(0xe08e45);
+    g.fillEllipse(11, 13, 16, 24);
+    g.fillStyle(0xb86a2e);
+    g.fillTriangle(3, 12, 0, 18, 6, 16);
+    g.fillTriangle(19, 12, 22, 18, 16, 16);
+    g.fillStyle(0xf2b980);
+    g.fillEllipse(13, 15, 7, 12);
+    g.fillStyle(0xffffff);
+    g.fillCircle(13, 6, 3);
+    g.fillStyle(0x222222);
+    g.fillCircle(14, 6, 1.5);
+    g.generateTexture('fish', 22, 32);
     g.clear();
 
     // Stalactite (cave backdrop decoration)

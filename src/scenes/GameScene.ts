@@ -19,6 +19,7 @@ export class GameScene extends Phaser.Scene {
   private spiders!: Phaser.Physics.Arcade.Group;
   private bats!: Phaser.Physics.Arcade.Group;
   private flies!: Phaser.Physics.Arcade.Group;
+  private fishes!: Phaser.Physics.Arcade.Group;
   private controls!: Controls;
   private character!: CharacterDef;
   private scoreText!: Phaser.GameObjects.Text;
@@ -65,6 +66,7 @@ export class GameScene extends Phaser.Scene {
     this.spiders = this.physics.add.group({ allowGravity: false });
     this.bats = this.physics.add.group({ allowGravity: false });
     this.flies = this.physics.add.group({ allowGravity: false });
+    this.fishes = this.physics.add.group({ allowGravity: false });
 
     let spawnX = 64;
     let spawnY = 64;
@@ -104,6 +106,14 @@ export class GameScene extends Phaser.Scene {
             break;
           case 'G':
             this.spawnFly(x, y);
+            break;
+          case 'W': {
+            const above = r > 0 && rows[r - 1][c] === 'W';
+            this.add.image(x, y, above ? 'water-deep' : 'water').setDepth(8);
+            break;
+          }
+          case 'X':
+            this.spawnFish(x, (r + 1) * C.TILE);
             break;
           case 'P':
             spawnX = x;
@@ -164,10 +174,11 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.enemies, (_playerObj, enemyObj) =>
       this.touchEnemy(enemyObj as Phaser.Physics.Arcade.Sprite),
     );
-    // Spiders, bats, and giant flies cannot be stomped — any contact is deadly
+    // Spiders, bats, flies, and fish cannot be stomped — any contact is deadly
     this.physics.add.overlap(this.player, this.spiders, () => this.touchHazard());
     this.physics.add.overlap(this.player, this.bats, () => this.touchHazard());
     this.physics.add.overlap(this.player, this.flies, () => this.touchHazard());
+    this.physics.add.overlap(this.player, this.fishes, () => this.touchHazard());
     if (flagZone) {
       this.physics.add.overlap(this.player, flagZone, () => this.reachFlag());
     }
@@ -219,6 +230,14 @@ export class GameScene extends Phaser.Scene {
           .setOrigin(0.5, 1)
           .setScrollFactor(0.7, 1)
           .setDepth(0);
+      }
+      // Swamp mist drifting over the ground
+      for (let x = from + 100, i = 0; x < to; x += 320, i++) {
+        this.add
+          .image(x, this.levelHeight - C.TILE * (1.5 + (i % 3) * 0.6), 'mist')
+          .setScrollFactor(0.85, 1)
+          .setDepth(9)
+          .setAlpha(0.35);
       }
       return;
     }
@@ -321,6 +340,24 @@ export class GameScene extends Phaser.Scene {
       yoyo: true,
       repeat: -1,
       ease: 'Sine.easeInOut',
+    });
+  }
+
+  // Fish: leaps out of its pool, arcs, and dives back in on a fixed rhythm
+  private spawnFish(x: number, surfaceY: number): void {
+    const fish = this.fishes.create(x, surfaceY + 28, 'fish') as Phaser.Physics.Arcade.Sprite;
+    fish.setSize(16, 26).setDepth(4);
+    this.tweens.add({
+      targets: fish,
+      y: surfaceY - C.FISH_JUMP_HEIGHT,
+      duration: C.FISH_RISE_MS,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Quad.easeOut',
+      loopDelay: C.FISH_PAUSE_MS,
+      delay: (x * 3) % 1400,
+      onYoyo: () => fish.setFlipY(true),
+      onLoop: () => fish.setFlipY(false),
     });
   }
 

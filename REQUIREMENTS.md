@@ -38,7 +38,10 @@ the appropriate section. Requirement IDs are stable and never reused.
   up and down on a spider thread; the player must dodge them. Bats fly
   around and must also be dodged.
 - **R10** — A forest level exists in which the player runs through a forest
-  and giant flies buzz around as hazards to dodge.
+  and giant flies buzz around as hazards to dodge. The forest must look like
+  a swampy jungle forest.
+- **R17** — The jungle level contains water pools out of which fish leap
+  again and again; the player must jump across the pools past the fish.
 
 ## Characters
 

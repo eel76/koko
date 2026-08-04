@@ -24,6 +24,10 @@ export const BAT_SPEED_MS = 1800;
 export const FLY_RANGE_X = 120;
 export const FLY_RANGE_Y = 60;
 export const FLY_SPEED_MS = 1400;
+// Fish leap out of water pools and fall back in
+export const FISH_JUMP_HEIGHT = 120;
+export const FISH_RISE_MS = 600;
+export const FISH_PAUSE_MS = 1000;
 
 export const COIN_SCORE = 10;
 export const BLOCK_COIN_SCORE = 50;
@@ -33,7 +37,7 @@ export const START_LIVES = 3;
 
 export const SKY_COLOR = 0x5c94fc;
 export const CAVE_BG_COLOR = 0x171226;
-export const FOREST_BG_COLOR = 0x8fca85;
+export const FOREST_BG_COLOR = 0x74975f;
 export const NIGHT_COLOR = 0x1a1a2e;
 
 // The stick-figure player is drawn white and tinted to contrast the theme
