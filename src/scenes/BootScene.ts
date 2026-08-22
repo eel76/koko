@@ -359,9 +359,11 @@ export class BootScene extends Phaser.Scene {
       const spikes = 13;
 
       // Shoes first — the head is drawn over them and sits right on top,
-      // so they peek out to the sides and below the lowest spikes
-      const swing = Math.cos(t) * 4;
-      for (const sx of [2 + swing, 30 - swing]) {
+      // so they peek out to the sides and below the lowest spikes. The step
+      // is small and rounded to whole pixels: a wider swing would push a shoe
+      // past the texture edge and clip it.
+      const swing = Math.round(Math.cos(t) * 2.5);
+      for (const sx of [7 + swing, 25 - swing]) {
         g.fillStyle(0x5b32b0);
         g.fillRoundedRect(sx, 37, 16, 11, 5);
         g.fillStyle(0x7d4ce0);
