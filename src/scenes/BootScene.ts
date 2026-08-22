@@ -345,6 +345,54 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('enemy', 30, 26);
     g.clear();
 
+    // Spiky (from a hand-drawn design): an orange spike ball grinning on two
+    // pink shoes. The spikes make it un-stompable — any contact is deadly.
+    const spikyFrame = (name: string, bob: number, leftShoe: number, rightShoe: number): void => {
+      const cx = 24;
+      const cy = 22 + bob;
+      const r = 13;
+      g.fillStyle(0x7a7a7a);
+      for (let i = 0; i < 13; i++) {
+        const a = (i / 13) * Math.PI * 2 - Math.PI / 2;
+        const len = r + 4 + (i % 3) * 2;
+        g.fillTriangle(
+          cx + Math.cos(a - 0.17) * (r - 1),
+          cy + Math.sin(a - 0.17) * (r - 1),
+          cx + Math.cos(a + 0.17) * (r - 1),
+          cy + Math.sin(a + 0.17) * (r - 1),
+          cx + Math.cos(a) * len,
+          cy + Math.sin(a) * len,
+        );
+      }
+      g.lineStyle(3, 0x8a8a8a);
+      g.lineBetween(cx - 4, cy + 10, leftShoe + 7, 42);
+      g.lineBetween(cx + 4, cy + 10, rightShoe + 7, 42);
+      g.fillStyle(0xf2913d);
+      g.fillCircle(cx, cy, r);
+      g.fillStyle(0xffffff);
+      g.fillCircle(cx - 6, cy - 5, 6);
+      g.fillCircle(cx + 6, cy - 5, 6);
+      g.fillStyle(0x6b7b85);
+      g.fillCircle(cx - 5, cy - 4, 4);
+      g.fillCircle(cx + 7, cy - 4, 4);
+      g.fillStyle(0x2b2b2b);
+      g.fillEllipse(cx, cy + 8, 22, 11);
+      g.fillStyle(0xf5f5f5);
+      g.fillRect(cx - 8, cy + 3, 6, 6);
+      g.fillRect(cx + 2, cy + 3, 6, 6);
+      for (const sx of [leftShoe, rightShoe]) {
+        g.fillStyle(0x8a8a8a);
+        g.fillRoundedRect(sx, 40, 16, 11, 5);
+        g.fillStyle(0xc2185b);
+        g.fillRoundedRect(sx + 2, 42, 12, 7, 3);
+      }
+      g.generateTexture(name, 48, 52);
+      g.clear();
+    };
+    spikyFrame('spiky-0', 0, 5, 27);
+    spikyFrame('spiky-1', -1, 10, 22);
+    spikyFrame('spiky-2', 0, 15, 17);
+
     // Flag (pole + banner), origin will be bottom-center
     g.fillStyle(0xcfd8dc);
     g.fillRect(30, 0, 6, 150);
@@ -428,6 +476,17 @@ export class BootScene extends Phaser.Scene {
         { key: 'dog-walk-1' },
       ],
       frameRate: 12,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'spiky-walk',
+      frames: [
+        { key: 'spiky-0' },
+        { key: 'spiky-1' },
+        { key: 'spiky-2' },
+        { key: 'spiky-1' },
+      ],
+      frameRate: 8,
       repeat: -1,
     });
     this.anims.create({

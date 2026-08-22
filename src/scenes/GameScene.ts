@@ -21,6 +21,7 @@ export class GameScene extends Phaser.Scene {
   private bats!: Phaser.Physics.Arcade.Group;
   private flies!: Phaser.Physics.Arcade.Group;
   private fishes!: Phaser.Physics.Arcade.Group;
+  private spikies!: Phaser.Physics.Arcade.Group;
   private controls!: Controls;
   private character!: CharacterDef;
   private scoreText!: Phaser.GameObjects.Text;
@@ -71,10 +72,12 @@ export class GameScene extends Phaser.Scene {
     this.bats = this.physics.add.group({ allowGravity: false });
     this.flies = this.physics.add.group({ allowGravity: false });
     this.fishes = this.physics.add.group({ allowGravity: false });
+    this.spikies = this.physics.add.group();
 
     let spawnX = 64;
     let spawnY = 64;
     const enemySpawns: { x: number; y: number }[] = [];
+    const spikySpawns: { x: number; y: number }[] = [];
     let flagZone: Phaser.GameObjects.Zone | undefined;
 
     rows.forEach((row, r) => {
@@ -101,6 +104,9 @@ export class GameScene extends Phaser.Scene {
             break;
           case 'E':
             enemySpawns.push({ x, y });
+            break;
+          case 'K':
+            spikySpawns.push({ x, y });
             break;
           case 'S':
             this.spawnSpider(x, r);
@@ -163,6 +169,13 @@ export class GameScene extends Phaser.Scene {
       enemy.setSize(26, 22).setOffset(2, 4);
       enemy.setVelocityX(-C.ENEMY_SPEED);
     }
+    for (const spawn of spikySpawns) {
+      const spiky = this.spikies.create(spawn.x, spawn.y, 'spiky-0') as Phaser.Physics.Arcade.Sprite;
+      // Hitbox stays one tile wide so it walks through gaps its spikes overhang
+      spiky.setSize(30, 34).setOffset(9, 18).setDepth(7);
+      spiky.setVelocityX(-C.SPIKY_SPEED);
+      spiky.play('spiky-walk');
+    }
 
     this.physics.add.collider(this.player, this.solids);
     this.physics.add.collider(this.player, this.blocks, (playerObj, blockObj) =>
@@ -173,17 +186,20 @@ export class GameScene extends Phaser.Scene {
     );
     this.physics.add.collider(this.enemies, this.solids);
     this.physics.add.collider(this.enemies, this.blocks);
+    this.physics.add.collider(this.spikies, this.solids);
+    this.physics.add.collider(this.spikies, this.blocks);
     this.physics.add.overlap(this.player, this.coins, (_playerObj, coinObj) =>
       this.collectCoin(coinObj as Phaser.Physics.Arcade.Sprite),
     );
     this.physics.add.overlap(this.player, this.enemies, (_playerObj, enemyObj) =>
       this.touchEnemy(enemyObj as Phaser.Physics.Arcade.Sprite),
     );
-    // Spiders, bats, flies, and fish cannot be stomped — any contact is deadly
+    // Spiders, bats, flies, fish, and Spiky cannot be stomped — any contact is deadly
     this.physics.add.overlap(this.player, this.spiders, () => this.touchHazard());
     this.physics.add.overlap(this.player, this.bats, () => this.touchHazard());
     this.physics.add.overlap(this.player, this.flies, () => this.touchHazard());
     this.physics.add.overlap(this.player, this.fishes, () => this.touchHazard());
+    this.physics.add.overlap(this.player, this.spikies, () => this.touchHazard());
     if (flagZone) {
       this.physics.add.overlap(this.player, flagZone, () => this.reachFlag());
     }
@@ -515,15 +531,21 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateEnemies(): void {
-    for (const child of this.enemies.getChildren()) {
+    this.patrol(this.enemies, C.ENEMY_SPEED);
+    this.patrol(this.spikies, C.SPIKY_SPEED);
+  }
+
+  // Walk back and forth, turning around at walls and ledges
+  private patrol(group: Phaser.Physics.Arcade.Group, speed: number): void {
+    for (const child of group.getChildren()) {
       const enemy = child as Phaser.Physics.Arcade.Sprite;
       if (!enemy.active || !enemy.body) continue;
       const body = enemy.body as Phaser.Physics.Arcade.Body;
 
       let vx = body.velocity.x;
-      if (vx === 0) vx = -C.ENEMY_SPEED;
-      if (body.blocked.left) vx = C.ENEMY_SPEED;
-      else if (body.blocked.right) vx = -C.ENEMY_SPEED;
+      if (vx === 0) vx = -speed;
+      if (body.blocked.left) vx = speed;
+      else if (body.blocked.right) vx = -speed;
 
       // Turn around at ledges instead of walking off
       if (body.blocked.down) {

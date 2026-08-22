@@ -42,8 +42,9 @@ per 32px tile:
 
 ```
 #  ground     B  brick block    ?  coin block   C  coin
-E  enemy      S  spider anchor  V  bat          G  giant fly
-W  water      X  leaping fish   P  player start F  goal flag
+E  enemy      K  Spiky          S  spider anchor
+V  bat        G  giant fly      W  water        X  leaping fish
+P  player start                 F  goal flag
 ```
 
 Each level has a `theme` (`meadow`, `cave`, or `forest` — a swampy jungle)
@@ -51,7 +52,9 @@ that picks tiles, background color, and backdrop decoration. Spiders (`S`)
 hang from the ceiling and bob up and down on a thread; bats (`V`) and giant
 mosquito-like flies (`G`) fly around their spawn point; fish (`X`) leap out
 of water pools (`W`) on a fixed rhythm, facing up while rising and down
-while falling. All of them are dodge-only hazards — any contact is deadly. The player is an animated stick figure, tinted light or
+while falling. Spiky (`K`) is a grinning orange spike ball in pink shoes
+that patrols the ground. All of them are dodge-only hazards — any contact
+is deadly. Only the plain walking enemy (`E`) can be stomped. The player is an animated stick figure, tinted light or
 dark to contrast each theme.
 
 New level = new string array, add it to `LEVELS`, done.

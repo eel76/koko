@@ -48,6 +48,13 @@ the appropriate section. Requirement IDs are stable and never reused.
   again and again; the player must jump across the pools past the fish.
   The fish looks up while flying upward and down while falling.
 
+## Enemies
+
+- **R20** — Spiky, an enemy modelled after the owner's hand-drawn design
+  sketch: an orange spike ball with a wide gap-toothed grin, big eyes, and
+  pink shoes. It patrols the ground; because of its spikes it cannot be
+  stomped, so any contact is deadly.
+
 ## Characters
 
 - **R11** — The player character can be a stick figure with clearly visible
