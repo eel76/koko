@@ -16,8 +16,8 @@ export const JUMP_BUFFER_MS = 120;
 
 export const ENEMY_SPEED = 60;
 export const STOMP_BOUNCE = -320;
-// Spiky patrols like a ground enemy but cannot be stomped (spikes!)
-export const SPIKY_SPEED = 50;
+// Sparky patrols like a ground enemy but cannot be stomped (spikes!)
+export const SPARKY_SPEED = 50;
 
 // Spiders hang from the ceiling and bob up and down on a thread
 export const SPIDER_DROP = 384;

@@ -50,10 +50,16 @@ the appropriate section. Requirement IDs are stable and never reused.
 
 ## Enemies
 
-- **R20** — Spiky, an enemy modelled after the owner's hand-drawn design
-  sketch: an orange spike ball with a wide gap-toothed grin, big eyes, and
-  pink shoes. It patrols the ground; because of its spikes it cannot be
-  stomped, so any contact is deadly.
+- **R20** — Sparky, an enemy modelled after the owner's hand-drawn design
+  sketch. It patrols the ground; because of its spikes it cannot be stomped,
+  so any contact is deadly. Sparky replaces the other walking enemies in
+  the levels. Its look follows the sketch:
+  - a head and shoes only — no body in between and no legs;
+  - spikes that come out of the head's own shape, in the head's colour
+    rather than a colour of their own;
+  - purple shoes, in the same purple as the former walking enemies;
+  - black googly eyes that roll in opposite directions;
+  - a grin narrower than the head, with an ordinary row of teeth.
 
 ## Characters
 
