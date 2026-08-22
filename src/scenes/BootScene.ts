@@ -353,10 +353,20 @@ export class BootScene extends Phaser.Scene {
     const sparkyFrame = (index: number): void => {
       const t = (index / SPARKY_FRAMES) * Math.PI * 2;
       const cx = 24;
-      const cy = 22 + Math.round(Math.sin(t * 2));
+      const cy = 23 + Math.round(Math.sin(t * 2));
       const outer = 22;
       const inner = 14;
       const spikes = 13;
+
+      // Shoes first — the head is drawn over them and sits right on top,
+      // so they peek out to the sides and below the lowest spikes
+      const swing = Math.cos(t) * 4;
+      for (const sx of [2 + swing, 30 - swing]) {
+        g.fillStyle(0x5b32b0);
+        g.fillRoundedRect(sx, 37, 16, 11, 5);
+        g.fillStyle(0x7d4ce0);
+        g.fillRoundedRect(sx + 2, 38, 12, 7, 3);
+      }
 
       // Head: a spiked star drawn in one piece, so the spikes read as its shape
       const pts: Phaser.Types.Math.Vector2Like[] = [];
@@ -373,8 +383,8 @@ export class BootScene extends Phaser.Scene {
       // Googly eyes rolling in opposite directions
       const roll = 2.4;
       const eyes: [number, number, number][] = [
-        [cx - 6, cy - 4, t],
-        [cx + 6, cy - 4, -t],
+        [cx - 6, cy - 5, t],
+        [cx + 6, cy - 5, -t],
       ];
       for (const [ex, ey, angle] of eyes) {
         g.fillStyle(0xffffff);
@@ -385,28 +395,16 @@ export class BootScene extends Phaser.Scene {
         g.fillCircle(ex + Math.cos(angle) * roll, ey + Math.sin(angle) * roll, 3.4);
       }
 
-      // Grin: narrower than the head, with an even row of teeth
+      // Grin: a half-moon mouth with just two teeth, as in the sketch
+      const mouthY = cy + 3;
       g.fillStyle(0x2b2b2b);
-      g.fillEllipse(cx, cy + 8, 17, 8);
+      g.slice(cx, mouthY, 10, 0, Math.PI);
+      g.fillPath();
       g.fillStyle(0xf5f5f5);
-      for (let i = 0; i < 4; i++) {
-        g.fillRect(cx - 7 + i * 4, cy + 5, 3, 4);
-      }
+      g.fillRect(cx - 6, mouthY, 5, 5);
+      g.fillRect(cx + 1, mouthY, 5, 5);
 
-      // Shoes sit directly under the head — no legs
-      const swing = Math.cos(t) * 4;
-      const shoes: [number, number][] = [
-        [5 + swing, 40],
-        [27 - swing, 40],
-      ];
-      for (const [sx, sy] of shoes) {
-        g.fillStyle(0x5b32b0);
-        g.fillRoundedRect(sx, sy, 16, 11, 5);
-        g.fillStyle(0x7d4ce0);
-        g.fillRoundedRect(sx + 2, sy + 1, 12, 7, 3);
-      }
-
-      g.generateTexture(`sparky-${index}`, 48, 52);
+      g.generateTexture(`sparky-${index}`, 48, 48);
       g.clear();
     };
     for (let i = 0; i < SPARKY_FRAMES; i++) {

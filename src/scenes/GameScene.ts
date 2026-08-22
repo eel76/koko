@@ -173,7 +173,7 @@ export class GameScene extends Phaser.Scene {
     for (const spawn of sparkySpawns) {
       const sparky = this.sparkies.create(spawn.x, spawn.y, 'sparky-0') as Phaser.Physics.Arcade.Sprite;
       // Hitbox stays one tile wide so it walks through gaps its spikes overhang
-      sparky.setSize(30, 34).setOffset(9, 18).setDepth(7);
+      sparky.setSize(30, 32).setOffset(9, 16).setDepth(7);
       sparky.setVelocityX(-C.SPARKY_SPEED);
       sparky.play('sparky-walk');
     }
