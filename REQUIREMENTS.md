@@ -82,3 +82,4 @@ the appropriate section. Requirement IDs are stable and never reused.
   offers a level-select on the start screen with one button per level. It
   must be clearly marked as a developer feature and be invisible to normal
   players.
+- **R21** — In developer mode the running game can be paused (and resumed).

@@ -438,6 +438,17 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('btn-jump', 120, 120);
     g.clear();
 
+    // Pause button (developer mode only)
+    g.fillStyle(0x000000, 0.35);
+    g.fillCircle(22, 22, 20);
+    g.lineStyle(3, 0xff6b6b, 0.9);
+    g.strokeCircle(22, 22, 20);
+    g.fillStyle(0xff6b6b);
+    g.fillRect(15, 13, 5, 18);
+    g.fillRect(24, 13, 5, 18);
+    g.generateTexture('btn-pause', 44, 44);
+    g.clear();
+
     // Particle
     g.fillStyle(0xffffff);
     g.fillRect(0, 0, 6, 6);

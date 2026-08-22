@@ -59,6 +59,12 @@ dark to contrast each theme.
 
 New level = new string array, add it to `LEVELS`, done.
 
+### Developer mode
+
+Running `npm run dev`, or adding `#dev` to the URL of the deployed game,
+enables developer tools: a level select on the title screen and a pause
+button in-game (also `P` or `ESC`). Normal players never see either.
+
 ## Deployment
 
 Every push builds the game via GitHub Actions and publishes it to

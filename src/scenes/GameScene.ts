@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { CharacterDef, getSelectedCharacter } from '../characters';
 import * as C from '../config';
 import { Controls } from '../controls';
+import { isDevMode } from '../devmode';
 import { LEVELS, LevelTheme } from '../levels';
 import { placeOnHud } from '../ui';
 
@@ -206,6 +207,9 @@ export class GameScene extends Phaser.Scene {
 
     this.createHud();
     this.controls = new Controls(this);
+    if (isDevMode()) {
+      this.addPauseControl();
+    }
   }
 
   // Continues '#' terrain rows as non-physical images half a screen past both
@@ -440,6 +444,25 @@ export class GameScene extends Phaser.Scene {
       .setScrollFactor(0)
       .setDepth(100);
     placeOnHud(livesText, C.GAME_WIDTH - 16, 12);
+  }
+
+  // Developer mode: pause via P/ESC or an on-screen button (for touch devices)
+  private addPauseControl(): void {
+    const button = this.add
+      .image(0, 0, 'btn-pause')
+      .setScrollFactor(0)
+      .setDepth(210)
+      .setInteractive({ useHandCursor: true });
+    placeOnHud(button, 34, 62);
+    button.on('pointerdown', () => this.pauseGame());
+    this.input.keyboard!.on('keydown-P', () => this.pauseGame());
+    this.input.keyboard!.on('keydown-ESC', () => this.pauseGame());
+  }
+
+  private pauseGame(): void {
+    if (this.dead || this.finished || this.scene.isPaused()) return;
+    this.scene.launch('Pause');
+    this.scene.pause();
   }
 
   private addScore(points: number): void {

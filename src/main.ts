@@ -5,6 +5,7 @@ import { MenuScene } from './scenes/MenuScene';
 import { GameScene } from './scenes/GameScene';
 import { LevelCompleteScene } from './scenes/LevelCompleteScene';
 import { GameOverScene } from './scenes/GameOverScene';
+import { PauseScene } from './scenes/PauseScene';
 
 new Phaser.Game({
   type: Phaser.AUTO,
@@ -25,5 +26,5 @@ new Phaser.Game({
   },
   // Three pointers so running and jumping can be touched at the same time
   input: { activePointers: 3 },
-  scene: [BootScene, MenuScene, GameScene, LevelCompleteScene, GameOverScene],
+  scene: [BootScene, MenuScene, GameScene, PauseScene, LevelCompleteScene, GameOverScene],
 });
