@@ -439,7 +439,7 @@ export class GameScene extends Phaser.Scene {
       .setDepth(100);
     placeOnHud(this.timeText, C.GAME_WIDTH * 0.62, 12);
     const livesText = this.add
-      .text(0, 0, `LIVES ${this.lives}`, style)
+      .text(0, 0, `LIVES ${isDevMode() ? '\u221e' : this.lives}`, style)
       .setOrigin(1, 0)
       .setScrollFactor(0)
       .setDepth(100);
@@ -656,7 +656,7 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.shake(200, 0.008);
 
     this.time.delayedCall(900, () => {
-      const lives = this.lives - 1;
+      const lives = isDevMode() ? this.lives : this.lives - 1;
       if (lives > 0) {
         this.scene.restart({ levelIndex: this.levelIndex, score: this.startScore, lives });
       } else {

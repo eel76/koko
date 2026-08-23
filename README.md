@@ -63,8 +63,9 @@ New level = new string array, add it to `LEVELS`, done.
 ### Developer mode
 
 Running `npm run dev`, or adding `#dev` to the URL of the deployed game,
-enables developer tools: a level select on the title screen and a pause
-button in-game (also `P` or `ESC`). Normal players never see either.
+enables developer tools: a level select on the title screen, a pause button
+in-game (also `P` or `ESC`), and infinite lives so a level can be tested
+end to end. Normal players never see any of it.
 
 ## Deployment
 

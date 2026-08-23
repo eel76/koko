@@ -91,3 +91,5 @@ the appropriate section. Requirement IDs are stable and never reused.
   must be clearly marked as a developer feature and be invisible to normal
   players.
 - **R21** — In developer mode the running game can be paused (and resumed).
+- **R23** — In developer mode the player has infinite lives, so levels can be
+  tested thoroughly.
