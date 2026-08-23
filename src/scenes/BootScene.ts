@@ -117,6 +117,136 @@ export class BootScene extends Phaser.Scene {
     flyFrame('fly-0', 6, 4);
     flyFrame('fly-1', 12, 3);
 
+    // Fliegi (from a hand-drawn design): a round blue body with two yellow
+    // eyes, two fangs, feelers ending in little loops, white wings that beat,
+    // and two red feet. Faces left; flipped at runtime.
+    const FLIEGI_FRAMES = 4;
+    // Ellipses have to be rotated, which Graphics cannot do directly, so the
+    // outline points are computed and filled as a polygon.
+    const ellipsePoints = (
+      ex: number,
+      ey: number,
+      rx: number,
+      ry: number,
+      angle: number,
+    ): Phaser.Types.Math.Vector2Like[] => {
+      const pts: Phaser.Types.Math.Vector2Like[] = [];
+      for (let i = 0; i < 28; i++) {
+        const t = (i / 28) * Math.PI * 2;
+        const px = Math.cos(t) * rx;
+        const py = Math.sin(t) * ry;
+        pts.push({
+          x: ex + px * Math.cos(angle) - py * Math.sin(angle),
+          y: ey + px * Math.sin(angle) + py * Math.cos(angle),
+        });
+      }
+      return pts;
+    };
+    const curvePoints = (
+      x0: number,
+      y0: number,
+      cxp: number,
+      cyp: number,
+      x1: number,
+      y1: number,
+    ): Phaser.Types.Math.Vector2Like[] => {
+      const pts: Phaser.Types.Math.Vector2Like[] = [];
+      for (let i = 0; i <= 8; i++) {
+        const t = i / 8;
+        const u = 1 - t;
+        pts.push({
+          x: u * u * x0 + 2 * u * t * cxp + t * t * x1,
+          y: u * u * y0 + 2 * u * t * cyp + t * t * y1,
+        });
+      }
+      return pts;
+    };
+
+    const fliegiFrame = (index: number): void => {
+      const beat = (index + 1) / FLIEGI_FRAMES;
+      const lift = Math.sin(beat * Math.PI * 2);
+      const cx = 31;
+      const cy = 31;
+
+      // Wings behind everything, hinged at the shoulders
+      for (const side of [-1, 1]) {
+        const a = side * (-0.55 - lift * 0.5);
+        const hx = cx + side * 9;
+        const hy = cy - 3;
+        const ox = side * 9;
+        const oy = -2;
+        const wing = ellipsePoints(
+          hx + ox * Math.cos(a) - oy * Math.sin(a),
+          hy + ox * Math.sin(a) + oy * Math.cos(a),
+          10.5,
+          5.5,
+          a,
+        );
+        g.fillStyle(0xf7fbff, 0.82);
+        g.fillPoints(wing, true);
+        g.lineStyle(1.6, 0x8fa6b8);
+        g.strokePoints(wing, true);
+      }
+
+      // Feelers, each ending in a little loop
+      const sway = lift * 1.2;
+      g.lineStyle(1.8, 0x26323d);
+      g.strokePoints(
+        curvePoints(cx - 6, cy - 11, cx - 11, cy - 18, cx - 12 + sway, cy - 23),
+        false,
+      );
+      g.strokeCircle(cx - 13 + sway, cy - 25.5, 2.6);
+      g.strokePoints(
+        curvePoints(cx + 6, cy - 11, cx + 10, cy - 15, cx + 12 - sway, cy - 19),
+        false,
+      );
+      g.strokeCircle(cx + 13 - sway, cy - 21, 2.1);
+
+      // Feet
+      for (const side of [-1, 1]) {
+        const foot = ellipsePoints(cx + side * 7, cy + 14, 5.5, 4.5, side * 0.2);
+        g.fillStyle(0xe05a4a);
+        g.fillPoints(foot, true);
+        g.lineStyle(1.8, 0x9c3527);
+        g.strokePoints(foot, true);
+      }
+
+      // Body
+      g.fillStyle(0x6ea8e0);
+      g.fillEllipse(cx, cy, 26, 28);
+      g.lineStyle(2, 0x3f6b9e);
+      g.strokeEllipse(cx, cy, 26, 28);
+
+      // Eyes
+      for (const side of [-1, 1]) {
+        g.fillStyle(0xf2c53d);
+        g.fillEllipse(cx + side * 5, cy - 3, 8.4, 12.8);
+        g.lineStyle(1.5, 0xa8790f);
+        g.strokeEllipse(cx + side * 5, cy - 3, 8.4, 12.8);
+      }
+
+      // Mouth line with two fangs
+      g.lineStyle(1.8, 0x26323d);
+      g.lineBetween(cx - 8, cy + 6, cx + 8, cy + 5);
+      g.fillStyle(0x26323d);
+      for (const side of [-1, 1]) {
+        g.fillTriangle(
+          cx + side * 2.5,
+          cy + 5.5,
+          cx + side * 6.5,
+          cy + 5.5,
+          cx + side * 4.5,
+          cy + 11,
+        );
+      }
+
+      g.generateTexture(`fliegi-${index}`, 62, 54);
+      g.clear();
+    };
+    for (let i = 0; i < FLIEGI_FRAMES; i++) {
+      fliegiFrame(i);
+    }
+
     // Wood log tile (forest bricks)
     g.fillStyle(0x8a6035);
     g.fillRect(0, 0, 32, 32);
@@ -513,6 +643,12 @@ export class BootScene extends Phaser.Scene {
       key: 'sparky-walk',
       frames: Array.from({ length: 8 }, (_, i) => ({ key: `sparky-${i}` })),
       frameRate: 10,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'fliegi-fly',
+      frames: Array.from({ length: 4 }, (_, i) => ({ key: `fliegi-${i}` })),
+      frameRate: 14,
       repeat: -1,
     });
     this.anims.create({

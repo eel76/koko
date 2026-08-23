@@ -26,6 +26,11 @@ export const SPIDER_SPEED_MS = 1600;
 export const BAT_RANGE_X = 96;
 export const BAT_RANGE_Y = 20;
 export const BAT_SPEED_MS = 1800;
+// Fliegi drifts back and forth along a sine wave, wings beating
+export const FLIEGI_RANGE_X = 120;
+export const FLIEGI_WAVE_Y = 34;
+export const FLIEGI_WAVES = 3;
+export const FLIEGI_TRIP_MS = 3200;
 // Giant flies buzz around faster and more erratically than bats
 export const FLY_RANGE_X = 120;
 export const FLY_RANGE_Y = 60;

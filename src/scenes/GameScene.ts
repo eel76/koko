@@ -23,6 +23,7 @@ export class GameScene extends Phaser.Scene {
   private flies!: Phaser.Physics.Arcade.Group;
   private fishes!: Phaser.Physics.Arcade.Group;
   private sparkies!: Phaser.Physics.Arcade.Group;
+  private fliegis!: Phaser.Physics.Arcade.Group;
   private controls!: Controls;
   private character!: CharacterDef;
   private scoreText!: Phaser.GameObjects.Text;
@@ -74,6 +75,7 @@ export class GameScene extends Phaser.Scene {
     this.flies = this.physics.add.group({ allowGravity: false });
     this.fishes = this.physics.add.group({ allowGravity: false });
     this.sparkies = this.physics.add.group();
+    this.fliegis = this.physics.add.group({ allowGravity: false });
 
     let spawnX = 64;
     let spawnY = 64;
@@ -117,6 +119,9 @@ export class GameScene extends Phaser.Scene {
             break;
           case 'G':
             this.spawnFly(x, y);
+            break;
+          case 'Y':
+            this.spawnFliegi(x, y);
             break;
           case 'W': {
             const above = r > 0 && rows[r - 1][c] === 'W';
@@ -201,6 +206,7 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.flies, () => this.touchHazard());
     this.physics.add.overlap(this.player, this.fishes, () => this.touchHazard());
     this.physics.add.overlap(this.player, this.sparkies, () => this.touchHazard());
+    this.physics.add.overlap(this.player, this.fliegis, () => this.touchHazard());
     if (flagZone) {
       this.physics.add.overlap(this.player, flagZone, () => this.reachFlag());
     }
@@ -385,6 +391,29 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  // Fliegi: drifts back and forth along a sine wave instead of a straight line
+  private spawnFliegi(x: number, y: number): void {
+    const fliegi = this.fliegis.create(x, y, 'fliegi-0') as Phaser.Physics.Arcade.Sprite;
+    fliegi.setSize(28, 26).setOffset(17, 14).setDepth(6);
+    fliegi.setData('prevX', x);
+    fliegi.play('fliegi-fly');
+    this.tweens.add({
+      targets: fliegi,
+      x: { from: x - C.FLIEGI_RANGE_X, to: x + C.FLIEGI_RANGE_X },
+      duration: C.FLIEGI_TRIP_MS / 2,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Linear',
+      delay: (x * 5) % 1500,
+      // The height follows the horizontal position, so the path is a fixed
+      // sine wave in the world that Fliegi flies along in both directions
+      onUpdate: () => {
+        const t = (fliegi.x - (x - C.FLIEGI_RANGE_X)) / (2 * C.FLIEGI_RANGE_X);
+        fliegi.y = y + Math.sin(t * Math.PI * 2 * C.FLIEGI_WAVES) * C.FLIEGI_WAVE_Y;
+      },
+    });
+  }
+
   private touchHazard(): void {
     if (this.dead || this.finished) return;
     this.playerDie();
@@ -397,7 +426,11 @@ export class GameScene extends Phaser.Scene {
       const thread = spider.getData('thread') as Phaser.GameObjects.Image;
       thread.displayHeight = spider.y - (spider.getData('anchorY') as number);
     }
-    for (const child of [...this.bats.getChildren(), ...this.flies.getChildren()]) {
+    for (const child of [
+      ...this.bats.getChildren(),
+      ...this.flies.getChildren(),
+      ...this.fliegis.getChildren(),
+    ]) {
       const flyer = child as Phaser.Physics.Arcade.Sprite;
       const prevX = flyer.getData('prevX') as number;
       if (flyer.x !== prevX) flyer.setFlipX(flyer.x > prevX);
