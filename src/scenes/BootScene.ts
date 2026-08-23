@@ -648,7 +648,7 @@ export class BootScene extends Phaser.Scene {
     this.anims.create({
       key: 'fliegi-fly',
       frames: Array.from({ length: 4 }, (_, i) => ({ key: `fliegi-${i}` })),
-      frameRate: 14,
+      frameRate: 11,
       repeat: -1,
     });
     this.anims.create({

@@ -391,25 +391,26 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  // Fliegi: drifts back and forth along a sine wave instead of a straight line
+  // Fliegi: flies one continuous figure-eight around its spawn point
   private spawnFliegi(x: number, y: number): void {
     const fliegi = this.fliegis.create(x, y, 'fliegi-0') as Phaser.Physics.Arcade.Sprite;
     fliegi.setSize(28, 26).setOffset(17, 14).setDepth(6);
     fliegi.setData('prevX', x);
     fliegi.play('fliegi-fly');
+    // A single phase drives both axes. Because the horizontal position is a
+    // sine of that phase, Fliegi slows to a stop at each side and accelerates
+    // back out — no hard turn — and the vertical sine simply keeps running,
+    // so the wave continues instead of being mirrored on the way back.
+    const state = { phase: (x * 0.017) % (Math.PI * 2) };
     this.tweens.add({
-      targets: fliegi,
-      x: { from: x - C.FLIEGI_RANGE_X, to: x + C.FLIEGI_RANGE_X },
-      duration: C.FLIEGI_TRIP_MS / 2,
-      yoyo: true,
+      targets: state,
+      phase: state.phase + Math.PI * 2,
+      duration: C.FLIEGI_LOOP_MS,
       repeat: -1,
       ease: 'Linear',
-      delay: (x * 5) % 1500,
-      // The height follows the horizontal position, so the path is a fixed
-      // sine wave in the world that Fliegi flies along in both directions
       onUpdate: () => {
-        const t = (fliegi.x - (x - C.FLIEGI_RANGE_X)) / (2 * C.FLIEGI_RANGE_X);
-        fliegi.y = y + Math.sin(t * Math.PI * 2 * C.FLIEGI_WAVES) * C.FLIEGI_WAVE_Y;
+        fliegi.x = x + Math.sin(state.phase) * C.FLIEGI_RANGE_X;
+        fliegi.y = y + Math.sin(state.phase * C.FLIEGI_WAVE_CYCLES) * C.FLIEGI_WAVE_Y;
       },
     });
   }
@@ -433,7 +434,7 @@ export class GameScene extends Phaser.Scene {
     ]) {
       const flyer = child as Phaser.Physics.Arcade.Sprite;
       const prevX = flyer.getData('prevX') as number;
-      if (flyer.x !== prevX) flyer.setFlipX(flyer.x > prevX);
+      if (Math.abs(flyer.x - prevX) > 0.3) flyer.setFlipX(flyer.x > prevX);
       flyer.setData('prevX', flyer.x);
     }
     // Fish look up while rising and down while falling

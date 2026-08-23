@@ -26,11 +26,14 @@ export const SPIDER_SPEED_MS = 1600;
 export const BAT_RANGE_X = 96;
 export const BAT_RANGE_Y = 20;
 export const BAT_SPEED_MS = 1800;
-// Fliegi drifts back and forth along a sine wave, wings beating
-export const FLIEGI_RANGE_X = 120;
-export const FLIEGI_WAVE_Y = 34;
-export const FLIEGI_WAVES = 3;
-export const FLIEGI_TRIP_MS = 3200;
+// Fliegi traces one continuous figure-eight: a sine drives the horizontal
+// position, so it eases to a halt at the turns instead of bouncing off them,
+// while the vertical sine runs on through the whole loop. Kept slow so the
+// character stays easy to read.
+export const FLIEGI_RANGE_X = 110;
+export const FLIEGI_WAVE_Y = 30;
+export const FLIEGI_WAVE_CYCLES = 2;
+export const FLIEGI_LOOP_MS = 5600;
 // Giant flies buzz around faster and more erratically than bats
 export const FLY_RANGE_X = 120;
 export const FLY_RANGE_Y = 60;

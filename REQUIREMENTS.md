@@ -67,7 +67,11 @@ the appropriate section. Requirement IDs are stable and never reused.
   replaces the mosquitoes in level 4 (level 5 keeps them). Its look follows
   the sketch: a round blue body, two yellow eyes, two fangs, two feelers on
   top, white wings at the sides, and two red feet. It moves back and forth
-  in a sine wave rather than a straight line, and its wings beat as it flies.
+  in a wave rather than a straight line, and its wings beat as it flies.
+  The path must read as round: no bouncing off an invisible wall at the
+  sides — Fliegi eases to a halt there and accelerates back out — and the
+  wave carries on continuously instead of being mirrored on the way back.
+  The whole motion is calm enough to make the character easy to read.
 
 ## Characters
 
