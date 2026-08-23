@@ -44,6 +44,8 @@ the appropriate section. Requirement IDs are stable and never reused.
   and giant flies buzz around as hazards to dodge. The forest must look like
   a swampy jungle forest. The flies look like mosquitoes, and the jungle
   level has no walking ground monsters — flies and fish are enough.
+- **R22** — A fifth level exists: a second jungle level, created as a copy
+  of the fourth.
 - **R17** — The jungle level contains water pools out of which fish leap
   again and again; the player must jump across the pools past the fish.
   The fish looks up while flying upward and down while falling.
