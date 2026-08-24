@@ -52,7 +52,8 @@ Each level has a `theme` (`meadow`, `cave`, or `forest` — a swampy jungle)
 that picks tiles, background color, and backdrop decoration. Spiders (`S`)
 hang from the ceiling and bob up and down on a thread; bats (`V`) and giant
 mosquito-like flies (`G`) fly around their spawn point; Fliegi (`Y`) traces a slow
-figure-eight with beating wings; fish (`X`) leap out
+figure-eight with beating wings, facing the viewer head-on so it is never
+mirrored on a turn; fish (`X`) leap out
 of water pools (`W`) on a fixed rhythm, facing up while rising and down
 while falling. Sparky (`K`) is a grinning spiky head on purple shoes with
 rolling googly eyes that patrols the ground. All of them are dodge-only

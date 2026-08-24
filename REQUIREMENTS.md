@@ -72,6 +72,9 @@ the appropriate section. Requirement IDs are stable and never reused.
   sides — Fliegi eases to a halt there and accelerates back out — and the
   wave carries on continuously instead of being mirrored on the way back.
   The whole motion is calm enough to make the character easy to read.
+  Fliegi faces the viewer head-on and is never mirrored when its horizontal
+  flight direction changes: its feelers and its grin always stay on the same
+  side.
 
 ## Characters
 

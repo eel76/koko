@@ -395,7 +395,6 @@ export class GameScene extends Phaser.Scene {
   private spawnFliegi(x: number, y: number): void {
     const fliegi = this.fliegis.create(x, y, 'fliegi-0') as Phaser.Physics.Arcade.Sprite;
     fliegi.setSize(28, 26).setOffset(17, 14).setDepth(6);
-    fliegi.setData('prevX', x);
     fliegi.play('fliegi-fly');
     // A single phase drives both axes. Because the horizontal position is a
     // sine of that phase, Fliegi slows to a stop at each side and accelerates
@@ -420,18 +419,17 @@ export class GameScene extends Phaser.Scene {
     this.playerDie();
   }
 
-  // Keep spider threads attached and bats facing their flight direction
+  // Keep spider threads attached and flyers facing their flight direction
   private updateHazards(): void {
     for (const child of this.spiders.getChildren()) {
       const spider = child as Phaser.Physics.Arcade.Sprite;
       const thread = spider.getData('thread') as Phaser.GameObjects.Image;
       thread.displayHeight = spider.y - (spider.getData('anchorY') as number);
     }
-    for (const child of [
-      ...this.bats.getChildren(),
-      ...this.flies.getChildren(),
-      ...this.fliegis.getChildren(),
-    ]) {
+    // Bats and flies are drawn in profile, so they turn with their flight
+    // direction. Fliegi faces the viewer head-on — mirroring it would swap
+    // its feelers and grin from side to side, so it is never flipped.
+    for (const child of [...this.bats.getChildren(), ...this.flies.getChildren()]) {
       const flyer = child as Phaser.Physics.Arcade.Sprite;
       const prevX = flyer.getData('prevX') as number;
       if (Math.abs(flyer.x - prevX) > 0.3) flyer.setFlipX(flyer.x > prevX);

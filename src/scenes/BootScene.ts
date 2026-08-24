@@ -119,7 +119,8 @@ export class BootScene extends Phaser.Scene {
 
     // Fliegi (from a hand-drawn design): a round blue body with two yellow
     // eyes, two fangs, feelers ending in little loops, white wings that beat,
-    // and two red feet. Faces left; flipped at runtime.
+    // and two red feet. Drawn facing the viewer head-on, so it is never
+    // flipped at runtime — its feelers and grin keep their sides.
     const FLIEGI_FRAMES = 4;
     // Ellipses have to be rotated, which Graphics cannot do directly, so the
     // outline points are computed and filled as a polygon.
