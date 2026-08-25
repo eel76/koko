@@ -289,10 +289,13 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('bush', 52, 28);
     g.clear();
 
-    // Swamp mist strip (drawn faint, stretched over the ground)
-    g.fillStyle(0xffffff, 0.5);
-    g.fillEllipse(80, 14, 150, 20);
-    g.generateTexture('mist', 160, 28);
+    // Swamp mist wisp: stacked ellipses of decreasing size, so the strip
+    // fades out towards its edges instead of reading as one hard circle
+    for (let i = 0; i < 5; i++) {
+      g.fillStyle(0xffffff, 0.12);
+      g.fillEllipse(130, 20, 254 - i * 46, 32 - i * 5);
+    }
+    g.generateTexture('mist', 260, 40);
     g.clear();
 
     // Water: surface tile (light ripple on top) and deep fill tile

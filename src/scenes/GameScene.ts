@@ -267,13 +267,18 @@ export class GameScene extends Phaser.Scene {
           .setScrollFactor(0.7, 1)
           .setDepth(0);
       }
-      // Swamp mist drifting over the ground
-      for (let x = from + 100, i = 0; x < to; x += 320, i++) {
+      // Swamp mist: a low veil hanging above the ground line. Anchored by its
+      // bottom edge to the terrain surface, so it never sinks into the ground
+      // or settles on the water; the strips overlap into one drifting band.
+      const surfaceY = this.levelHeight - 2 * C.TILE;
+      for (let x = from + 100, i = 0; x < to; x += 200, i++) {
         this.add
-          .image(x, this.levelHeight - C.TILE * (1.5 + (i % 3) * 0.6), 'mist')
+          .image(x, surfaceY - 6 - (i % 3) * 18, 'mist')
+          .setOrigin(0.5, 1)
+          .setScale(1 + (i % 2) * 0.3, 1)
           .setScrollFactor(0.85, 1)
           .setDepth(9)
-          .setAlpha(0.35);
+          .setAlpha(0.4 - (i % 3) * 0.08);
       }
       return;
     }

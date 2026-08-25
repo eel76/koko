@@ -50,6 +50,10 @@ the appropriate section. Requirement IDs are stable and never reused.
   level has no walking ground monsters — flies and fish are enough.
 - **R22** — A fifth level exists: a second jungle level, created as a copy
   of the fourth.
+- **R26** — The swamp mist in the jungle levels must read as mist: a soft,
+  wide veil that hangs above the ground line. It must never sit inside the
+  terrain or lie flat on the water surface, and must not look like separate
+  round blobs.
 - **R17** — The jungle level contains water pools out of which fish leap
   again and again; the player must jump across the pools past the fish.
   The fish looks up while flying upward and down while falling.
