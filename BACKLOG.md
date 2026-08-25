@@ -42,7 +42,26 @@ _(none open)_
 
 Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 
-_(none open)_
+- **B1** — Collectibles as a real currency, plus a shop for cosmetic items.
+  Today the coins (`C` and `?` blocks) are pure score: picking one up adds
+  points and is forgotten the moment the run ends. Instead, the collected
+  items should be counted and kept across runs, so the player builds up a
+  balance and can spend it in a shop.
+
+  The shop sells cosmetics for the playable characters — for Koko the bird,
+  for example, feathers or plumage in different colours; something
+  equivalent for the stick figure and for Pup the dachshund. Bought items
+  stay unlocked and can be selected, most likely on the title screen next to
+  the character choice.
+
+  Open question: whether coins are the right collectible at all. A themed
+  item might fit the game better — bird eggs, for instance — which would
+  replace the coins in the levels and become the shop's currency.
+
+  Open points to decide before this can be implemented: whether the
+  currency is separate from the score or replaces it, where the balance is
+  stored (localStorage, like the highscore), what the shop screen looks
+  like, and which items exist at what price.
 
 ## Done
 
