@@ -2,9 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    # claude/mobile-browser-game-dev-bt6aga is the initial development branch;
-    # narrow this to main once the game lives there.
-    branches: [main, claude/mobile-browser-game-dev-bt6aga]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
