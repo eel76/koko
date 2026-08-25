@@ -136,8 +136,13 @@ export class GameScene extends Phaser.Scene {
             spawnY = y;
             break;
           case 'F': {
-            this.add.image(x, (r + 1) * C.TILE, 'flag').setOrigin(0.5, 1).setDepth(5);
-            flagZone = this.add.zone(x, (r + 1) * C.TILE - 76, 20, 152);
+            const base = (r + 1) * C.TILE;
+            this.add.image(x, base, 'flag').setOrigin(0.5, 1).setDepth(5);
+            // The goal zone covers the flag's whole tile column, from far above
+            // the level down to the ground: jumping over the flag from a nearby
+            // platform still finishes the level instead of leaving it unfinishable.
+            const top = -C.GAME_HEIGHT;
+            flagZone = this.add.zone(x, (top + base) / 2, C.TILE, base - top);
             this.physics.add.existing(flagZone, true);
             break;
           }

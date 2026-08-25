@@ -34,6 +34,10 @@ the appropriate section. Requirement IDs are stable and never reused.
 - **R19** — Each level has a timer: the level must be finished within the
   time limit. Finishing early grants a bonus — the more seconds remain, the
   more bonus points are awarded.
+- **R25** — The goal flag can never be skipped: the goal is triggered
+  anywhere in the flag's tile column, at any height. Jumping over the flag
+  from a nearby platform finishes the level instead of leaving it
+  unfinishable.
 
 ## Levels
 
