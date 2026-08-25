@@ -34,11 +34,21 @@ the appropriate section. Requirement IDs are stable and never reused.
 
 - **R8** — The game is a classic side-scrolling jump'n'run in the style of
   Super Mario Bros.: running, jumping, collecting coins, defeating ground
-  enemies by jumping on them, reaching a goal flag; lives and a locally
-  stored highscore.
+  enemies by jumping on them, reaching the goal marker at the end of the
+  level; lives and a locally stored highscore.
 - **R19** — Each level has a timer: the level must be finished within the
   time limit. Finishing early grants a bonus — the more seconds remain, the
-  more bonus points are awarded.
+  more bonus points are awarded. The timer only runs while the player is
+  actually in control (see R29).
+- **R29** — Levels are entered and left as a little scene. On entering, the
+  character walks in from the left screen edge to the middle of the screen by
+  itself; only then do the controls fade in, making it clear that the player
+  is now in charge. On reaching the goal the controls fade out again and the
+  character walks from the middle of the screen off the right edge until it
+  is out of sight.
+- **R30** — Floating logs drift back and forth on the water and carry the
+  player standing on them, so wider streams can be crossed by riding and
+  hopping from log to log.
 - **R25** — The goal flag can never be skipped: the goal is triggered
   anywhere in the flag's tile column, at any height. Jumping over the flag
   from a nearby platform finishes the level instead of leaving it
@@ -46,15 +56,28 @@ the appropriate section. Requirement IDs are stable and never reused.
 
 ## Levels
 
-- **R9** — Level 1 is a cave level. Spiders hang from the ceiling and move
-  up and down on a spider thread; the player must dodge them. Bats fly
-  around and must also be dodged.
-- **R10** — A forest level exists in which the player runs through a forest
-  and giant flies buzz around as hazards to dodge. The forest must look like
+- **R27** — Level 1 is a woods level: a real, ordinary forest — no swamp and
+  no jungle. It is full of trees, with mushrooms, flowers, ferns and grass on
+  the forest floor. Sparky and Fliegi appear as enemies. Small brooks have to
+  be jumped across, and two wider streams are crossed on floating logs.
+- **R28** — Only the woods level is part of the released game. The older
+  levels are kept for later and are reachable through the developer-mode
+  level select alone (see R16).
+- **R31** — In the woods the goal is not a flag but a wooden signpost, weathered
+  and overgrown with ivy, grass and a mushroom.
+- **R32** — Harmless little creatures — ants and beetles — crawl through the
+  woods. They are pure decoration: they never hurt the player and only make
+  the forest feel alive.
+- **R9** — A cave level exists (now level 2). Spiders hang from the ceiling
+  and move up and down on a spider thread; the player must dodge them. Bats
+  fly around and must also be dodged.
+- **R10** — A jungle level exists in which the player runs through a forest
+  and giant flies buzz around as hazards to dodge. This forest must look like
   a swampy jungle forest. The flies look like mosquitoes, and the jungle
-  level has no walking ground monsters — flies and fish are enough.
-- **R22** — A fifth level exists: a second jungle level, created as a copy
-  of the fourth.
+  level has no walking ground monsters — flies and fish are enough. It is
+  distinct from the ordinary woods of R27.
+- **R22** — A second jungle level exists, created as a copy of the first
+  one.
 - **R26** — The swamp mist in the jungle levels must read as mist: a soft,
   wide veil that hangs above the ground line. It must never sit inside the
   terrain or lie flat on the water surface, and must not look like separate
@@ -110,10 +133,18 @@ the appropriate section. Requirement IDs are stable and never reused.
   fills at least about two thirds of the screen instead of only the lower
   half. HUD and touch controls keep their apparent size and position.
 
+## Sound
+
+- **R33** — The game has background music that carries the mood of the forest.
+  It is generated at runtime like every graphic in this game, so the game
+  still ships without any asset files and stays free of third-party licences.
+  It can be switched off on the title screen, and that choice is remembered.
+
 ## Developer Tools
 
 - **R16** — A developer mode (local dev server, or `#dev` in the URL)
-  offers a level-select on the start screen with one button per level. It
+  offers a level-select on the start screen with one button per level —
+  including the levels that are not part of the released game (R28). It
   must be clearly marked as a developer feature and be invisible to normal
   players.
 - **R21** — In developer mode the running game can be paused (and resumed).

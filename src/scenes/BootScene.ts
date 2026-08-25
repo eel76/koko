@@ -289,6 +289,426 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('bush', 52, 28);
     g.clear();
 
+    // ---------------------------------------------------------------
+    // Woods theme: an ordinary, sunlit forest — proper trees, ferns,
+    // mushrooms, flowers and the little critters crawling between them.
+    // ---------------------------------------------------------------
+
+    // Trunk with a slight taper and a hint of bark
+    const trunk = (
+      cx: number,
+      bottom: number,
+      top: number,
+      halfBottom: number,
+      halfTop: number,
+      bark: number,
+      grain: number,
+    ): void => {
+      g.fillStyle(bark);
+      g.fillPoints(
+        [
+          { x: cx - halfBottom, y: bottom },
+          { x: cx - halfTop, y: top },
+          { x: cx + halfTop, y: top },
+          { x: cx + halfBottom, y: bottom },
+        ],
+        true,
+      );
+      g.fillStyle(grain);
+      g.fillRect(cx - halfTop * 0.5, top + 8, 2, bottom - top - 16);
+      g.fillRect(cx + halfTop * 0.2, top + 20, 2, (bottom - top) * 0.5);
+    };
+
+    // Leafy canopy: overlapping blobs in three greens so it reads as foliage
+    const canopy = (blobs: [number, number, number][], dark: number, mid: number, light: number): void => {
+      g.fillStyle(dark);
+      for (const [bx, by, br] of blobs) g.fillCircle(bx, by, br);
+      g.fillStyle(mid);
+      for (const [bx, by, br] of blobs) g.fillCircle(bx - br * 0.15, by - br * 0.2, br * 0.78);
+      g.fillStyle(light);
+      for (const [bx, by, br] of blobs) g.fillCircle(bx - br * 0.35, by - br * 0.4, br * 0.34);
+    };
+
+    // Broad-leaved tree (oak-like)
+    trunk(70, 210, 96, 13, 8, 0x6b4a2c, 0x543823);
+    g.lineStyle(7, 0x6b4a2c);
+    g.lineBetween(68, 128, 44, 106);
+    g.lineBetween(72, 136, 96, 112);
+    canopy(
+      [
+        [70, 70, 44],
+        [30, 92, 28],
+        [110, 90, 30],
+        [52, 46, 26],
+        [92, 44, 24],
+      ],
+      0x2f6b2f,
+      0x3d8b3a,
+      0x5cae4c,
+    );
+    g.generateTexture('woods-tree-0', 140, 210);
+    g.clear();
+
+    // Birch: a slim, pale trunk with dark marks and a light crown
+    trunk(50, 230, 60, 9, 6, 0xe6e3dc, 0xcfcabd);
+    g.fillStyle(0x3a3630);
+    g.fillRect(44, 96, 9, 3);
+    g.fillRect(49, 140, 7, 3);
+    g.fillRect(43, 178, 8, 3);
+    canopy(
+      [
+        [50, 44, 34],
+        [22, 66, 22],
+        [78, 64, 23],
+      ],
+      0x3f7d33,
+      0x5aa244,
+      0x7ec25c,
+    );
+    g.generateTexture('woods-tree-1', 100, 230);
+    g.clear();
+
+    // Spruce: stacked needle tiers
+    trunk(55, 240, 190, 9, 7, 0x5a4028, 0x452f1d);
+    for (let i = 0; i < 4; i++) {
+      const y = 200 - i * 44;
+      const half = 46 - i * 9;
+      g.fillStyle(0x235c33);
+      g.fillTriangle(55, y - 66, 55 - half, y, 55 + half, y);
+      g.fillStyle(0x2e7540);
+      g.fillTriangle(55, y - 58, 55 - half * 0.8, y - 4, 55 + half * 0.8, y - 4);
+      g.fillStyle(0x3d8f4d);
+      g.fillTriangle(55 - 6, y - 52, 55 - half * 0.55, y - 12, 55 + half * 0.2, y - 12);
+    }
+    g.generateTexture('woods-tree-2', 110, 240);
+    g.clear();
+
+    // Undergrowth bush
+    g.fillStyle(0x2f6b2f);
+    g.fillCircle(16, 26, 15);
+    g.fillCircle(38, 22, 18);
+    g.fillCircle(60, 27, 14);
+    g.fillStyle(0x3d8b3a);
+    g.fillCircle(14, 24, 10);
+    g.fillCircle(36, 19, 12);
+    g.fillCircle(58, 25, 9);
+    g.fillStyle(0x5cae4c);
+    g.fillCircle(11, 20, 4);
+    g.fillCircle(32, 14, 5);
+    g.generateTexture('woods-bush', 76, 42);
+    g.clear();
+
+    // Fern: arching fronds with little leaflets
+    for (const [tipX, tipY, thickness] of [
+      [4, 8, 3],
+      [22, 2, 3.5],
+      [40, 10, 3],
+    ] as const) {
+      g.lineStyle(thickness, 0x35743f);
+      const frond = curvePoints(22, 40, (22 + tipX) / 2, 8, tipX, tipY);
+      g.strokePoints(frond, false);
+      g.fillStyle(0x4a9b4a);
+      for (const p of frond) g.fillCircle(p.x!, p.y!, 3);
+    }
+    g.generateTexture('woods-fern', 46, 42);
+    g.clear();
+
+    // Grass tuft
+    g.lineStyle(2, 0x4a9b4a);
+    g.lineBetween(4, 16, 1, 3);
+    g.lineBetween(9, 16, 9, 0);
+    g.lineBetween(14, 16, 18, 4);
+    g.generateTexture('grass-tuft', 20, 16);
+    g.clear();
+
+    // Mushrooms: the classic red fly agaric and a small brown one
+    const mushroom = (name: string, cap: number, capDark: number, w: number, h: number): void => {
+      g.fillStyle(0xf0e6d2);
+      g.fillRect(w / 2 - 2.5, h - 11, 5, 11);
+      g.fillStyle(0xd8ccb4);
+      g.fillRect(w / 2 + 0.5, h - 11, 2, 11);
+      g.fillStyle(capDark);
+      g.fillEllipse(w / 2, h - 11, w, 14);
+      g.fillStyle(cap);
+      g.fillEllipse(w / 2, h - 13, w - 2, 13);
+      g.fillStyle(0xfff6e8);
+      g.fillCircle(w / 2 - 3, h - 15, 1.8);
+      g.fillCircle(w / 2 + 3, h - 13, 1.4);
+      g.generateTexture(name, w, h);
+      g.clear();
+    };
+    mushroom('mushroom-red', 0xd94a3d, 0xa8342a, 20, 22);
+    mushroom('mushroom-brown', 0xb98a52, 0x8d663a, 14, 16);
+
+    // Small flowers on a stem
+    const flower = (name: string, petal: number, heart: number): void => {
+      g.lineStyle(2, 0x4a9b4a);
+      g.lineBetween(9, 22, 9, 9);
+      g.fillStyle(0x4a9b4a);
+      g.fillEllipse(4, 16, 7, 4);
+      g.fillStyle(petal);
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2;
+        g.fillCircle(9 + Math.cos(a) * 4.5, 8 + Math.sin(a) * 4.5, 3.2);
+      }
+      g.fillStyle(heart);
+      g.fillCircle(9, 8, 2.6);
+      g.generateTexture(name, 18, 22);
+      g.clear();
+    };
+    flower('flower-0', 0xffffff, 0xffd54a);
+    flower('flower-1', 0xffd54a, 0xe08a2a);
+    flower('flower-2', 0xa98fe0, 0xfff0a8);
+
+    // Pebble on the forest floor
+    g.fillStyle(0x8d8a84);
+    g.fillEllipse(9, 6, 18, 10);
+    g.fillStyle(0xa8a49d);
+    g.fillEllipse(7, 5, 11, 5);
+    g.generateTexture('pebble', 18, 12);
+    g.clear();
+
+    // Falling leaf (drawn green, tinted to autumn colours at runtime)
+    g.fillStyle(0x66b04a);
+    g.fillEllipse(7, 5, 14, 9);
+    g.lineStyle(1, 0x3f7d33);
+    g.lineBetween(1, 5, 13, 5);
+    g.generateTexture('leaf', 14, 10);
+    g.clear();
+
+    // Sunbeam falling through the canopy
+    g.fillStyle(0xfff6d0, 0.13);
+    g.fillPoints(
+      [
+        { x: 34, y: 0 },
+        { x: 90, y: 0 },
+        { x: 56, y: 300 },
+        { x: 0, y: 300 },
+      ],
+      true,
+    );
+    g.generateTexture('sunbeam', 90, 300);
+    g.clear();
+
+    // Canopy: the leaf roof of the forest, hanging into the top of the screen
+    const canopyBand = (name: string, seed: number): void => {
+      g.fillStyle(0x2a5f2c);
+      g.fillRect(0, 0, 260, 40);
+      for (let i = 0; i < 10; i++) {
+        g.fillCircle(10 + i * 28, 40, 20 + ((i * 7 + seed) % 5) * 6);
+      }
+      g.fillStyle(0x37782f);
+      for (let i = 0; i < 8; i++) {
+        g.fillCircle(20 + i * 32, 28, 16 + ((i * 5 + seed) % 4) * 5);
+      }
+      g.fillStyle(0x4a9b3d);
+      for (let i = 0; i < 6; i++) {
+        g.fillCircle(24 + i * 44, 14, 13 + ((i + seed) % 3) * 4);
+      }
+      g.generateTexture(name, 260, 96);
+      g.clear();
+    };
+    canopyBand('canopy-0', 1);
+    canopyBand('canopy-1', 4);
+
+    // Near trunk passing in front of the player — bark only, no crown, so it
+    // frames the scene instead of covering it.
+    g.fillStyle(0x6b4a2c);
+    g.fillPoints(
+      [
+        { x: 4, y: 400 },
+        { x: 14, y: 0 },
+        { x: 56, y: 0 },
+        { x: 66, y: 400 },
+      ],
+      true,
+    );
+    g.fillStyle(0x553a22);
+    g.fillRect(24, 20, 4, 370);
+    g.fillRect(44, 60, 3, 300);
+    g.fillStyle(0x7d5836);
+    g.fillRect(16, 40, 5, 330);
+    g.fillStyle(0x4a9b4a);
+    g.fillEllipse(12, 300, 16, 46);
+    g.fillEllipse(58, 210, 14, 38);
+    g.generateTexture('woods-trunk-near', 70, 400);
+    g.clear();
+
+    // Mossy log tile (woods platforms)
+    g.fillStyle(0x8a6035);
+    g.fillRect(0, 0, 32, 32);
+    g.fillStyle(0x6b4527);
+    g.fillRect(0, 12, 32, 2);
+    g.fillRect(0, 24, 32, 2);
+    g.fillStyle(0x75512c);
+    g.fillRect(6, 17, 5, 4);
+    g.fillRect(21, 28, 5, 3);
+    g.fillStyle(0x4a9b4a);
+    g.fillRect(0, 0, 32, 5);
+    g.fillCircle(6, 5, 4);
+    g.fillCircle(19, 5, 5);
+    g.fillCircle(29, 4, 3);
+    g.fillStyle(0x66b04a);
+    g.fillRect(0, 0, 32, 2);
+    g.generateTexture('log-moss', 32, 32);
+    g.clear();
+
+    // Floating log: a mossy trunk drifting on the water
+    g.fillStyle(0x7a5230);
+    g.fillRoundedRect(0, 6, 96, 20, 9);
+    g.fillStyle(0x8f6539);
+    g.fillRoundedRect(2, 8, 92, 10, 5);
+    g.fillStyle(0x5f3f24);
+    g.fillRect(24, 8, 2, 16);
+    g.fillRect(58, 8, 2, 16);
+    g.fillStyle(0x4a9b4a);
+    g.fillEllipse(20, 8, 24, 8);
+    g.fillEllipse(52, 7, 18, 7);
+    g.fillEllipse(78, 8, 20, 8);
+    g.fillStyle(0x66b04a);
+    g.fillEllipse(20, 6, 14, 4);
+    g.fillEllipse(78, 6, 12, 4);
+    // Cut end with year rings
+    g.fillStyle(0xb08a58);
+    g.fillEllipse(92, 16, 10, 20);
+    g.lineStyle(1.5, 0x8a6035);
+    g.strokeEllipse(92, 16, 6, 12);
+    g.generateTexture('float-log', 98, 30);
+    g.clear();
+
+    // Clear forest stream: surface tile and deeper fill
+    g.fillStyle(0x4f9fd0);
+    g.fillRect(0, 0, 32, 32);
+    g.fillStyle(0xa9dcf0);
+    g.fillRect(0, 0, 32, 3);
+    g.fillRect(4, 7, 9, 2);
+    g.fillRect(19, 11, 8, 2);
+    g.generateTexture('stream', 32, 32);
+    g.clear();
+    g.fillStyle(0x35719c);
+    g.fillRect(0, 0, 32, 32);
+    g.fillStyle(0x2d5f85);
+    g.fillRect(6, 9, 9, 3);
+    g.fillRect(19, 20, 7, 3);
+    g.generateTexture('stream-deep', 32, 32);
+    g.clear();
+
+    // Wooden signpost marking the end of the woods level, overgrown with ivy
+    // and with a mushroom and some grass at its foot.
+    const plank = (px: number, py: number, w: number, h: number, dir: number): void => {
+      const tip = dir > 0 ? px + w : px;
+      const back = dir > 0 ? px : px + w;
+      const shape = [
+        { x: back, y: py },
+        { x: tip - dir * 15, y: py },
+        { x: tip, y: py + h / 2 },
+        { x: tip - dir * 15, y: py + h },
+        { x: back, y: py + h },
+      ];
+      g.fillStyle(0xb08a58);
+      g.fillPoints(shape, true);
+      g.lineStyle(3, 0x5f3f24);
+      g.strokePoints(shape, true);
+      // A carved arrow pointing the way
+      g.fillStyle(0x5f3f24);
+      g.fillRect(px + w / 2 - dir * 13, py + h / 2 - 3, 18, 6);
+      g.fillTriangle(
+        px + w / 2 + dir * 7,
+        py + h / 2 - 10,
+        px + w / 2 + dir * 7,
+        py + h / 2 + 10,
+        px + w / 2 + dir * 19,
+        py + h / 2,
+      );
+    };
+
+    g.fillStyle(0x7a5230);
+    g.fillRect(46, 22, 16, 140);
+    g.fillStyle(0x8f6539);
+    g.fillRect(46, 22, 6, 140);
+    g.lineStyle(3, 0x5f3f24);
+    g.strokeRect(46, 22, 16, 140);
+    plank(22, 32, 74, 28, 1);
+    plank(14, 76, 66, 26, -1);
+    // Ivy winding up the post
+    g.lineStyle(2.5, 0x3f7d33);
+    g.strokePoints(curvePoints(54, 160, 28, 136, 48, 112), false);
+    g.strokePoints(curvePoints(48, 112, 74, 96, 56, 70), false);
+    g.fillStyle(0x4a9b4a);
+    for (const [lx, ly] of [
+      [36, 148],
+      [30, 130],
+      [42, 118],
+      [64, 100],
+      [70, 84],
+      [58, 72],
+    ] as const) {
+      g.fillEllipse(lx, ly, 14, 10);
+    }
+    g.fillStyle(0x66b04a);
+    g.fillEllipse(31, 129, 7, 5);
+    g.fillEllipse(65, 99, 7, 5);
+    // Foot: grass and a mushroom
+    g.lineStyle(2.5, 0x4a9b4a);
+    g.lineBetween(36, 162, 30, 144);
+    g.lineBetween(70, 162, 76, 146);
+    g.lineBetween(78, 162, 84, 150);
+    g.fillStyle(0xf0e6d2);
+    g.fillRect(78, 150, 5, 12);
+    g.fillStyle(0xd94a3d);
+    g.fillEllipse(80, 149, 20, 13);
+    g.fillStyle(0xfff6e8);
+    g.fillCircle(76, 147, 2);
+    g.fillCircle(84, 149, 1.6);
+    g.generateTexture('signpost', 104, 162);
+    g.clear();
+
+    // Ants and beetles crawling in the background — pure decoration
+    const antFrame = (name: string, lift: number): void => {
+      g.fillStyle(0x3a2a20);
+      g.fillEllipse(4, 6, 6, 6);
+      g.fillEllipse(9, 6, 5, 5);
+      g.fillEllipse(15, 6, 9, 7);
+      g.lineStyle(1, 0x3a2a20);
+      g.lineBetween(3, 4, 0, 1);
+      g.lineBetween(5, 4, 2, 0);
+      for (const [lx, dir, step] of [
+        [5, -1, 0],
+        [9, 1, 1],
+        [13, -1, 0],
+      ] as const) {
+        g.lineBetween(lx, 8, lx + dir * 3, 10 - (step ? lift : 0));
+      }
+      g.generateTexture(name, 20, 11);
+      g.clear();
+    };
+    antFrame('ant-0', 0);
+    antFrame('ant-1', 2);
+
+    const beetleFrame = (name: string, lift: number): void => {
+      g.fillStyle(0x2b2b33);
+      for (const [lx, step] of [
+        [6, 0],
+        [11, 1],
+        [16, 0],
+      ] as const) {
+        g.fillRect(lx, 10, 2, 3 - (step ? lift : 0));
+      }
+      g.fillEllipse(5, 7, 7, 7);
+      g.fillStyle(0x4a3f6b);
+      g.fillEllipse(14, 7, 18, 12);
+      g.fillStyle(0x6b5c99);
+      g.fillEllipse(12, 5, 12, 6);
+      g.lineStyle(1, 0x2b2b33);
+      g.lineBetween(14, 2, 14, 12);
+      g.fillStyle(0xffd54a);
+      g.fillCircle(3, 5, 1.2);
+      g.generateTexture(name, 24, 14);
+      g.clear();
+    };
+    beetleFrame('beetle-0', 0);
+    beetleFrame('beetle-1', 2);
+
     // Swamp mist wisp: stacked ellipses of decreasing size, so the strip
     // fades out towards its edges instead of reading as one hard circle
     for (let i = 0; i < 5; i++) {
@@ -603,6 +1023,34 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('btn-pause', 44, 44);
     g.clear();
 
+    // Sound toggle (title screen)
+    const speaker = (name: string, on: boolean): void => {
+      g.fillStyle(0x000000, 0.35);
+      g.fillCircle(20, 20, 19);
+      g.lineStyle(2, 0xffd700, 0.8);
+      g.strokeCircle(20, 20, 19);
+      g.fillStyle(0xffd700);
+      g.fillRect(11, 16, 5, 8);
+      g.fillTriangle(16, 20, 22, 12, 22, 28);
+      if (on) {
+        g.lineStyle(2, 0xffd700);
+        g.beginPath();
+        g.arc(23, 20, 5, -0.9, 0.9);
+        g.strokePath();
+        g.beginPath();
+        g.arc(23, 20, 9, -0.9, 0.9);
+        g.strokePath();
+      } else {
+        g.lineStyle(2.5, 0xffd700);
+        g.lineBetween(25, 15, 33, 25);
+        g.lineBetween(33, 15, 25, 25);
+      }
+      g.generateTexture(name, 40, 40);
+      g.clear();
+    };
+    speaker('btn-sound-on', true);
+    speaker('btn-sound-off', false);
+
     // Particle
     g.fillStyle(0xffffff);
     g.fillRect(0, 0, 6, 6);
@@ -659,6 +1107,18 @@ export class BootScene extends Phaser.Scene {
       key: 'fly-buzz',
       frames: [{ key: 'fly-0' }, { key: 'fly-1' }],
       frameRate: 20,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'ant-crawl',
+      frames: [{ key: 'ant-0' }, { key: 'ant-1' }],
+      frameRate: 9,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'beetle-crawl',
+      frames: [{ key: 'beetle-0' }, { key: 'beetle-1' }],
+      frameRate: 6,
       repeat: -1,
     });
 

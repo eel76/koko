@@ -4,6 +4,7 @@ import * as C from '../config';
 import { Controls } from '../controls';
 import { isDevMode } from '../devmode';
 import { LEVELS, LevelTheme } from '../levels';
+import { startMusic } from '../music';
 import { placeOnHud } from '../ui';
 
 interface GameData {
@@ -24,6 +25,7 @@ export class GameScene extends Phaser.Scene {
   private fishes!: Phaser.Physics.Arcade.Group;
   private sparkies!: Phaser.Physics.Arcade.Group;
   private fliegis!: Phaser.Physics.Arcade.Group;
+  private logs!: Phaser.Physics.Arcade.Group;
   private controls!: Controls;
   private character!: CharacterDef;
   private scoreText!: Phaser.GameObjects.Text;
@@ -40,6 +42,16 @@ export class GameScene extends Phaser.Scene {
   private lastJumpPress = -10000;
   private dead = false;
   private finished = false;
+  // A level is entered and left as a little scene: 'intro' walks the character
+  // in from the left screen edge, 'play' hands over to the player, and 'outro'
+  // walks it off the right edge once the goal is reached.
+  private phase: 'intro' | 'play' | 'outro' | 'done' = 'intro';
+  private introTargetX = 0;
+  private outroWalking = false;
+  private outroStarted = 0;
+  private logPhase = 0;
+  private secondsLeft = 0;
+  private timeBonus = 0;
 
   constructor() {
     super('Game');
@@ -54,6 +66,10 @@ export class GameScene extends Phaser.Scene {
     this.lastJumpPress = -10000;
     this.dead = false;
     this.finished = false;
+    this.phase = 'intro';
+    this.outroWalking = false;
+    this.outroStarted = 0;
+    this.logPhase = 0;
     this.timeLeft = C.LEVEL_TIME_SECONDS;
   }
 
@@ -62,7 +78,12 @@ export class GameScene extends Phaser.Scene {
     const levelWidth = Math.max(...rows.map((r) => r.length)) * C.TILE;
     this.levelHeight = rows.length * C.TILE;
 
-    const bgColors = { cave: C.CAVE_BG_COLOR, meadow: C.SKY_COLOR, forest: C.FOREST_BG_COLOR };
+    const bgColors: Record<LevelTheme, number> = {
+      cave: C.CAVE_BG_COLOR,
+      meadow: C.SKY_COLOR,
+      forest: C.FOREST_BG_COLOR,
+      woods: C.WOODS_BG_COLOR,
+    };
     this.cameras.main.setBackgroundColor(bgColors[theme]);
     this.addBackdrop(levelWidth, theme);
 
@@ -76,6 +97,7 @@ export class GameScene extends Phaser.Scene {
     this.fishes = this.physics.add.group({ allowGravity: false });
     this.sparkies = this.physics.add.group();
     this.fliegis = this.physics.add.group({ allowGravity: false });
+    this.logs = this.physics.add.group({ allowGravity: false, immovable: true });
 
     let spawnX = 64;
     let spawnY = 64;
@@ -95,10 +117,13 @@ export class GameScene extends Phaser.Scene {
             this.solidTiles.add(`${c},${r}`);
             break;
           }
-          case 'B':
-            this.solids.create(x, y, theme === 'forest' ? 'log' : 'brick');
+          case 'B': {
+            const platform =
+              theme === 'forest' ? 'log' : theme === 'woods' ? 'log-moss' : 'brick';
+            this.solids.create(x, y, platform);
             this.solidTiles.add(`${c},${r}`);
             break;
+          }
           case '?':
             this.blocks.create(x, y, 'block').setData('used', false);
             break;
@@ -125,9 +150,15 @@ export class GameScene extends Phaser.Scene {
             break;
           case 'W': {
             const above = r > 0 && rows[r - 1][c] === 'W';
-            this.add.image(x, y, above ? 'water-deep' : 'water').setDepth(8);
+            const clear = theme === 'woods';
+            const surface = clear ? 'stream' : 'water';
+            const deep = clear ? 'stream-deep' : 'water-deep';
+            this.add.image(x, y, above ? deep : surface).setDepth(8);
             break;
           }
+          case 'L':
+            this.spawnFloatLog(x, (r + 1) * C.TILE);
+            break;
           case 'X':
             this.spawnFish(x, (r + 1) * C.TILE);
             break;
@@ -137,7 +168,10 @@ export class GameScene extends Phaser.Scene {
             break;
           case 'F': {
             const base = (r + 1) * C.TILE;
-            this.add.image(x, base, 'flag').setOrigin(0.5, 1).setDepth(5);
+            // In the woods the goal is a weathered, overgrown signpost;
+            // the other levels keep their flag.
+            const goal = theme === 'woods' ? 'signpost' : 'flag';
+            this.add.image(x, base, goal).setOrigin(0.5, 1).setDepth(5);
             // The goal zone covers the flag's whole tile column, from far above
             // the level down to the ground: jumping over the flag from a nearby
             // platform still finishes the level instead of leaving it unfinishable.
@@ -171,9 +205,11 @@ export class GameScene extends Phaser.Scene {
       levelWidth + 2 * pad,
       Math.max(this.levelHeight, C.GAME_HEIGHT),
     );
-    this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
     this.cameras.main.setZoom(C.CAMERA_ZOOM);
     this.addEdgePadding(rows, theme, levelWidth);
+    if (theme === 'woods') {
+      this.addWoodsGroundCover(rows, levelWidth);
+    }
 
     for (const spawn of enemySpawns) {
       const enemy = this.enemies.create(spawn.x, spawn.y, 'enemy') as Phaser.Physics.Arcade.Sprite;
@@ -189,6 +225,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.physics.add.collider(this.player, this.solids);
+    this.physics.add.collider(this.player, this.logs);
     this.physics.add.collider(this.player, this.blocks, (playerObj, blockObj) =>
       this.hitBlock(
         playerObj as Phaser.Physics.Arcade.Sprite,
@@ -221,6 +258,25 @@ export class GameScene extends Phaser.Scene {
     if (isDevMode()) {
       this.addPauseControl();
     }
+    startMusic(this);
+    this.startIntro();
+  }
+
+  // Entering a level: the camera looks ahead into the level while the
+  // character walks in from the left screen edge. Only when it reaches the
+  // middle of the screen do the controls appear and the timer start.
+  private startIntro(): void {
+    const halfView = C.GAME_WIDTH / (2 * C.CAMERA_ZOOM);
+    this.introTargetX = this.player.x + halfView + C.INTRO_LEAD_IN;
+    this.cameras.main.stopFollow();
+    this.cameras.main.centerOn(this.introTargetX, this.player.y);
+    this.player.setFlipX(false);
+  }
+
+  private endIntro(): void {
+    this.phase = 'play';
+    this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
+    this.controls.reveal();
   }
 
   // Continues '#' terrain rows as non-physical images half a screen past both
@@ -246,10 +302,189 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  // A repeatable pseudo-random value for a column, so the scattered forest
+  // decoration looks natural but comes out the same on every playthrough.
+  private static noise(n: number): number {
+    const value = Math.sin(n * 12.9898) * 43758.5453;
+    return value - Math.floor(value);
+  }
+
+  // The woods: layer after layer of trees. Three parallax bands of trunks
+  // and crowns, sunbeams falling through the canopy, undergrowth along the
+  // ground line, and a few near trunks passing in front of the player.
+  private addWoodsBackdrop(from: number, to: number): void {
+    const surfaceY = this.levelHeight - 2 * C.TILE;
+    const trees = ['woods-tree-0', 'woods-tree-1', 'woods-tree-2'];
+    const layers = [
+      { step: 82, factor: 0.3, scale: 0.42, alpha: 0.6, tint: 0x9dc0a6, depth: -6 },
+      { step: 116, factor: 0.55, scale: 0.62, alpha: 0.85, tint: 0xc5dcbf, depth: -5 },
+      { step: 166, factor: 0.82, scale: 0.88, alpha: 1, tint: 0xffffff, depth: -4 },
+    ];
+    layers.forEach((layer, l) => {
+      for (let x = from + l * 41, i = 0; x < to; x += layer.step, i++) {
+        const n = GameScene.noise(x + l * 100);
+        this.add
+          .image(x + n * 24, surfaceY + 6 + (i % 3) * 4, trees[(i + l) % trees.length])
+          .setOrigin(0.5, 1)
+          .setScale(layer.scale * (0.85 + n * 0.35))
+          .setScrollFactor(layer.factor, 1)
+          .setDepth(layer.depth)
+          .setAlpha(layer.alpha)
+          .setTint(layer.tint);
+      }
+    });
+
+    // Sunlight breaking through the leaves
+    for (let x = from + 120, i = 0; x < to; x += 430, i++) {
+      this.add
+        .image(x, -40, 'sunbeam')
+        .setOrigin(0.5, 0)
+        .setScale(1 + (i % 2) * 0.5, 1.6)
+        .setScrollFactor(0.7, 1)
+        .setDepth(-3);
+    }
+
+    // Undergrowth right along the tree line
+    for (let x = from + 60, i = 0; x < to; x += 104, i++) {
+      const n = GameScene.noise(x * 0.5);
+      this.add
+        .image(x, surfaceY + 4, n > 0.5 ? 'woods-bush' : 'woods-fern')
+        .setOrigin(0.5, 1)
+        .setScale(0.7 + n * 0.5)
+        .setScrollFactor(0.82, 1)
+        .setDepth(-4);
+    }
+
+    // The leaf roof overhead: the level is played under the canopy, not in
+    // an open field.
+    for (let x = from, i = 0; x < to; x += 250, i++) {
+      this.add
+        .image(x, 236 + (i % 3) * 16, i % 2 === 0 ? 'canopy-0' : 'canopy-1')
+        .setOrigin(0.5, 1)
+        .setScale(1.1, 1.4)
+        .setScrollFactor(0.45, 1)
+        .setDepth(-6)
+        .setTint(0xdff0d8);
+    }
+    for (let x = from + 90, i = 0; x < to; x += 300, i++) {
+      this.add
+        .image(x, 268 + (i % 2) * 20, i % 2 === 0 ? 'canopy-1' : 'canopy-0')
+        .setOrigin(0.5, 1)
+        .setScale(1, 1.5)
+        .setScrollFactor(0.72, 1)
+        .setDepth(-3);
+    }
+
+    // A handful of trunks passing in front of the player for depth. They are
+    // translucent so the character always stays readable, and they stop well
+    // before the end of the level so nothing stands in front of the goal.
+    for (let x = from + 260, i = 0; x < to - 1080; x += 700, i++) {
+      this.add
+        .image(x, surfaceY + 10, 'woods-trunk-near')
+        .setOrigin(0.5, 1)
+        .setScale(0.75 + (i % 2) * 0.2)
+        .setScrollFactor(1.14, 1)
+        .setDepth(20)
+        .setAlpha(0.7)
+        .setTint(0x9c8f76);
+    }
+  }
+
+  // Forest floor: mushrooms, flowers, grass and pebbles on every ground
+  // surface, plus ants and beetles going about their business. None of it is
+  // solid or dangerous — it is there to make the woods feel alive.
+  private addWoodsGroundCover(rows: string[], levelWidth: number): void {
+    const surfaceRow = new Map<number, number>();
+    rows.forEach((row, r) => {
+      for (let c = 0; c < row.length; c++) {
+        if (row[c] === '#' && (r === 0 || rows[r - 1][c] !== '#') && !surfaceRow.has(c)) {
+          surfaceRow.set(c, r);
+        }
+      }
+    });
+
+    const padTiles = C.GAME_WIDTH / 2 / C.TILE;
+    const maxCols = levelWidth / C.TILE;
+    const plants = [
+      'grass-tuft',
+      'flower-0',
+      'mushroom-red',
+      'grass-tuft',
+      'flower-1',
+      'mushroom-brown',
+      'grass-tuft',
+      'flower-2',
+      'pebble',
+      'woods-fern',
+    ];
+
+    // The decoration continues into the terrain padding beyond both level
+    // ends, which is what the camera shows during the walk-in and walk-off.
+    const surfaceAt = (c: number): number | undefined =>
+      surfaceRow.get(Phaser.Math.Clamp(c, 0, maxCols - 1));
+
+    for (let c = -padTiles; c < maxCols + padTiles; c++) {
+      const row = surfaceAt(c);
+      if (row === undefined) continue;
+      const y = row * C.TILE + 2;
+      const n = GameScene.noise(c);
+      if (n < 0.34) continue;
+      const count = n > 0.88 ? 2 : 1;
+      for (let i = 0; i < count; i++) {
+        const m = GameScene.noise(c * 3 + i * 7);
+        this.add
+          .image(c * C.TILE + 6 + m * 20, y, plants[Math.floor(m * plants.length)])
+          .setOrigin(0.5, 1)
+          .setScale(0.8 + m * 0.4)
+          .setDepth(2);
+      }
+    }
+
+    this.addWoodsCritters(surfaceRow, maxCols);
+  }
+
+  // Ants and beetles crawling to and fro on the forest floor
+  private addWoodsCritters(surfaceRow: Map<number, number>, maxCols: number): void {
+    for (let c = 6; c < maxCols; c += 11) {
+      const row = surfaceRow.get(c);
+      if (row === undefined) continue;
+      const n = GameScene.noise(c * 5);
+      if (n < 0.45) continue;
+      const ant = n < 0.78;
+      const x = c * C.TILE + 16;
+      const range = ant ? 60 : 40;
+      // Both critters are drawn facing left, so they are flipped while
+      // crawling to the right.
+      const critter = this.add
+        .sprite(x, row * C.TILE + 3, ant ? 'ant-0' : 'beetle-0')
+        .setOrigin(0.5, 1)
+        .setDepth(3)
+        .setScale(ant ? 0.9 : 1)
+        .setFlipX(true);
+      critter.play(ant ? 'ant-crawl' : 'beetle-crawl');
+      this.tweens.add({
+        targets: critter,
+        x: x + range,
+        duration: (range / (ant ? 22 : 14)) * 1000,
+        yoyo: true,
+        repeat: -1,
+        hold: 400,
+        repeatDelay: 700,
+        delay: (c * 137) % 2600,
+        onYoyo: () => critter.setFlipX(false),
+        onRepeat: () => critter.setFlipX(true),
+      });
+    }
+  }
+
   private addBackdrop(levelWidth: number, theme: LevelTheme): void {
     // Cover the camera's full range, including the edge padding on both sides
     const from = -C.GAME_WIDTH / 2;
     const to = levelWidth + C.GAME_WIDTH / 2;
+    if (theme === 'woods') {
+      this.addWoodsBackdrop(from, to);
+      return;
+    }
     if (theme === 'forest') {
       for (let x = from + 70, i = 0; x < to; x += 220, i++) {
         this.add
@@ -401,6 +636,45 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  // Floating log: a trunk drifting on the water that the player rides across.
+  // Its deck sits exactly at bank height, so stepping on and off is seamless.
+  private spawnFloatLog(x: number, surfaceY: number): void {
+    const log = this.logs.create(x, surfaceY + 9, 'float-log') as Phaser.Physics.Arcade.Sprite;
+    log.setSize(94, 14).setOffset(2, 6).setDepth(9);
+    log.setData('homeX', x);
+    log.setData('dx', 0);
+  }
+
+  // Every log follows the same sine, so neighbouring logs keep their spacing
+  // and drift as one raft of stepping stones.
+  private updateLogs(delta: number): void {
+    const logs = this.logs.getChildren();
+    if (logs.length === 0) return;
+    this.logPhase += (delta / C.LOG_PERIOD_MS) * Math.PI * 2;
+    const offset = Math.sin(this.logPhase) * C.LOG_RANGE_X;
+    for (const child of logs) {
+      const log = child as Phaser.Physics.Arcade.Sprite;
+      const previous = log.x;
+      log.x = (log.getData('homeX') as number) + offset;
+      log.setData('dx', log.x - previous);
+    }
+  }
+
+  // Arcade physics does not move riders along with a platform, so a player
+  // standing on a log is shifted by the same amount as the log itself.
+  private carryOnLog(): void {
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    if (!body.blocked.down && !body.touching.down) return;
+    for (const child of this.logs.getChildren()) {
+      const log = child as Phaser.Physics.Arcade.Sprite;
+      const deck = log.body as Phaser.Physics.Arcade.Body;
+      if (body.bottom < deck.top - 2 || body.bottom > deck.top + 16) continue;
+      if (body.right < deck.left || body.left > deck.right) continue;
+      this.player.x += log.getData('dx') as number;
+      return;
+    }
+  }
+
   // Fliegi: flies one continuous figure-eight around its spawn point
   private spawnFliegi(x: number, y: number): void {
     const fliegi = this.fliegis.create(x, y, 'fliegi-0') as Phaser.Physics.Arcade.Sprite;
@@ -425,7 +699,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private touchHazard(): void {
-    if (this.dead || this.finished) return;
+    if (this.dead || this.phase !== 'play') return;
     this.playerDie();
   }
 
@@ -514,15 +788,20 @@ export class GameScene extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     this.updateHazards();
-    if (this.dead) return;
+    this.updateLogs(delta);
+    if (this.dead || this.phase === 'done') return;
+
+    if (this.phase === 'intro') {
+      this.updateIntro();
+      return;
+    }
+    if (this.phase === 'outro') {
+      this.updateOutro(time);
+      return;
+    }
 
     this.controls.update();
     const body = this.player.body as Phaser.Physics.Arcade.Body;
-
-    if (this.finished) {
-      this.player.setVelocityX(0);
-      return;
-    }
 
     // Level timer: running out costs a life
     this.timeLeft -= delta / 1000;
@@ -561,16 +840,7 @@ export class GameScene extends Phaser.Scene {
     // Jumping with coyote time and a small input buffer
     const grounded = body.blocked.down || body.touching.down;
 
-    // Character animation: walk cycle on the ground, jump pose in the air
-    if (!grounded) {
-      this.player.stop();
-      this.player.setTexture(this.character.jumpTexture);
-    } else if (body.velocity.x !== 0) {
-      this.player.play(this.character.walkAnim, true);
-    } else {
-      this.player.stop();
-      this.player.setTexture(this.character.idleTexture);
-    }
+    this.animateCharacter(grounded, body.velocity.x !== 0);
     if (grounded) this.lastGrounded = time;
     if (this.controls.jumpPressed) this.lastJumpPress = time;
 
@@ -592,7 +862,74 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
+    this.carryOnLog();
     this.updateEnemies();
+  }
+
+  // Walk cycle on the ground, jump pose in the air
+  private animateCharacter(grounded: boolean, moving: boolean): void {
+    if (!grounded) {
+      this.player.stop();
+      this.player.setTexture(this.character.jumpTexture);
+    } else if (moving) {
+      this.player.play(this.character.walkAnim, true);
+    } else {
+      this.player.stop();
+      this.player.setTexture(this.character.idleTexture);
+    }
+  }
+
+  // Walking into the level: the character strolls in from the left screen
+  // edge and hands over to the player once it stands in the middle.
+  private updateIntro(): void {
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    this.player.setVelocityX(C.PLAYER_SPEED);
+    this.animateCharacter(body.blocked.down || body.touching.down, true);
+    // Failsafe: should the ground give way during the walk-in, hand over
+    // right away instead of staying stuck in the intro.
+    if (this.player.y > this.levelHeight) {
+      this.endIntro();
+      return;
+    }
+    if (this.player.x >= this.introTargetX) {
+      this.player.x = this.introTargetX;
+      this.player.setVelocityX(0);
+      this.endIntro();
+    }
+  }
+
+  // Walking out of the level: once the character has landed at the signpost it
+  // carries on past the right screen edge — the terrain ends with the level,
+  // so it walks on without colliding with anything.
+  private updateOutro(time: number): void {
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    if (!this.outroWalking) {
+      const landed = body.blocked.down || body.touching.down;
+      if (!landed && time - this.outroStarted < 1500) {
+        this.player.setVelocityX(0);
+        this.animateCharacter(false, false);
+        return;
+      }
+      this.outroWalking = true;
+      body.setAllowGravity(false);
+      body.checkCollision.none = true;
+      this.player.setCollideWorldBounds(false);
+      this.player.setVelocityY(0);
+    }
+
+    this.player.setVelocityX(C.PLAYER_SPEED);
+    this.player.setFlipX(false);
+    this.animateCharacter(true, true);
+    if (this.player.x > this.cameras.main.worldView.right + C.OUTRO_MARGIN) {
+      this.phase = 'done';
+      this.scene.start('LevelComplete', {
+        levelIndex: this.levelIndex,
+        score: this.score,
+        lives: this.lives,
+        secondsLeft: this.secondsLeft,
+        timeBonus: this.timeBonus,
+      });
+    }
   }
 
   private updateEnemies(): void {
@@ -665,7 +1002,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private touchEnemy(enemy: Phaser.Physics.Arcade.Sprite): void {
-    if (this.dead || this.finished || !enemy.active || !enemy.body) return;
+    if (this.dead || this.phase !== 'play' || !enemy.active || !enemy.body) return;
 
     const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
     const enemyBody = enemy.body as Phaser.Physics.Arcade.Body;
@@ -707,22 +1044,18 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  // Reaching the goal hides the controls again and starts the walk-off
   private reachFlag(): void {
     if (this.finished || this.dead) return;
     this.finished = true;
-    const secondsLeft = Math.max(0, Math.ceil(this.timeLeft));
-    const timeBonus = secondsLeft * C.TIME_BONUS_PER_SECOND;
-    this.addScore(C.FLAG_SCORE + timeBonus);
+    this.phase = 'outro';
+    this.outroStarted = this.time.now;
+    this.outroWalking = false;
+    this.secondsLeft = Math.max(0, Math.ceil(this.timeLeft));
+    this.timeBonus = this.secondsLeft * C.TIME_BONUS_PER_SECOND;
+    this.addScore(C.FLAG_SCORE + this.timeBonus);
+    this.controls.conceal();
+    this.cameras.main.stopFollow();
     this.player.setVelocityX(0);
-
-    this.time.delayedCall(900, () => {
-      this.scene.start('LevelComplete', {
-        levelIndex: this.levelIndex,
-        score: this.score,
-        lives: this.lives,
-        secondsLeft,
-        timeBonus,
-      });
-    });
   }
 }

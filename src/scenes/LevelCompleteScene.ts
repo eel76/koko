@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from '../config';
 import { submitScore } from '../highscore';
-import { LEVELS } from '../levels';
+import { playableLevelCount } from '../levels';
 
 interface CompleteData {
   levelIndex: number;
@@ -18,7 +18,7 @@ export class LevelCompleteScene extends Phaser.Scene {
 
   create(data: CompleteData): void {
     const cx = GAME_WIDTH / 2;
-    const hasNext = data.levelIndex + 1 < LEVELS.length;
+    const hasNext = data.levelIndex + 1 < playableLevelCount();
 
     this.add
       .text(cx, 160, hasNext ? `LEVEL ${data.levelIndex + 1} COMPLETE!` : 'YOU WIN!', {
