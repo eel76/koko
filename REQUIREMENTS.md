@@ -41,11 +41,17 @@ the appropriate section. Requirement IDs are stable and never reused.
   more bonus points are awarded. The timer only runs while the player is
   actually in control (see R29).
 - **R29** — Levels are entered and left as a little scene. On entering, the
-  character walks in from the left screen edge to the middle of the screen by
-  itself; only then do the controls fade in, making it clear that the player
-  is now in charge. On reaching the goal the controls fade out again and the
-  character walks from the middle of the screen off the right edge until it
-  is out of sight.
+  character walks in from the left end of the level to the middle of the
+  screen by itself; only then do the controls fade in, making it clear that
+  the player is now in charge. On reaching the goal the controls fade out
+  again and the character walks from the middle of the screen off the right
+  edge until it is out of sight.
+- **R34** — The walk-in really starts at the leftmost point the level allows,
+  not at the start marker in the map: the marker only sets the height at which
+  the character enters. The spot where control is handed over is the left end
+  of the world from then on — the player can never steer the character back
+  behind the point where control began, and no level content ever lies behind
+  it.
 - **R30** — Floating logs drift back and forth on the water and carry the
   player standing on them, so wider streams can be crossed by riding and
   hopping from log to log.

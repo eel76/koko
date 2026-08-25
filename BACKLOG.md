@@ -68,4 +68,8 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
-_(nothing yet)_
+- **B2** — ~~Walking into a level starts at the start marker in the map, so the
+  character only appears to walk in from outside; afterwards the player can
+  steer back behind that entrance point.~~ Fixed: the character now enters from
+  the leftmost point of the level and the handover point is the left end of the
+  world (see R34).

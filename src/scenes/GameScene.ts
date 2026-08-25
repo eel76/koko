@@ -37,13 +37,14 @@ export class GameScene extends Phaser.Scene {
   private score = 0;
   private startScore = 0;
   private lives = C.START_LIVES;
+  private levelWidth = 0;
   private levelHeight = 0;
   private lastGrounded = -10000;
   private lastJumpPress = -10000;
   private dead = false;
   private finished = false;
   // A level is entered and left as a little scene: 'intro' walks the character
-  // in from the left screen edge, 'play' hands over to the player, and 'outro'
+  // in from the level's left end, 'play' hands over to the player, and 'outro'
   // walks it off the right edge once the goal is reached.
   private phase: 'intro' | 'play' | 'outro' | 'done' = 'intro';
   private introTargetX = 0;
@@ -76,6 +77,7 @@ export class GameScene extends Phaser.Scene {
   create(): void {
     const { map: rows, theme } = LEVELS[this.levelIndex];
     const levelWidth = Math.max(...rows.map((r) => r.length)) * C.TILE;
+    this.levelWidth = levelWidth;
     this.levelHeight = rows.length * C.TILE;
 
     const bgColors: Record<LevelTheme, number> = {
@@ -263,9 +265,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Entering a level: the camera looks ahead into the level while the
-  // character walks in from the left screen edge. Only when it reaches the
+  // character walks in from the level's left end. Only when it reaches the
   // middle of the screen do the controls appear and the timer start.
+  // The walk-in always starts at the leftmost point the world allows — not at
+  // the spawn point marked in the map, which only decides the entry height —
+  // so no part of the level is ever left behind the character's entrance.
   private startIntro(): void {
+    this.player.setX(this.spriteXForBodyLeft(0));
     const halfView = C.GAME_WIDTH / (2 * C.CAMERA_ZOOM);
     this.introTargetX = this.player.x + halfView + C.INTRO_LEAD_IN;
     this.cameras.main.stopFollow();
@@ -273,10 +279,27 @@ export class GameScene extends Phaser.Scene {
     this.player.setFlipX(false);
   }
 
+  // Handing over to the player: the point the character has walked to becomes
+  // the left end of the world, so the player can never steer back behind the
+  // spot where control began.
   private endIntro(): void {
     this.phase = 'play';
+    const left = this.bodyLeftForSpriteX(this.introTargetX);
+    this.physics.world.setBounds(left, -320, this.levelWidth - left, this.levelHeight + 640);
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
     this.controls.reveal();
+  }
+
+  // The player's collision body is narrower than its sprite; these two convert
+  // between the sprite position and the world x of the body's left edge.
+  private spriteXForBodyLeft(bodyLeft: number): number {
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    return bodyLeft + this.player.displayOriginX - body.offset.x;
+  }
+
+  private bodyLeftForSpriteX(spriteX: number): number {
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    return spriteX - this.player.displayOriginX + body.offset.x;
   }
 
   // Continues '#' terrain rows as non-physical images half a screen past both
@@ -879,8 +902,8 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  // Walking into the level: the character strolls in from the left screen
-  // edge and hands over to the player once it stands in the middle.
+  // Walking into the level: the character strolls in from the level's left end
+  // and hands over to the player once it stands in the middle of the screen.
   private updateIntro(): void {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     this.player.setVelocityX(C.PLAYER_SPEED);
