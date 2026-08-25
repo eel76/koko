@@ -9,6 +9,11 @@
   requirement arrives or an existing one changes, update `REQUIREMENTS.md` in
   the same change set — it must always give a complete, current overview of
   the requirements. IDs (R1, R2, …) are stable and never reused.
+- **Backlog: `BACKLOG.md` collects ideas, feature wishes, and bug reports that
+  are not implemented yet.** New ideas or bug reports from the project owner
+  go in there with a fresh, never-reused ID (B1, B2, …). When an item is
+  implemented, move it to the *Done* section; an implemented feature also
+  gets a new requirement in `REQUIREMENTS.md`.
 - All graphics are generated at runtime (`src/scenes/BootScene.ts`); do not
   add binary image assets except the PWA icons in `public/`, which are
   generated via `npm run icons` (`scripts/generate-icons.mjs`).

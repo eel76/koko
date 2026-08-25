@@ -24,6 +24,11 @@ the appropriate section. Requirement IDs are stable and never reused.
   regardless of the language used in chat instructions.
 - **R7** — This requirements file must exist, collect all requirements, and
   always reflect the current state (see note in CLAUDE.md).
+- **R27** — A backlog file `BACKLOG.md` must exist and collect every idea,
+  feature wish, and bug report that is not implemented yet. Its IDs (B1,
+  B2, …) are stable and never reused. An implemented feature moves out of
+  the backlog and becomes a requirement here with a new R ID; a bugfix
+  points at the requirement it restores.
 
 ## Gameplay
 
