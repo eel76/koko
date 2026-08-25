@@ -4,6 +4,7 @@ import { GAME_HEIGHT, GAME_WIDTH, START_LIVES } from '../config';
 import { isDevMode } from '../devmode';
 import { getHighscore } from '../highscore';
 import { LEVELS } from '../levels';
+import { isMusicEnabled, setMusicEnabled } from '../music';
 
 export class MenuScene extends Phaser.Scene {
   constructor() {
@@ -58,6 +59,8 @@ export class MenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
+    this.addSoundToggle();
+
     let started = false;
     const startGame = (levelIndex = 0): void => {
       if (started) return;
@@ -77,6 +80,18 @@ export class MenuScene extends Phaser.Scene {
     );
     this.input.keyboard!.once('keydown-SPACE', () => startGame());
     this.input.keyboard!.once('keydown-ENTER', () => startGame());
+  }
+
+  // Music on/off — the setting is remembered between sessions
+  private addSoundToggle(): void {
+    const button = this.add
+      .image(38, GAME_HEIGHT - 38, isMusicEnabled() ? 'btn-sound-on' : 'btn-sound-off')
+      .setInteractive({ useHandCursor: true });
+    button.on('pointerdown', () => {
+      const on = !isMusicEnabled();
+      setMusicEnabled(on);
+      button.setTexture(on ? 'btn-sound-on' : 'btn-sound-off');
+    });
   }
 
   private addCharacterSelect(cx: number): void {

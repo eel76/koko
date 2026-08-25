@@ -43,6 +43,12 @@ export const FISH_JUMP_HEIGHT = 120;
 export const FISH_RISE_MS = 600;
 export const FISH_PAUSE_MS = 1000;
 
+// Floating logs drift back and forth over the water and carry the player.
+// Every log follows the same sine, so neighbouring logs keep their distance
+// and never drift into each other.
+export const LOG_RANGE_X = 64;
+export const LOG_PERIOD_MS = 3400;
+
 export const COIN_SCORE = 10;
 export const BLOCK_COIN_SCORE = 50;
 export const ENEMY_SCORE = 100;
@@ -54,9 +60,20 @@ export const START_LIVES = 3;
 export const LEVEL_TIME_SECONDS = 120;
 export const TIME_BONUS_PER_SECOND = 10;
 
+// Entering and leaving a level is played as a little scene: the character
+// walks in from the left screen edge to the middle before the controls appear,
+// and walks off the right edge after the goal. INTRO_LEAD_IN is how far left of
+// the visible area the character starts, OUTRO_MARGIN how far past the right
+// edge it walks before the level ends.
+export const INTRO_LEAD_IN = 60;
+export const OUTRO_MARGIN = 80;
+export const CONTROLS_FADE_MS = 350;
+
 export const SKY_COLOR = 0x5c94fc;
 export const CAVE_BG_COLOR = 0x171226;
 export const FOREST_BG_COLOR = 0x74975f;
+// Ordinary woods: bright daylight sky seen through the canopy
+export const WOODS_BG_COLOR = 0x9ed0e8;
 export const NIGHT_COLOR = 0x1a1a2e;
 
 // The stick-figure player is drawn white and tinted to contrast the theme
