@@ -618,50 +618,51 @@ export class BootScene extends Phaser.Scene {
       const ax = px + w / 2;
       const ay = py + h / 2;
       g.fillStyle(0x5f3f24);
-      g.fillRect(ax - 26, ay - 4, 33, 8);
-      g.fillTriangle(ax + 5, ay - 14, ax + 5, ay + 14, ax + 26, ay);
+      g.fillRect(ax - 34, ay - 5, 42, 10);
+      g.fillTriangle(ax + 8, ay - 16, ax + 8, ay + 16, ax + 32, ay);
     };
 
     // Post
     g.fillStyle(0x7a5230);
-    g.fillRect(56, 14, 16, 176);
+    g.fillRect(62, 14, 16, 176);
     g.fillStyle(0x8f6539);
-    g.fillRect(56, 14, 6, 176);
+    g.fillRect(62, 14, 6, 176);
     g.lineStyle(3, 0x5f3f24);
-    g.strokeRect(56, 14, 16, 176);
-    plank(28, 22, 96, 36);
+    g.strokeRect(62, 14, 16, 176);
+    // The arm reaches out on both sides of the post, not just towards its tip
+    plank(10, 22, 124, 38);
 
     // Two cords holding the poster close under the arm
     g.lineStyle(2, 0x5f3f24);
-    g.lineBetween(50, 58, 44, 76);
-    g.lineBetween(80, 58, 86, 76);
+    g.lineBetween(56, 60, 50, 78);
+    g.lineBetween(86, 60, 92, 78);
 
     // The poster itself: weathered paper with two torn corners
     const paper = [
-      { x: 41, y: 76 },
-      { x: 92, y: 76 },
-      { x: 92, y: 121 },
-      { x: 87, y: 126 },
-      { x: 36, y: 126 },
-      { x: 36, y: 81 },
+      { x: 47, y: 78 },
+      { x: 98, y: 78 },
+      { x: 98, y: 123 },
+      { x: 93, y: 128 },
+      { x: 42, y: 128 },
+      { x: 42, y: 83 },
     ];
     g.fillStyle(0xf2e6c8);
     g.fillPoints(paper, true);
     g.lineStyle(2, 0x8a6b3f);
     g.strokePoints(paper, true);
     g.fillStyle(0x5f3f24);
-    g.fillCircle(44, 81, 1.8);
-    g.fillCircle(85, 81, 1.8);
+    g.fillCircle(50, 83, 1.8);
+    g.fillCircle(91, 83, 1.8);
 
     // The wanted face: the carnivorous plant that guards the end of the woods
-    const jawCx = 64;
-    const jawCy = 96;
+    const jawCx = 70;
+    const jawCy = 98;
     const jawR = 13;
     g.lineStyle(4, 0x3f7d33);
-    g.strokePoints(curvePoints(64, 122, 59, 114, 63, 107), false);
+    g.strokePoints(curvePoints(70, 124, 65, 116, 69, 109), false);
     g.fillStyle(0x4a9b4a);
-    g.fillEllipse(52, 116, 15, 7);
-    g.fillEllipse(76, 114, 15, 7);
+    g.fillEllipse(58, 118, 15, 7);
+    g.fillEllipse(82, 116, 15, 7);
     g.fillStyle(0xa8324a);
     g.fillCircle(jawCx, jawCy, jawR - 1);
     // Both jaws are slices of the same head, leaving the mouth wide open
@@ -702,35 +703,35 @@ export class BootScene extends Phaser.Scene {
 
     // Ivy winding up the post below the poster
     g.lineStyle(2.5, 0x3f7d33);
-    g.strokePoints(curvePoints(62, 188, 46, 176, 54, 156), false);
-    g.strokePoints(curvePoints(54, 156, 34, 150, 40, 166), false);
+    g.strokePoints(curvePoints(68, 188, 52, 176, 60, 156), false);
+    g.strokePoints(curvePoints(60, 156, 40, 150, 46, 166), false);
     g.fillStyle(0x4a9b4a);
     for (const [lx, ly] of [
-      [50, 180],
-      [52, 165],
-      [44, 155],
-      [38, 164],
+      [56, 180],
+      [58, 165],
+      [50, 155],
+      [44, 164],
     ] as const) {
       g.fillEllipse(lx, ly, 14, 10);
     }
     g.fillStyle(0x66b04a);
-    g.fillEllipse(53, 164, 7, 5);
-    g.fillEllipse(45, 154, 7, 5);
+    g.fillEllipse(59, 164, 7, 5);
+    g.fillEllipse(51, 154, 7, 5);
     // Foot: grass and a mushroom
     g.lineStyle(2.5, 0x4a9b4a);
-    g.lineBetween(46, 190, 40, 172);
-    g.lineBetween(80, 190, 86, 174);
-    g.lineBetween(88, 190, 94, 178);
+    g.lineBetween(52, 190, 46, 172);
+    g.lineBetween(86, 190, 92, 174);
+    g.lineBetween(94, 190, 100, 178);
     g.fillStyle(0xf0e6d2);
-    g.fillRect(82, 178, 5, 12);
+    g.fillRect(88, 178, 5, 12);
     g.fillStyle(0xa8342a);
-    g.fillEllipse(84, 178, 20, 13);
+    g.fillEllipse(90, 178, 20, 13);
     g.fillStyle(0xd94a3d);
-    g.fillEllipse(84, 176, 18, 12);
+    g.fillEllipse(90, 176, 18, 12);
     g.fillStyle(0xfff6e8);
-    g.fillCircle(80, 175, 2);
-    g.fillCircle(88, 177, 1.6);
-    g.generateTexture('signpost', 128, 190);
+    g.fillCircle(86, 175, 2);
+    g.fillCircle(94, 177, 1.6);
+    g.generateTexture('signpost', 140, 190);
     g.clear();
 
     // Ants and beetles crawling in the background — pure decoration
