@@ -73,12 +73,19 @@ the appropriate section. Requirement IDs are stable and never reused.
   levels are kept for later and are reachable through the developer-mode
   level select alone (see R16).
 - **R31** — In the woods the goal is not a flag but a wooden signpost, weathered
-  and overgrown with ivy, grass and a mushroom.
+  and overgrown with ivy, grass and a mushroom. It carries exactly one arm, and
+  that arm points the way onwards — to the right, towards the level's exit;
+  never a second arm back into the level. Under the arm hangs a wanted poster
+  showing what waits at the end of the woods: a carnivorous plant, drawn with
+  its mouth open towards the side the player walks in from.
 - **R32** — Harmless little creatures — ants and beetles — make the woods feel
   alive. They are pure decoration and never hurt the player. They also never
   share the plane the character runs in: beetles climb up and down the trunks
   of the tree line behind the player, and ants travel in file over the shaded
   plane where the flowers grow (see R35), behind its grass and ferns.
+- **R37** — Signs in the world speak in pictures, not in words: a wanted poster
+  rather than a boss's name, an arrow rather than "exit". Nothing on them ever
+  needs translating, and a player of any age or language reads them at once.
 - **R36** — It must be obvious at a glance what is dangerous. The rule the
   woods follow: everything that moves in the plane the character runs in is a
   hazard, and everything harmless lives in a plane behind it. No badge, marker

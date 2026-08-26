@@ -36,7 +36,12 @@ _(none open)_
 
 Wishes that are agreed on in principle and wait for implementation.
 
-_(none open)_
+- **B8** — A real boss at the end of the woods: the carnivorous plant that the
+  signpost's wanted poster already shows (see R31). Until it exists the poster
+  is a promise the level does not keep yet. Open points: where the boss fight
+  happens (an arena before the goal, or the goal itself), how it is beaten —
+  stomping is out, the plant has teeth — and whether every level ends in a boss
+  with its own poster. Priority: medium.
 
 ## Ideas / Someday
 
@@ -67,6 +72,11 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
+
+- **B7** — ~~The signpost at the end of the level points in two directions, and
+  one of them leads back into the level.~~ Fixed: it now carries a single arm
+  pointing onwards, plus a wanted poster of the woods' boss in place of any
+  text (see R31, R37).
 
 - **B6** — ~~It is not obvious which creatures are dangerous: the harmless
   beetles and ants walk the same ground as the deadly ones and are only a
