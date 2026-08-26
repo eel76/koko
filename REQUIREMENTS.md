@@ -96,7 +96,8 @@ the appropriate section. Requirement IDs are stable and never reused.
   on them hazes out with the distance. Everything is rooted on the bank of its
   own plane, so nothing behind the character hangs in the air. The banks run on
   behind brooks and streams: what shows above the water there are their far
-  sides.
+  sides. The woods recede backwards only — nothing is ever drawn in front of
+  the plane the character runs in.
 - **R36** — It must be obvious at a glance what is dangerous. The rule the
   woods follow: everything that moves in the plane the character runs in is a
   hazard, and everything harmless lives in a plane behind it. No badge, marker

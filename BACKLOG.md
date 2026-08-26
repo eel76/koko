@@ -73,6 +73,12 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B10** — ~~The half-transparent trunks passing in front of the character are
+  unpleasant to look at.~~ Fixed: the whole foreground plane is gone, texture
+  included, and the woods now recede backwards only (see R38). A foreground
+  plane is parked rather than ruled out — if it returns it needs a form that
+  does not sit between the player and the character.
+
 - **B9** — ~~The planes behind the character hang in the air — the ants walk on
   nothing instead of on ground.~~ Fixed: every plane has a bank of its own now,
   each a smaller step higher than the last, and everything behind the character

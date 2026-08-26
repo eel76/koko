@@ -514,29 +514,6 @@ export class BootScene extends Phaser.Scene {
     canopyBand('canopy-0', 1);
     canopyBand('canopy-1', 4);
 
-    // Near trunk passing in front of the player — bark only, no crown, so it
-    // frames the scene instead of covering it.
-    g.fillStyle(0x6b4a2c);
-    g.fillPoints(
-      [
-        { x: 4, y: 400 },
-        { x: 14, y: 0 },
-        { x: 56, y: 0 },
-        { x: 66, y: 400 },
-      ],
-      true,
-    );
-    g.fillStyle(0x553a22);
-    g.fillRect(24, 20, 4, 370);
-    g.fillRect(44, 60, 3, 300);
-    g.fillStyle(0x7d5836);
-    g.fillRect(16, 40, 5, 330);
-    g.fillStyle(0x4a9b4a);
-    g.fillEllipse(12, 300, 16, 46);
-    g.fillEllipse(58, 210, 14, 38);
-    g.generateTexture('woods-trunk-near', 70, 400);
-    g.clear();
-
     // Mossy log tile (woods platforms)
     g.fillStyle(0x8a6035);
     g.fillRect(0, 0, 32, 32);

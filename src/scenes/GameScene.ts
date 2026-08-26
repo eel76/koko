@@ -336,8 +336,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   // The woods: layer after layer of trees. Three parallax bands of trunks
-  // and crowns, sunbeams falling through the canopy, undergrowth along the
-  // ground line, and a few near trunks passing in front of the player.
+  // and crowns, sunbeams falling through the canopy, and undergrowth along
+  // the tree line. Nothing is drawn in front of the player.
   private addWoodsBackdrop(from: number, to: number): void {
     const surfaceY = this.levelHeight - 2 * C.TILE;
     const trees = ['woods-tree-0', 'woods-tree-1', 'woods-tree-2'];
@@ -424,20 +424,6 @@ export class GameScene extends Phaser.Scene {
         .setScale(1, 1.5)
         .setScrollFactor(0.72, 1)
         .setDepth(-3);
-    }
-
-    // A handful of trunks passing in front of the player for depth. They are
-    // translucent so the character always stays readable, and they stop well
-    // before the end of the level so nothing stands in front of the goal.
-    for (let x = from + 260, i = 0; x < to - 1080; x += 700, i++) {
-      this.add
-        .image(x, surfaceY + 10, 'woods-trunk-near')
-        .setOrigin(0.5, 1)
-        .setScale(0.75 + (i % 2) * 0.2)
-        .setScrollFactor(1.14, 1)
-        .setDepth(20)
-        .setAlpha(0.7)
-        .setTint(0x9c8f76);
     }
   }
 
