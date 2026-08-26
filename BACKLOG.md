@@ -73,6 +73,15 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B13** — ~~A hairline runs across the picture, the leaf roof looks like tree
+  shapes rather than leaves, too regular and too solid, and the woods fade to
+  blue sky instead of getting darker with depth.~~ Fixed: the hairline was the
+  roof's tile sprite wrapping onto itself — its sprite is now drawn shorter
+  than its texture, whose top and bottom rows stay empty. The roof itself is
+  single leaves on hanging twigs, thinner and more translucent, on a 640-pixel
+  tile with no two twigs alike (see R39). And the woods now recede into
+  darkness rather than into a sky (see R40).
+
 - **B12** — ~~The leaf roof keeps breaking into pieces, and jumping onto a
   platform shows that it is not continued upwards at all.~~ Fixed: the roof is
   now one seamless band in the plane in front of the character — the plane the

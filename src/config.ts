@@ -75,9 +75,17 @@ export const CONTROLS_FADE_MS = 350;
 export const SKY_COLOR = 0x5c94fc;
 export const CAVE_BG_COLOR = 0x171226;
 export const FOREST_BG_COLOR = 0x74975f;
-// Ordinary woods: bright daylight sky seen through the canopy
-export const WOODS_BG_COLOR = 0x9ed0e8;
+// Ordinary woods: no sky at all behind the trees. A forest does not open onto
+// blue — the deeper you look, the darker and denser it gets, and this is what
+// is left where the trees run out (see R40).
+export const WOODS_BG_COLOR = 0x2a4a35;
 export const NIGHT_COLOR = 0x1a1a2e;
+
+// How the woods recede: one tint and one grass colour per parallax band,
+// ordered from the furthest band to the nearest. Kept here so the whole depth
+// palette can be judged — and changed — in one place.
+export const WOODS_BAND_TINT = [0x5f7d62, 0x9fbf9a, 0xf0fae8];
+export const WOODS_BAND_GRASS = [0x143c1c, 0x1e5527, 0x2c7434];
 
 // The woods have a shaded plane behind the character: the flowers that do not
 // crowd the player grow there, and the harmless ants crawl there. Everything
@@ -99,12 +107,12 @@ export const BEETLE_CLIMB_SPEED = 14;
 // the screen and show open sky above the forest.
 export const WOODS_CANOPY_FACTOR_X = 1.15;
 export const WOODS_CANOPY_FACTOR_Y = 0.2;
-export const WOODS_CANOPY_ALPHA = 0.82;
+export const WOODS_CANOPY_ALPHA = 0.7;
 // World y of the roof's upper edge, and how tall the strip is. The roof hangs
 // deep enough to frame the picture but stops short of the height Fliegi flies
 // at: leaves in front of the player may cover scenery, never a hazard.
-export const WOODS_CANOPY_TOP = -18;
-export const WOODS_CANOPY_HEIGHT = 240;
+export const WOODS_CANOPY_TOP = 20;
+export const WOODS_CANOPY_HEIGHT = 256;
 
 // The stick-figure player is drawn white and tinted to contrast the theme
 export const PLAYER_TINT_DARK = 0x26262e;

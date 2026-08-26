@@ -100,14 +100,21 @@ the appropriate section. Requirement IDs are stable and never reused.
   behind brooks and streams: what shows above the water there are their far
   sides. Behind the character the woods recede backwards only; the single
   thing in front of its plane is the leaf roof overhead (R39).
-- **R39** — The leaf roof hangs in the one plane in front of the character: a
-  single dark, half-transparent band of leaves with branches hanging out of it,
-  tiled seamlessly so it never breaks into pieces. It sweeps past faster than
-  the world horizontally, because it hangs nearer than the character, and
-  barely moves vertically, so no jump ever slides it out of the top of the
-  screen and shows open sky above the forest. It hangs deep enough to frame the
-  picture but stops short of the height the flying enemies patrol at: leaves in
-  front of the player may cover scenery, never a hazard.
+- **R39** — The leaf roof hangs in the one plane in front of the character.
+  Being the nearest thing on screen it is drawn as what it really is — single
+  leaves on thin twigs, never whole tree shapes — thin and translucent enough
+  to see the woods through it, and irregular enough that the eye cannot find
+  the beat of its repeat. It sweeps past faster than the world horizontally,
+  because it hangs nearer than the character, and barely moves vertically, so
+  no jump ever slides it out of the top of the screen. It hangs deep enough to
+  frame the picture but stops short of the height the flying enemies patrol at:
+  leaves in front of the player may cover scenery, never a hazard.
+- **R40** — The woods do not open onto a sky. Looking into them, everything
+  grows darker with distance: each parallax band is drawn darker than the one
+  in front of it, its ground line darker still, and where the trees finally run
+  out there is forest dark rather than blue. Only the plane the character runs
+  in keeps its full daylight colour, so the character, the enemies and
+  everything else that matters to play stand out against that depth.
 - **R36** — It must be obvious at a glance what is dangerous. The rule the
   woods follow: everything that moves in the plane the character runs in is a
   hazard, and everything harmless lives in a plane behind it. No badge, marker

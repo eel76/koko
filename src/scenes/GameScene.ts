@@ -347,15 +347,16 @@ export class GameScene extends Phaser.Scene {
     // them hazes out with the distance. `ground` is the depth of a band's own
     // bank: behind that band's trees, in front of the band beyond it.
     const layers = [
-      // Farthest band: the highest ground line, hazed out the most
-      { step: 82, factor: 0.3, scale: 0.42, alpha: 0.6, tint: 0x9dc0a6 },
-      { step: 116, factor: 0.55, scale: 0.62, alpha: 0.85, tint: 0xc5dcbf },
+      // Farthest band first, nearest last
+      { step: 82, factor: 0.3, scale: 0.42, alpha: 0.6 },
+      { step: 116, factor: 0.55, scale: 0.62, alpha: 0.85 },
       // Nearest band, right behind the plane the flowers and ants live on
-      { step: 166, factor: 0.82, scale: 0.88, alpha: 1, tint: 0xffffff },
+      { step: 166, factor: 0.82, scale: 0.88, alpha: 1 },
     ].map((band, l) => ({
       ...band,
+      tint: C.WOODS_BAND_TINT[l],
+      grass: C.WOODS_BAND_GRASS[l],
       lift: [17, 15, 12][l],
-      grass: [0x63ab68, 0x4a9a51, 0x35893c][l],
       depth: [-15, -12, -10][l],
       ground: [-16, -13, -11][l],
     }));
@@ -397,11 +398,12 @@ export class GameScene extends Phaser.Scene {
     }
 
     // The leaf roof: the level is played under the canopy, not in an open
-    // field. It is the one thing in front of the player — a single dark,
-    // half-transparent band of leaves and hanging branches, tiled seamlessly
-    // so it never breaks. Being nearer than the character it sweeps past
-    // faster than the world; vertically it barely moves, so a jump can never
-    // slide it out of the top of the screen (see R39).
+    // field. It is the one thing in front of the player — thin, dark foliage
+    // on hanging twigs, tiled seamlessly so it never breaks. Being nearer than
+    // the character it sweeps past faster than the world; vertically it barely
+    // moves, so a jump can never slide it out of the top of the screen. The
+    // sprite is drawn a few pixels shorter than its texture, so the tiling
+    // never wraps and never leaves a hairline across the picture (see R39).
     const fx = C.WOODS_CANOPY_FACTOR_X;
     this.add
       .tileSprite(

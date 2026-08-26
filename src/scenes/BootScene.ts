@@ -290,8 +290,9 @@ export class BootScene extends Phaser.Scene {
     g.clear();
 
     // ---------------------------------------------------------------
-    // Woods theme: an ordinary, sunlit forest — proper trees, ferns,
-    // mushrooms, flowers and the little critters crawling between them.
+    // Woods theme: an ordinary forest that grows darker with every step into
+    // its depth — proper trees, ferns, mushrooms, flowers and the little
+    // critters crawling between them.
     // ---------------------------------------------------------------
 
     // Trunk with a slight taper and a hint of bark
@@ -479,60 +480,99 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('leaf', 14, 10);
     g.clear();
 
-    // Canopy: the leaf roof, drawn as one strip that repeats seamlessly for a
-    // whole level. Anything crossing a side is drawn again on the other side,
-    // so the band tiles without a seam and without a gap. It hangs in front of
-    // the player, so it is kept dark — the light greens of the trees would
-    // pull the eye away from the character underneath.
-    const canopyW = 320;
-    const canopyH = 240;
-    const tiled = (draw: (offset: number) => void): void => {
-      for (const offset of [-canopyW, 0, canopyW]) draw(offset);
+    // Canopy: the foliage hanging into the top of the picture, in the one
+    // plane in front of the character. Being the nearest thing on screen it is
+    // drawn as what it really is — single leaves on thin twigs, never whole
+    // tree shapes — thin enough to see the forest through it. The strip
+    // repeats seamlessly: anything crossing a side is drawn again on the other
+    // side. Its top and bottom rows stay empty, so the tiling can never blend
+    // the two into a hairline across the screen.
+    const canopyW = 640;
+    const canopyH = 260;
+    let canopySeed = 20260826;
+    const rnd = (): number => {
+      canopySeed = (canopySeed * 1103515245 + 12345) % 2147483648;
+      return canopySeed / 2147483648;
     };
-    // A closed mass at the top, so no camera position ever finds its upper edge
-    g.fillStyle(0x1c4620);
-    g.fillRect(0, 0, canopyW, 120);
-    const leaves: [number, number, number][] = [
-      [30, 118, 58],
-      [95, 140, 50],
-      [152, 108, 62],
-      [212, 146, 48],
-      [268, 122, 56],
-      [316, 136, 46],
-    ];
-    for (const [colour, shrink, dx, dy] of [
-      [0x1c4620, 1, 0, 0],
-      [0x25542a, 0.72, -0.16, -0.24],
-      [0x2f6733, 0.34, -0.34, -0.42],
-    ] as const) {
-      g.fillStyle(colour);
-      for (const [bx, by, br] of leaves) {
-        tiled((offset) => g.fillCircle(bx + offset + br * dx, by + br * dy, br * shrink));
-      }
-    }
-    // Branches hanging out of the roof, each with a few leaves along it
-    for (const [sx, sy, len] of [
-      [64, 150, 74],
-      [178, 132, 96],
-      [252, 154, 62],
-    ] as const) {
-      tiled((offset) => {
-        const twig = curvePoints(sx + offset, sy, sx + offset + 14, sy + len * 0.55, sx + offset - 5, sy + len);
-        g.lineStyle(3, 0x1c4620);
-        g.strokePoints(twig, false);
-        // Leaves sit to the left and right of the twig, not on it, so the
-        // branch reads as foliage instead of a string of beads.
-        for (let i = 3; i < twig.length - 1; i++) {
-          g.fillStyle(i % 3 === 0 ? 0x2f6733 : 0x25542a);
-          g.fillEllipse(twig[i].x! + (i % 2 === 0 ? -10 : 10), twig[i].y! - 2, 19, 10);
+    const between = (lo: number, hi: number): number => lo + rnd() * (hi - lo);
+    const canopyGreens = [0x16381b, 0x1b431f, 0x214f25, 0x275b2b];
+    // One leaf: a pointed oval that can lie at any angle on its twig
+    const leaf = (cx: number, cy: number, len: number, wide: number, angle: number): void => {
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+      const pts: Phaser.Types.Math.Vector2Like[] = [];
+      const put = (t: number, side: number): void => {
+        const lx = (t - 0.5) * len;
+        const ly = side * Math.pow(Math.sin(Math.PI * t), 0.8) * wide * 0.5;
+        pts.push({ x: cx + lx * cos - ly * sin, y: cy + lx * sin + ly * cos });
+      };
+      for (let i = 0; i <= 6; i++) put(i / 6, 1);
+      for (let i = 6; i >= 0; i--) put(i / 6, -1);
+      g.fillPoints(pts, true);
+    };
+    // A twig hanging out of the roof, with leaves along it at odd intervals
+    const twig = (x0: number, y0: number, len: number, sway: number): void => {
+      for (const offset of [-canopyW, 0, canopyW]) {
+        const x = x0 + offset;
+        const path = curvePoints(x, y0, x + sway, y0 + len * 0.55, x + sway * 0.3, y0 + len);
+        g.lineStyle(between(1.5, 2.6), 0x16381b);
+        g.strokePoints(path, false);
+        for (let i = 1; i < path.length; i++) {
+          if (rnd() < 0.28) continue;
+          const side = rnd() < 0.5 ? -1 : 1;
+          const size = between(13, 26);
+          g.fillStyle(canopyGreens[Math.floor(rnd() * canopyGreens.length)]);
+          leaf(
+            path[i].x! + side * between(4, 9),
+            path[i].y! + between(-3, 3),
+            size,
+            size * between(0.38, 0.52),
+            side * between(0.2, 1.1) + between(-0.2, 0.2),
+          );
         }
-        const tip = twig[twig.length - 1];
-        g.fillStyle(0x25542a);
-        g.fillCircle(tip.x!, tip.y! - 2, 9);
-        g.fillCircle(tip.x! - 9, tip.y! - 8, 7);
-        g.fillStyle(0x2f6733);
-        g.fillCircle(tip.x! + 7, tip.y! - 9, 6);
-      });
+      }
+    };
+    // Twigs at irregular spacing, of very different lengths, so no eye can
+    // find the beat of the repeat
+    for (const [x0, y0, len, sway] of [
+      [18, 58, 96, 14],
+      [63, 74, 44, -9],
+      [104, 56, 132, 22],
+      [162, 66, 70, -16],
+      [223, 54, 110, 10],
+      [258, 82, 52, 18],
+      [316, 58, 138, -20],
+      [372, 72, 78, 12],
+      [430, 56, 120, -12],
+      [468, 80, 48, 16],
+      [523, 60, 128, 20],
+      [586, 70, 88, -14],
+    ] as const) {
+      twig(x0, y0, len, sway);
+    }
+    // A few loose sprays of leaves, as if from branches out of frame
+    for (const [cx, cy] of [
+      [88, 122],
+      [204, 158],
+      [348, 104],
+      [412, 170],
+      [556, 132],
+      [612, 96],
+    ] as const) {
+      for (const offset of [-canopyW, 0, canopyW]) {
+        const count = Math.floor(between(2, 5));
+        for (let i = 0; i < count; i++) {
+          const size = between(14, 24);
+          g.fillStyle(canopyGreens[Math.floor(rnd() * canopyGreens.length)]);
+          leaf(
+            cx + offset + between(-22, 22),
+            cy + between(-16, 16),
+            size,
+            size * between(0.38, 0.52),
+            between(-1.4, 1.4),
+          );
+        }
+      }
     }
     g.generateTexture('canopy-front', canopyW, canopyH);
     g.clear();
