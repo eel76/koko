@@ -74,6 +74,11 @@ the appropriate section. Requirement IDs are stable and never reused.
 - **R32** — Harmless little creatures — ants and beetles — crawl through the
   woods. They are pure decoration: they never hurt the player and only make
   the forest feel alive.
+- **R35** — The forest floor grows in two planes. The plane the character runs
+  in stays sparse and mostly green — grass, ferns, mushrooms and pebbles — so
+  the character is never lost in the undergrowth. Most of the flowers grow one
+  plane further back: smaller, shaded and drawn behind the character, so the
+  woods keep their colour without crowding the player.
 - **R9** — A cave level exists (now level 2). Spiders hang from the ceiling
   and move up and down on a spider thread; the player must dodge them. Bats
   fly around and must also be dodged.

@@ -414,8 +414,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Forest floor: mushrooms, flowers, grass and pebbles on every ground
-  // surface, plus ants and beetles going about their business. None of it is
-  // solid or dangerous — it is there to make the woods feel alive.
+  // surface, plus ants and beetles going about their business. It grows in two
+  // planes — a sparse one around the character and a shaded one behind it that
+  // carries most of the flowers. None of it is solid or dangerous — it is
+  // there to make the woods feel alive.
   private addWoodsGroundCover(rows: string[], levelWidth: number): void {
     const surfaceRow = new Map<number, number>();
     rows.forEach((row, r) => {
@@ -428,17 +430,33 @@ export class GameScene extends Phaser.Scene {
 
     const padTiles = C.GAME_WIDTH / 2 / C.TILE;
     const maxCols = levelWidth / C.TILE;
-    const plants = [
+    // The plane the character runs in stays sparse and mostly green, so the
+    // player is never lost in the undergrowth.
+    const frontPlants = [
+      'grass-tuft',
+      'woods-fern',
+      'mushroom-red',
+      'grass-tuft',
+      'pebble',
+      'grass-tuft',
+      'mushroom-brown',
+      'flower-1',
+      'grass-tuft',
+      'woods-fern',
+      'pebble',
+      'grass-tuft',
+    ];
+    // Most of the flowers live one step further back: they still colour the
+    // forest floor, but behind the character rather than around its feet.
+    const backPlants = [
+      'flower-0',
+      'grass-tuft',
+      'flower-2',
+      'woods-fern',
+      'flower-1',
       'grass-tuft',
       'flower-0',
       'mushroom-red',
-      'grass-tuft',
-      'flower-1',
-      'mushroom-brown',
-      'grass-tuft',
-      'flower-2',
-      'pebble',
-      'woods-fern',
     ];
 
     // The decoration continues into the terrain padding beyond both level
@@ -450,13 +468,29 @@ export class GameScene extends Phaser.Scene {
       const row = surfaceAt(c);
       if (row === undefined) continue;
       const y = row * C.TILE + 2;
+
+      // Back layer: smaller, shaded and drawn behind the player, standing a
+      // little above the ground line so it reads as further into the woods.
+      // One value decides whether something grows here, a second one what it
+      // is — otherwise the threshold would keep cutting the same plants out.
+      const b = GameScene.noise(c * 11 + 5);
+      if (b > 0.6) {
+        const k = GameScene.noise(c * 17 + 3);
+        this.add
+          .image(c * C.TILE + 4 + k * 24, y - 5, backPlants[Math.floor(k * backPlants.length)])
+          .setOrigin(0.5, 1)
+          .setScale(0.55 + k * 0.2)
+          .setDepth(0)
+          .setTint(0x9bb496);
+      }
+
       const n = GameScene.noise(c);
-      if (n < 0.34) continue;
-      const count = n > 0.88 ? 2 : 1;
+      if (n < 0.45) continue;
+      const count = n > 0.93 ? 2 : 1;
       for (let i = 0; i < count; i++) {
         const m = GameScene.noise(c * 3 + i * 7);
         this.add
-          .image(c * C.TILE + 6 + m * 20, y, plants[Math.floor(m * plants.length)])
+          .image(c * C.TILE + 6 + m * 20, y, frontPlants[Math.floor(m * frontPlants.length)])
           .setOrigin(0.5, 1)
           .setScale(0.8 + m * 0.4)
           .setDepth(2);

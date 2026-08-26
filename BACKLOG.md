@@ -68,6 +68,15 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B4** — ~~In the woods the spruces' light triangles stick out over the edge
+  of the tier they sit on, so the trees look slightly broken.~~ Fixed: every
+  tier's mid tone and highlight are now measured from that tier's own width,
+  so they stay inside its outline right up to the narrow top (restores R27).
+
+- **B3** — ~~Level 1 shows far too many flowers, and all of them stand in the
+  very plane the character moves in.~~ Fixed: the ground cover now grows in two
+  planes and most flowers moved to the one behind the character (see R35).
+
 - **B2** — ~~Walking into a level starts at the start marker in the map, so the
   character only appears to walk in from outside; afterwards the player can
   steer back behind that entrance point.~~ Fixed: the character now enters from

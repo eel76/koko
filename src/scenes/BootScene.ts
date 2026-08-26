@@ -368,7 +368,10 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('woods-tree-1', 100, 230);
     g.clear();
 
-    // Spruce: stacked needle tiers
+    // Spruce: stacked needle tiers. Every tier is one dark triangle with a
+    // mid tone and a highlight nested inside it — all three measured from the
+    // tier's own width, so the lighter triangles stay within the tier's
+    // outline instead of poking out of the narrow tiers near the top.
     trunk(55, 240, 190, 9, 7, 0x5a4028, 0x452f1d);
     for (let i = 0; i < 4; i++) {
       const y = 200 - i * 44;
@@ -378,7 +381,7 @@ export class BootScene extends Phaser.Scene {
       g.fillStyle(0x2e7540);
       g.fillTriangle(55, y - 58, 55 - half * 0.8, y - 4, 55 + half * 0.8, y - 4);
       g.fillStyle(0x3d8f4d);
-      g.fillTriangle(55 - 6, y - 52, 55 - half * 0.55, y - 12, 55 + half * 0.2, y - 12);
+      g.fillTriangle(55 - half * 0.1, y - 50, 55 - half * 0.5, y - 14, 55 + half * 0.2, y - 14);
     }
     g.generateTexture('woods-tree-2', 110, 240);
     g.clear();
