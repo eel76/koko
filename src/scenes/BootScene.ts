@@ -348,26 +348,39 @@ export class BootScene extends Phaser.Scene {
       0x3d8b3a,
       0x5cae4c,
     );
-    g.generateTexture('woods-tree-0', 140, 210);
+    g.generateTexture('woods-oak', 140, 210);
     g.clear();
 
-    // Birch: a slim, pale trunk with dark marks and a light crown
-    trunk(50, 230, 60, 9, 6, 0xe6e3dc, 0xcfcabd);
-    g.fillStyle(0x3a3630);
-    g.fillRect(44, 96, 9, 3);
-    g.fillRect(49, 140, 7, 3);
-    g.fillRect(43, 178, 8, 3);
+    // Beech: the tree of a closed, dark forest — a smooth grey column that
+    // carries no branch until well up, then spreads into one broad crown.
+    // (A birch stood here before; birches are pioneers of open, light ground
+    // and looked out of place under a canopy this dense.)
+    trunk(58, 260, 74, 13, 9, 0x8a887f, 0x6f6d66);
+    g.fillStyle(0xa3a199);
+    g.fillRect(48, 96, 5, 150);
+    g.fillStyle(0x6f6d66);
+    g.fillEllipse(66, 150, 7, 22);
+    g.fillEllipse(52, 196, 5, 16);
+    // Two limbs leaving the trunk upwards, as a beech carries its crown
+    g.lineStyle(8, 0x8a887f);
+    g.lineBetween(56, 104, 30, 74);
+    g.lineBetween(60, 112, 88, 78);
+    g.lineStyle(5, 0x8a887f);
+    g.lineBetween(30, 74, 20, 58);
+    g.lineBetween(88, 78, 98, 60);
     canopy(
       [
-        [50, 44, 34],
-        [22, 66, 22],
-        [78, 64, 23],
+        [58, 50, 40],
+        [22, 66, 26],
+        [94, 64, 27],
+        [40, 26, 22],
+        [78, 24, 21],
       ],
-      0x3f7d33,
-      0x5aa244,
-      0x7ec25c,
+      0x24501f,
+      0x2f6b2b,
+      0x3d8437,
     );
-    g.generateTexture('woods-tree-1', 100, 230);
+    g.generateTexture('woods-beech', 120, 260);
     g.clear();
 
     // Spruce: stacked needle tiers. Every tier is one dark triangle with a
@@ -385,7 +398,7 @@ export class BootScene extends Phaser.Scene {
       g.fillStyle(0x3d8f4d);
       g.fillTriangle(55 - half * 0.1, y - 50, 55 - half * 0.5, y - 14, 55 + half * 0.2, y - 14);
     }
-    g.generateTexture('woods-tree-2', 110, 240);
+    g.generateTexture('woods-spruce', 110, 240);
     g.clear();
 
     // Undergrowth bush
@@ -536,56 +549,95 @@ export class BootScene extends Phaser.Scene {
     // The deeper a leaf hangs the more it is seen through: what reaches into
     // the middle of the picture must never hide what happens behind it.
     const depthAlpha = (y: number): number => Phaser.Math.Clamp(1.05 - y / 340, 0.4, 1);
-    const twig = (x0: number, y0: number, len: number, sway: number, grow = 1): void => {
+    // A branch leaves the roof in a direction of its own — level, slanted or
+    // steep — and sags towards its tip under its own weight. Leaves fan off
+    // both sides of it and hang a little towards the ground.
+    const branch = (
+      x0: number,
+      y0: number,
+      degrees: number,
+      len: number,
+      droop: number,
+      grow = 1,
+    ): void => {
+      const a = Phaser.Math.DegToRad(degrees);
+      const dx = Math.cos(a);
+      const dy = Math.sin(a);
       for (const offset of [-canopyW, 0, canopyW]) {
         const x = x0 + offset;
-        const path = curvePoints(x, y0, x + sway, y0 + len * 0.55, x + sway * 0.3, y0 + len);
-        g.lineStyle(between(1.5, 2.6) * grow, 0x080f09, depthAlpha(y0 + len * 0.5));
-        g.strokePoints(path, false);
-        for (let i = 1; i < path.length; i++) {
-          if (rnd() < 0.28) continue;
+        const cx = x + dx * len * 0.5;
+        const cy = y0 + dy * len * 0.5 + droop * 0.12;
+        const ex = x + dx * len;
+        const ey = y0 + dy * len + droop;
+        const at = (t: number): { x: number; y: number } => {
+          const u = 1 - t;
+          return {
+            x: u * u * x + 2 * u * t * cx + t * t * ex,
+            y: u * u * y0 + 2 * u * t * cy + t * t * ey,
+          };
+        };
+        // The wood itself stays quiet: a thin, slightly faded line. What the
+        // eye should read is the foliage on it, not the stick underneath.
+        g.lineStyle(
+          between(1.6, 2.6) * grow,
+          0x080f09,
+          depthAlpha(y0 + dy * len * 0.5) * 0.8,
+        );
+        g.strokePoints(curvePoints(x, y0, cx, cy, ex, ey), false);
+        // Leaves sit close together along the whole branch — sampled finely,
+        // so a long branch carries foliage rather than reading as a bare wire.
+        const steps = Math.max(8, Math.round(len / 8));
+        for (let i = 2; i <= steps; i++) {
+          if (rnd() < 0.12) continue;
+          const p = at(i / steps);
           const side = rnd() < 0.5 ? -1 : 1;
-          const size = between(13, 26) * grow;
-          g.fillStyle(
-            canopyGreens[Math.floor(rnd() * canopyGreens.length)],
-            depthAlpha(path[i].y!),
-          );
+          const size = between(16, 30) * grow;
+          const out = between(3, 8) * grow;
+          g.fillStyle(canopyGreens[Math.floor(rnd() * canopyGreens.length)], depthAlpha(p.y));
           leaf(
-            path[i].x! + side * between(4, 9) * grow,
-            path[i].y! + between(-3, 3),
+            // offset away from the branch, at right angles to it
+            p.x - dy * side * out,
+            p.y + dx * side * out,
             size,
             size * between(0.38, 0.52),
-            side * between(0.2, 1.1) + between(-0.2, 0.2),
+            a + side * between(0.45, 1.25) + between(0.05, 0.35),
           );
         }
       }
     };
-    // Twigs at irregular spacing, of very different lengths, so no eye can
-    // find the beat of the repeat
-    for (const [x0, y0, len, sway] of [
-      [18, 58, 96, 14],
-      [63, 74, 44, -9],
-      [104, 56, 132, 22],
-      [162, 66, 70, -16],
-      [258, 82, 52, 18],
-      [316, 58, 138, -20],
-      [372, 72, 78, 12],
-      [468, 80, 48, 16],
-      [523, 60, 128, 20],
-      [586, 70, 88, -14],
+    // Branches at every angle from level to steep, of very different lengths,
+    // hanging from all along the top — so no eye finds the beat of the repeat.
+    for (const [x0, y0, deg, len, droop] of [
+      [10, 40, 12, 150, 46],
+      [46, 8, 66, 104, 22],
+      [88, 62, 168, 122, 38],
+      [124, 22, 38, 168, 54],
+      [168, 54, 96, 88, 12],
+      [206, 12, 148, 136, 44],
+      [246, 66, 24, 96, 30],
+      [286, 30, 74, 148, 26],
+      [330, 6, 160, 110, 40],
+      [368, 48, 44, 130, 48],
+      [412, 18, 118, 92, 20],
+      [452, 58, 8, 128, 52],
+      [498, 26, 88, 118, 18],
+      [536, 60, 138, 104, 34],
+      [576, 14, 56, 142, 44],
+      [614, 46, 172, 96, 30],
     ] as const) {
-      twig(x0, y0, len, sway);
+      branch(x0, y0, deg, len, droop);
     }
     // Three heavy boughs per tile that reach right down into the picture. At
-    // roughly one per screen they push across the view now and then as the
-    // player runs, which is what makes the plane read as being in front.
-    for (const [x0, y0, len, sway] of [
-      [222, 52, 168, 12],
-      [428, 56, 152, -18],
-      [604, 60, 176, 16],
+    // roughly one per screen they push across the view now and then, which is
+    // what makes the plane read as being in front.
+    for (const [x0, y0, deg, len, droop] of [
+      [150, 16, 58, 176, 58],
+      [372, 10, 112, 168, 62],
+      [594, 20, 72, 158, 56],
     ] as const) {
-      twig(x0, y0, len, sway, 1.7);
+      branch(x0, y0, deg, len, droop, 1.45);
     }
+
     // A few loose sprays of leaves, as if from branches out of frame
     for (const [cx, cy] of [
       [88, 122],

@@ -66,8 +66,9 @@ the appropriate section. Requirement IDs are stable and never reused.
 ## Levels
 
 - **R27** — Level 1 is a woods level: a real, ordinary forest — no swamp and
-  no jungle. It is full of trees, with mushrooms, flowers, ferns and grass on
-  the forest floor. Sparky and Fliegi appear as enemies. Small brooks have to
+  no jungle. Its trees are oak, beech and spruce; birches have no place in it,
+  being pioneers of open, light ground rather than of a closed canopy. It is
+  full of trees, with mushrooms, flowers, ferns and grass on the forest floor. Sparky and Fliegi appear as enemies. Small brooks have to
   be jumped across, and two wider streams are crossed on floating logs.
 - **R28** — Only the woods level is part of the released game. The older
   levels are kept for later and are reachable through the developer-mode
@@ -103,7 +104,9 @@ the appropriate section. Requirement IDs are stable and never reused.
 - **R39** — The leaf roof hangs in the one plane in front of the character.
   Being the nearest thing on screen it is drawn as what it really is — single
   leaves on thin twigs, never whole tree shapes — irregular enough that the eye
-  cannot find the beat of its repeat. It is almost black: closest to the eye
+  cannot find the beat of its repeat. Its branches leave the roof at every
+  angle — level, slanted, steep — and sag towards their tips under their own
+  weight, rather than all hanging straight down. It is almost black: closest to the eye
   and in the shadow of everything above it, it must never compete with the
   character. Among the twigs hang a few heavy boughs that reach right down into
   the picture, about one per screen, so that now and then foliage pushes across

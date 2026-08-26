@@ -347,7 +347,7 @@ export class GameScene extends Phaser.Scene {
       .tileSprite(from, 0, to - from, C.WOODS_SKY_DEPTH, 'woods-sky')
       .setOrigin(0, 0)
       .setDepth(-20);
-    const trees = ['woods-tree-0', 'woods-tree-1', 'woods-tree-2'];
+    const trees = ['woods-oak', 'woods-beech', 'woods-spruce'];
     // Every band stands on a ground line of its own, each a little higher than
     // the one in front of it. The steps grow smaller towards the back, the way
     // ground lines crowd together as they near the horizon, and the grass on
@@ -387,7 +387,7 @@ export class GameScene extends Phaser.Scene {
           .setTint(layer.tint);
         // Beetles live in the nearest tree line, on the trunks that are bare
         // for a good stretch — the spruce's is hidden under its needles.
-        if (l === layers.length - 1 && key !== 'woods-tree-2' && n > 0.55) {
+        if (l === layers.length - 1 && key !== 'woods-spruce' && n > 0.55) {
           this.addTrunkBeetle(tree, layer.factor, layer.depth, n);
         }
       }

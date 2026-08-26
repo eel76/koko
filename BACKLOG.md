@@ -73,6 +73,12 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B15** — ~~Birches make no sense in a dark forest and never looked good, and
+  the roof's branches all hang straight down.~~ Fixed: the birch is replaced by
+  a beech — a smooth grey column that carries its crown high, the tree of a
+  closed forest — and the roof's branches now leave at every angle and sag
+  towards their tips, densely leaved along their whole length (see R27, R39).
+
 - **B14** — ~~The woods should go further: near-black foliage in front, leaves
   pushing across the view now and then, bigger trees, and a hint of blue sky
   above the crowns.~~ Done: the foliage in the front plane is near-black and
