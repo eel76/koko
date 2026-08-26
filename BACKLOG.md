@@ -73,6 +73,11 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B11** — ~~The sunbeams falling through the canopy look odd.~~ Fixed: the
+  light shafts are gone, texture included. Like the foreground plane of B10
+  they are parked rather than ruled out — light through the leaves is a good
+  idea that needs a form that reads as light instead of as pale wedges.
+
 - **B10** — ~~The half-transparent trunks passing in front of the character are
   unpleasant to look at.~~ Fixed: the whole foreground plane is gone, texture
   included, and the woods now recede backwards only (see R38). A foreground

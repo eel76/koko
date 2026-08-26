@@ -479,20 +479,6 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('leaf', 14, 10);
     g.clear();
 
-    // Sunbeam falling through the canopy
-    g.fillStyle(0xfff6d0, 0.13);
-    g.fillPoints(
-      [
-        { x: 34, y: 0 },
-        { x: 90, y: 0 },
-        { x: 56, y: 300 },
-        { x: 0, y: 300 },
-      ],
-      true,
-    );
-    g.generateTexture('sunbeam', 90, 300);
-    g.clear();
-
     // Canopy: the leaf roof of the forest, hanging into the top of the screen
     const canopyBand = (name: string, seed: number): void => {
       g.fillStyle(0x2a5f2c);

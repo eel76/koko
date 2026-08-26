@@ -335,9 +335,9 @@ export class GameScene extends Phaser.Scene {
     return value - Math.floor(value);
   }
 
-  // The woods: layer after layer of trees. Three parallax bands of trunks
-  // and crowns, sunbeams falling through the canopy, and undergrowth along
-  // the tree line. Nothing is drawn in front of the player.
+  // The woods: layer after layer of trees. Three parallax bands of trunks and
+  // crowns, undergrowth along the tree line, and the leaf roof overhead.
+  // Nothing is drawn in front of the player.
   private addWoodsBackdrop(from: number, to: number): void {
     const surfaceY = this.levelHeight - 2 * C.TILE;
     const trees = ['woods-tree-0', 'woods-tree-1', 'woods-tree-2'];
@@ -384,16 +384,6 @@ export class GameScene extends Phaser.Scene {
         }
       }
     });
-
-    // Sunlight breaking through the leaves
-    for (let x = from + 120, i = 0; x < to; x += 430, i++) {
-      this.add
-        .image(x, -40, 'sunbeam')
-        .setOrigin(0.5, 0)
-        .setScale(1 + (i % 2) * 0.5, 1.6)
-        .setScrollFactor(0.7, 1)
-        .setDepth(-3);
-    }
 
     // Undergrowth right along the tree line
     for (let x = from + 60, i = 0; x < to; x += 104, i++) {
