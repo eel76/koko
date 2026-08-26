@@ -96,8 +96,16 @@ the appropriate section. Requirement IDs are stable and never reused.
   on them hazes out with the distance. Everything is rooted on the bank of its
   own plane, so nothing behind the character hangs in the air. The banks run on
   behind brooks and streams: what shows above the water there are their far
-  sides. The woods recede backwards only — nothing is ever drawn in front of
-  the plane the character runs in.
+  sides. Behind the character the woods recede backwards only; the single
+  thing in front of its plane is the leaf roof overhead (R39).
+- **R39** — The leaf roof hangs in the one plane in front of the character: a
+  single dark, half-transparent band of leaves with branches hanging out of it,
+  tiled seamlessly so it never breaks into pieces. It sweeps past faster than
+  the world horizontally, because it hangs nearer than the character, and
+  barely moves vertically, so no jump ever slides it out of the top of the
+  screen and shows open sky above the forest. It hangs deep enough to frame the
+  picture but stops short of the height the flying enemies patrol at: leaves in
+  front of the player may cover scenery, never a hazard.
 - **R36** — It must be obvious at a glance what is dangerous. The rule the
   woods follow: everything that moves in the plane the character runs in is a
   hazard, and everything harmless lives in a plane behind it. No badge, marker

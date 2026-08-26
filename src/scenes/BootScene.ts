@@ -479,26 +479,63 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('leaf', 14, 10);
     g.clear();
 
-    // Canopy: the leaf roof of the forest, hanging into the top of the screen
-    const canopyBand = (name: string, seed: number): void => {
-      g.fillStyle(0x2a5f2c);
-      g.fillRect(0, 0, 260, 40);
-      for (let i = 0; i < 10; i++) {
-        g.fillCircle(10 + i * 28, 40, 20 + ((i * 7 + seed) % 5) * 6);
-      }
-      g.fillStyle(0x37782f);
-      for (let i = 0; i < 8; i++) {
-        g.fillCircle(20 + i * 32, 28, 16 + ((i * 5 + seed) % 4) * 5);
-      }
-      g.fillStyle(0x4a9b3d);
-      for (let i = 0; i < 6; i++) {
-        g.fillCircle(24 + i * 44, 14, 13 + ((i + seed) % 3) * 4);
-      }
-      g.generateTexture(name, 260, 96);
-      g.clear();
+    // Canopy: the leaf roof, drawn as one strip that repeats seamlessly for a
+    // whole level. Anything crossing a side is drawn again on the other side,
+    // so the band tiles without a seam and without a gap. It hangs in front of
+    // the player, so it is kept dark — the light greens of the trees would
+    // pull the eye away from the character underneath.
+    const canopyW = 320;
+    const canopyH = 240;
+    const tiled = (draw: (offset: number) => void): void => {
+      for (const offset of [-canopyW, 0, canopyW]) draw(offset);
     };
-    canopyBand('canopy-0', 1);
-    canopyBand('canopy-1', 4);
+    // A closed mass at the top, so no camera position ever finds its upper edge
+    g.fillStyle(0x1c4620);
+    g.fillRect(0, 0, canopyW, 120);
+    const leaves: [number, number, number][] = [
+      [30, 118, 58],
+      [95, 140, 50],
+      [152, 108, 62],
+      [212, 146, 48],
+      [268, 122, 56],
+      [316, 136, 46],
+    ];
+    for (const [colour, shrink, dx, dy] of [
+      [0x1c4620, 1, 0, 0],
+      [0x25542a, 0.72, -0.16, -0.24],
+      [0x2f6733, 0.34, -0.34, -0.42],
+    ] as const) {
+      g.fillStyle(colour);
+      for (const [bx, by, br] of leaves) {
+        tiled((offset) => g.fillCircle(bx + offset + br * dx, by + br * dy, br * shrink));
+      }
+    }
+    // Branches hanging out of the roof, each with a few leaves along it
+    for (const [sx, sy, len] of [
+      [64, 150, 74],
+      [178, 132, 96],
+      [252, 154, 62],
+    ] as const) {
+      tiled((offset) => {
+        const twig = curvePoints(sx + offset, sy, sx + offset + 14, sy + len * 0.55, sx + offset - 5, sy + len);
+        g.lineStyle(3, 0x1c4620);
+        g.strokePoints(twig, false);
+        // Leaves sit to the left and right of the twig, not on it, so the
+        // branch reads as foliage instead of a string of beads.
+        for (let i = 3; i < twig.length - 1; i++) {
+          g.fillStyle(i % 3 === 0 ? 0x2f6733 : 0x25542a);
+          g.fillEllipse(twig[i].x! + (i % 2 === 0 ? -10 : 10), twig[i].y! - 2, 19, 10);
+        }
+        const tip = twig[twig.length - 1];
+        g.fillStyle(0x25542a);
+        g.fillCircle(tip.x!, tip.y! - 2, 9);
+        g.fillCircle(tip.x! - 9, tip.y! - 8, 7);
+        g.fillStyle(0x2f6733);
+        g.fillCircle(tip.x! + 7, tip.y! - 9, 6);
+      });
+    }
+    g.generateTexture('canopy-front', canopyW, canopyH);
+    g.clear();
 
     // Mossy log tile (woods platforms)
     g.fillStyle(0x8a6035);

@@ -396,25 +396,25 @@ export class GameScene extends Phaser.Scene {
         .setDepth(-10);
     }
 
-    // The leaf roof overhead: the level is played under the canopy, not in
-    // an open field.
-    for (let x = from, i = 0; x < to; x += 250, i++) {
-      this.add
-        .image(x, 236 + (i % 3) * 16, i % 2 === 0 ? 'canopy-0' : 'canopy-1')
-        .setOrigin(0.5, 1)
-        .setScale(1.1, 1.4)
-        .setScrollFactor(0.45, 1)
-        .setDepth(-14)
-        .setTint(0xdff0d8);
-    }
-    for (let x = from + 90, i = 0; x < to; x += 300, i++) {
-      this.add
-        .image(x, 268 + (i % 2) * 20, i % 2 === 0 ? 'canopy-1' : 'canopy-0')
-        .setOrigin(0.5, 1)
-        .setScale(1, 1.5)
-        .setScrollFactor(0.72, 1)
-        .setDepth(-3);
-    }
+    // The leaf roof: the level is played under the canopy, not in an open
+    // field. It is the one thing in front of the player — a single dark,
+    // half-transparent band of leaves and hanging branches, tiled seamlessly
+    // so it never breaks. Being nearer than the character it sweeps past
+    // faster than the world; vertically it barely moves, so a jump can never
+    // slide it out of the top of the screen (see R39).
+    const fx = C.WOODS_CANOPY_FACTOR_X;
+    this.add
+      .tileSprite(
+        from * fx - C.GAME_WIDTH,
+        C.WOODS_CANOPY_TOP,
+        (to - from) * fx + 2 * C.GAME_WIDTH,
+        C.WOODS_CANOPY_HEIGHT,
+        'canopy-front',
+      )
+      .setOrigin(0, 0)
+      .setScrollFactor(fx, C.WOODS_CANOPY_FACTOR_Y)
+      .setDepth(30)
+      .setAlpha(C.WOODS_CANOPY_ALPHA);
   }
 
   // A beetle climbing up and down a trunk of the tree line. The harmless

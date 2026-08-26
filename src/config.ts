@@ -93,6 +93,19 @@ export const WOODS_BACK_PLANE_GRASS_EDGE = 0x1d6322;
 // How fast a beetle climbs a trunk in the tree line, in pixels per second
 export const BEETLE_CLIMB_SPEED = 14;
 
+// The leaf roof hangs in front of everything, nearer than the character, so it
+// sweeps past faster than the world as the player runs. Vertically it barely
+// moves at all: a jump would otherwise slide the roof down out of the top of
+// the screen and show open sky above the forest.
+export const WOODS_CANOPY_FACTOR_X = 1.15;
+export const WOODS_CANOPY_FACTOR_Y = 0.2;
+export const WOODS_CANOPY_ALPHA = 0.82;
+// World y of the roof's upper edge, and how tall the strip is. The roof hangs
+// deep enough to frame the picture but stops short of the height Fliegi flies
+// at: leaves in front of the player may cover scenery, never a hazard.
+export const WOODS_CANOPY_TOP = -18;
+export const WOODS_CANOPY_HEIGHT = 240;
+
 // The stick-figure player is drawn white and tinted to contrast the theme
 export const PLAYER_TINT_DARK = 0x26262e;
 export const PLAYER_TINT_LIGHT = 0xf5f5f5;

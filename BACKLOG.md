@@ -73,6 +73,12 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B12** — ~~The leaf roof keeps breaking into pieces, and jumping onto a
+  platform shows that it is not continued upwards at all.~~ Fixed: the roof is
+  now one seamless band in the plane in front of the character — the plane the
+  trunks of B10 used to occupy — dark, half-transparent, with branches hanging
+  out of it, scrolling faster sideways and barely at all vertically (see R39).
+
 - **B11** — ~~The sunbeams falling through the canopy look odd.~~ Fixed: the
   light shafts are gone, texture included. Like the foreground plane of B10
   they are parked rather than ruled out — light through the leaves is a good
