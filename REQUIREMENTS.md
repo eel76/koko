@@ -74,9 +74,15 @@ the appropriate section. Requirement IDs are stable and never reused.
   level select alone (see R16).
 - **R31** — In the woods the goal is not a flag but a wooden signpost, weathered
   and overgrown with ivy, grass and a mushroom.
-- **R32** — Harmless little creatures — ants and beetles — crawl through the
-  woods. They are pure decoration: they never hurt the player and only make
-  the forest feel alive.
+- **R32** — Harmless little creatures — ants and beetles — make the woods feel
+  alive. They are pure decoration and never hurt the player. They also never
+  share the plane the character runs in: beetles climb up and down the trunks
+  of the tree line behind the player, and ants travel in file over the shaded
+  plane where the flowers grow (see R35), behind its grass and ferns.
+- **R36** — It must be obvious at a glance what is dangerous. The rule the
+  woods follow: everything that moves in the plane the character runs in is a
+  hazard, and everything harmless lives in a plane behind it. No badge, marker
+  or warning colour is used for this — the plane says it.
 - **R35** — The forest floor grows in two planes. The plane the character runs
   in stays sparse and mostly green — grass, ferns, mushrooms and pebbles — so
   the character is never lost in the undergrowth. Most of the flowers grow one

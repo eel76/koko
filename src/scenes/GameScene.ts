@@ -349,14 +349,20 @@ export class GameScene extends Phaser.Scene {
     layers.forEach((layer, l) => {
       for (let x = from + l * 41, i = 0; x < to; x += layer.step, i++) {
         const n = GameScene.noise(x + l * 100);
-        this.add
-          .image(x + n * 24, surfaceY + 6 + (i % 3) * 4, trees[(i + l) % trees.length])
+        const key = trees[(i + l) % trees.length];
+        const tree = this.add
+          .image(x + n * 24, surfaceY + 6 + (i % 3) * 4, key)
           .setOrigin(0.5, 1)
           .setScale(layer.scale * (0.85 + n * 0.35))
           .setScrollFactor(layer.factor, 1)
           .setDepth(layer.depth)
           .setAlpha(layer.alpha)
           .setTint(layer.tint);
+        // Beetles live in the nearest tree line, on the trunks that are bare
+        // for a good stretch — the spruce's is hidden under its needles.
+        if (l === layers.length - 1 && key !== 'woods-tree-2' && n > 0.55) {
+          this.addTrunkBeetle(tree, layer.factor, layer.depth, n);
+        }
       }
     });
 
@@ -414,6 +420,40 @@ export class GameScene extends Phaser.Scene {
         .setAlpha(0.7)
         .setTint(0x9c8f76);
     }
+  }
+
+  // A beetle climbing up and down a trunk of the tree line. The harmless
+  // creatures keep out of the plane the character runs in, which makes the
+  // rule easy to read: whatever moves beside the character is dangerous,
+  // whatever moves behind it is just the forest living its life.
+  private addTrunkBeetle(
+    tree: Phaser.GameObjects.Image,
+    factor: number,
+    depth: number,
+    n: number,
+  ): void {
+    const foot = tree.y - tree.displayHeight * 0.12;
+    const head = tree.y - tree.displayHeight * 0.45;
+    // Drawn facing left, so a quarter turn points it up the trunk.
+    const beetle = this.add
+      .sprite(tree.x, foot, 'beetle-0')
+      .setScale(tree.scaleY)
+      .setAngle(90)
+      .setScrollFactor(factor, 1)
+      .setDepth(depth);
+    beetle.play('beetle-crawl');
+    this.tweens.add({
+      targets: beetle,
+      y: head,
+      duration: ((foot - head) / C.BEETLE_CLIMB_SPEED) * 1000,
+      yoyo: true,
+      repeat: -1,
+      hold: 700,
+      repeatDelay: 1100,
+      delay: n * 3000,
+      onYoyo: () => beetle.setAngle(-90),
+      onRepeat: () => beetle.setAngle(90),
+    });
   }
 
   // Forest floor: mushrooms, flowers, grass and pebbles on every ground
@@ -484,7 +524,7 @@ export class GameScene extends Phaser.Scene {
           .setOrigin(0.5, 1)
           .setScale(0.55 + k * 0.2)
           .setDepth(0)
-          .setTint(0x9bb496);
+          .setTint(C.WOODS_BACK_PLANE_TINT);
       }
 
       const n = GameScene.noise(c);
@@ -503,37 +543,43 @@ export class GameScene extends Phaser.Scene {
     this.addWoodsCritters(surfaceRow, maxCols);
   }
 
-  // Ants and beetles crawling to and fro on the forest floor
+  // Ants trailing to and fro over the forest floor — on the shaded plane
+  // behind the character, where the flowers grow, and behind that plane's
+  // grass and ferns, so nothing harmless ever shares the ground the character
+  // runs on.
   private addWoodsCritters(surfaceRow: Map<number, number>, maxCols: number): void {
     for (let c = 6; c < maxCols; c += 11) {
       const row = surfaceRow.get(c);
       if (row === undefined) continue;
       const n = GameScene.noise(c * 5);
       if (n < 0.45) continue;
-      const ant = n < 0.78;
       const x = c * C.TILE + 16;
-      const range = ant ? 60 : 40;
-      // Both critters are drawn facing left, so they are flipped while
-      // crawling to the right.
-      const critter = this.add
-        .sprite(x, row * C.TILE + 3, ant ? 'ant-0' : 'beetle-0')
-        .setOrigin(0.5, 1)
-        .setDepth(3)
-        .setScale(ant ? 0.9 : 1)
-        .setFlipX(true);
-      critter.play(ant ? 'ant-crawl' : 'beetle-crawl');
-      this.tweens.add({
-        targets: critter,
-        x: x + range,
-        duration: (range / (ant ? 22 : 14)) * 1000,
-        yoyo: true,
-        repeat: -1,
-        hold: 400,
-        repeatDelay: 700,
-        delay: (c * 137) % 2600,
-        onYoyo: () => critter.setFlipX(false),
-        onRepeat: () => critter.setFlipX(true),
-      });
+      const range = 60;
+      // Ants travel in file: a little trail of them reads as ants going about
+      // their business, never as something out to get the player.
+      for (let i = 0; i < (n > 0.75 ? 3 : 2); i++) {
+        // Ants are drawn facing left, so they are flipped while crawling right.
+        const ant = this.add
+          .sprite(x - i * 19, row * C.TILE - 3, 'ant-0')
+          .setOrigin(0.5, 1)
+          .setDepth(-1)
+          .setScale(0.7)
+          .setTint(C.WOODS_BACK_PLANE_TINT)
+          .setFlipX(true);
+        ant.play('ant-crawl');
+        this.tweens.add({
+          targets: ant,
+          x: ant.x + range,
+          duration: (range / 22) * 1000,
+          yoyo: true,
+          repeat: -1,
+          hold: 400,
+          repeatDelay: 700,
+          delay: (c * 137) % 2600,
+          onYoyo: () => ant.setFlipX(false),
+          onRepeat: () => ant.setFlipX(true),
+        });
+      }
     }
   }
 

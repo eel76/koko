@@ -79,6 +79,13 @@ export const FOREST_BG_COLOR = 0x74975f;
 export const WOODS_BG_COLOR = 0x9ed0e8;
 export const NIGHT_COLOR = 0x1a1a2e;
 
+// The woods have a shaded plane behind the character: the flowers that do not
+// crowd the player grow there, and the harmless ants crawl there. Everything
+// on it is drawn in this tint so it reads as further into the forest.
+export const WOODS_BACK_PLANE_TINT = 0x9bb496;
+// How fast a beetle climbs a trunk in the tree line, in pixels per second
+export const BEETLE_CLIMB_SPEED = 14;
+
 // The stick-figure player is drawn white and tinted to contrast the theme
 export const PLAYER_TINT_DARK = 0x26262e;
 export const PLAYER_TINT_LIGHT = 0xf5f5f5;

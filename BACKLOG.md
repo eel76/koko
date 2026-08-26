@@ -68,6 +68,12 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B6** — ~~It is not obvious which creatures are dangerous: the harmless
+  beetles and ants walk the same ground as the deadly ones and are only a
+  little smaller.~~ Fixed: harmless creatures left the character's plane —
+  beetles climb the trunks of the tree line, ants trail over the shaded plane
+  behind the planting (see R32, R36).
+
 - **B5** — ~~The logs in the brooks and streams drift into the bank, which makes
   no sense: a log must always stay on the water surface.~~ Fixed: every log is
   tied to the stretch of water under it and swings only as far as the open
