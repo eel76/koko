@@ -73,6 +73,10 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B9** — ~~The planes behind the character hang in the air — the ants walk on
+  nothing instead of on ground.~~ Fixed: that plane has a bank of its own now,
+  and everything rooted behind the character stands on it (see R38).
+
 - **B7** — ~~The signpost at the end of the level points in two directions, and
   one of them leads back into the level.~~ Fixed: it now carries a single arm
   pointing onwards, plus a wanted poster of the woods' boss in place of any

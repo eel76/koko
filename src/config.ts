@@ -83,6 +83,13 @@ export const NIGHT_COLOR = 0x1a1a2e;
 // crowd the player grow there, and the harmless ants crawl there. Everything
 // on it is drawn in this tint so it reads as further into the forest.
 export const WOODS_BACK_PLANE_TINT = 0x9bb496;
+// That plane has ground of its own — a bank this many pixels higher than the
+// ground the character runs on, so nothing standing on it hangs in the air.
+// Its earth and grass are the front plane's colours under the tint above.
+export const WOODS_BACK_PLANE_LIFT = 8;
+export const WOODS_BACK_PLANE_EARTH = 0x544019;
+export const WOODS_BACK_PLANE_GRASS = 0x267b2c;
+export const WOODS_BACK_PLANE_GRASS_EDGE = 0x1d6322;
 // How fast a beetle climbs a trunk in the tree line, in pixels per second
 export const BEETLE_CLIMB_SPEED = 14;
 

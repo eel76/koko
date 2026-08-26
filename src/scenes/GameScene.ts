@@ -340,6 +340,9 @@ export class GameScene extends Phaser.Scene {
   // ground line, and a few near trunks passing in front of the player.
   private addWoodsBackdrop(from: number, to: number): void {
     const surfaceY = this.levelHeight - 2 * C.TILE;
+    // Everything rooted behind the character stands on the bank of the plane
+    // behind it, not on the ground the character runs on (see R38).
+    const backY = surfaceY - C.WOODS_BACK_PLANE_LIFT;
     const trees = ['woods-tree-0', 'woods-tree-1', 'woods-tree-2'];
     const layers = [
       { step: 82, factor: 0.3, scale: 0.42, alpha: 0.6, tint: 0x9dc0a6, depth: -6 },
@@ -351,7 +354,7 @@ export class GameScene extends Phaser.Scene {
         const n = GameScene.noise(x + l * 100);
         const key = trees[(i + l) % trees.length];
         const tree = this.add
-          .image(x + n * 24, surfaceY + 6 + (i % 3) * 4, key)
+          .image(x + n * 24, backY + 6 + (i % 3) * 4, key)
           .setOrigin(0.5, 1)
           .setScale(layer.scale * (0.85 + n * 0.35))
           .setScrollFactor(layer.factor, 1)
@@ -380,7 +383,7 @@ export class GameScene extends Phaser.Scene {
     for (let x = from + 60, i = 0; x < to; x += 104, i++) {
       const n = GameScene.noise(x * 0.5);
       this.add
-        .image(x, surfaceY + 4, n > 0.5 ? 'woods-bush' : 'woods-fern')
+        .image(x, backY + 4, n > 0.5 ? 'woods-bush' : 'woods-fern')
         .setOrigin(0.5, 1)
         .setScale(0.7 + n * 0.5)
         .setScrollFactor(0.82, 1)
@@ -507,20 +510,26 @@ export class GameScene extends Phaser.Scene {
     const surfaceAt = (c: number): number | undefined =>
       surfaceRow.get(Phaser.Math.Clamp(c, 0, maxCols - 1));
 
+    this.addWoodsBackPlaneFloor(surfaceAt, padTiles, maxCols);
+
     for (let c = -padTiles; c < maxCols + padTiles; c++) {
       const row = surfaceAt(c);
       if (row === undefined) continue;
       const y = row * C.TILE + 2;
 
-      // Back layer: smaller, shaded and drawn behind the player, standing a
-      // little above the ground line so it reads as further into the woods.
+      // Back layer: smaller, shaded and drawn behind the player, standing on
+      // the bank of the plane behind it rather than on the character's ground.
       // One value decides whether something grows here, a second one what it
       // is — otherwise the threshold would keep cutting the same plants out.
       const b = GameScene.noise(c * 11 + 5);
       if (b > 0.6) {
         const k = GameScene.noise(c * 17 + 3);
         this.add
-          .image(c * C.TILE + 4 + k * 24, y - 5, backPlants[Math.floor(k * backPlants.length)])
+          .image(
+            c * C.TILE + 4 + k * 24,
+            y - C.WOODS_BACK_PLANE_LIFT,
+            backPlants[Math.floor(k * backPlants.length)],
+          )
           .setOrigin(0.5, 1)
           .setScale(0.55 + k * 0.2)
           .setDepth(0)
@@ -543,6 +552,48 @@ export class GameScene extends Phaser.Scene {
     this.addWoodsCritters(surfaceRow, maxCols);
   }
 
+  // The plane behind the character needs ground of its own. Without it the
+  // flowers and ants standing on it hang in mid-air; with it the woods gain a
+  // second bank, a step further back and a little higher than the ground the
+  // character runs on. The bank runs on across brooks and streams — what shows
+  // above the water there is its far side, which is the depth we are after.
+  private addWoodsBackPlaneFloor(
+    surfaceAt: (c: number) => number | undefined,
+    padTiles: number,
+    maxCols: number,
+  ): void {
+    const bank = this.add.graphics().setDepth(-2);
+    const strip = (from: number, to: number, row: number): void => {
+      const top = row * C.TILE - C.WOODS_BACK_PLANE_LIFT;
+      const x = from * C.TILE;
+      const w = (to - from) * C.TILE;
+      bank.fillStyle(C.WOODS_BACK_PLANE_EARTH);
+      bank.fillRect(x, top, w, this.levelHeight - top);
+      bank.fillStyle(C.WOODS_BACK_PLANE_GRASS);
+      bank.fillRect(x, top, w, 8);
+      bank.fillStyle(C.WOODS_BACK_PLANE_GRASS_EDGE);
+      bank.fillRect(x, top + 6, w, 2);
+    };
+
+    // Columns of equal height are drawn as one strip, so a level with a flat
+    // ground line costs a single rectangle rather than one per tile.
+    let row: number | undefined;
+    let runFrom = -padTiles;
+    for (let c = -padTiles; c < maxCols + padTiles; c++) {
+      const here = surfaceAt(c) ?? row;
+      if (here === undefined) continue;
+      if (row === undefined) {
+        row = here;
+        runFrom = c;
+      } else if (here !== row) {
+        strip(runFrom, c, row);
+        row = here;
+        runFrom = c;
+      }
+    }
+    if (row !== undefined) strip(runFrom, maxCols + padTiles, row);
+  }
+
   // Ants trailing to and fro over the forest floor — on the shaded plane
   // behind the character, where the flowers grow, and behind that plane's
   // grass and ferns, so nothing harmless ever shares the ground the character
@@ -560,7 +611,7 @@ export class GameScene extends Phaser.Scene {
       for (let i = 0; i < (n > 0.75 ? 3 : 2); i++) {
         // Ants are drawn facing left, so they are flipped while crawling right.
         const ant = this.add
-          .sprite(x - i * 19, row * C.TILE - 3, 'ant-0')
+          .sprite(x - i * 19, row * C.TILE - C.WOODS_BACK_PLANE_LIFT + 2, 'ant-0')
           .setOrigin(0.5, 1)
           .setDepth(-1)
           .setScale(0.7)
