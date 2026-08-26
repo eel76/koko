@@ -77,7 +77,9 @@ the appropriate section. Requirement IDs are stable and never reused.
   that arm points the way onwards — to the right, towards the level's exit;
   never a second arm back into the level. Under the arm hangs a wanted poster
   showing what waits at the end of the woods: a carnivorous plant, drawn with
-  its mouth open towards the side the player walks in from.
+  its mouth open towards the side the player walks in from. The arm is the
+  larger of the two and leads the eye; the poster stays clearly smaller and
+  hangs high under the arm, well clear of the grass at the post's foot.
 - **R32** — Harmless little creatures — ants and beetles — make the woods feel
   alive. They are pure decoration and never hurt the player. They also never
   share the plane the character runs in: beetles climb up and down the trunks
