@@ -73,6 +73,12 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B17** — ~~The beetles climb over the leaves of their tree instead of
+  disappearing behind them.~~ Fixed: each beetle's tree carries its crown a
+  second time, drawn just in front of the beetle, so the beetle climbs the bare
+  trunk, vanishes into the leaves and waits there out of sight before coming
+  back down (see R32).
+
 - **B16** — ~~The woods need an ant hill where the ants are, have blocks to hit
   from below and platforms that float, and could use more faint trees far
   back.~~ Done: every ant trail now ends at a hill, the coin blocks are gone

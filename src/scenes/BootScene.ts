@@ -350,6 +350,21 @@ export class BootScene extends Phaser.Scene {
     );
     g.generateTexture('woods-oak', 140, 210);
     g.clear();
+    // The crown once more on its own, so a beetle can climb in behind it
+    canopy(
+      [
+        [70, 70, 44],
+        [30, 92, 28],
+        [110, 90, 30],
+        [52, 46, 26],
+        [92, 44, 24],
+      ],
+      0x2f6b2f,
+      0x3d8b3a,
+      0x5cae4c,
+    );
+    g.generateTexture('woods-oak-crown', 140, 210);
+    g.clear();
 
     // Beech: the tree of a closed, dark forest — a smooth grey column that
     // carries no branch until well up, then spreads into one broad crown.
@@ -381,6 +396,20 @@ export class BootScene extends Phaser.Scene {
       0x3d8437,
     );
     g.generateTexture('woods-beech', 120, 260);
+    g.clear();
+    canopy(
+      [
+        [58, 50, 40],
+        [22, 66, 26],
+        [94, 64, 27],
+        [40, 26, 22],
+        [78, 24, 21],
+      ],
+      0x24501f,
+      0x2f6b2b,
+      0x3d8437,
+    );
+    g.generateTexture('woods-beech-crown', 120, 260);
     g.clear();
 
     // Spruce: stacked needle tiers. Every tier is one dark triangle with a

@@ -86,7 +86,9 @@ the appropriate section. Requirement IDs are stable and never reused.
 - **R32** — Harmless little creatures — ants and beetles — make the woods feel
   alive. They are pure decoration and never hurt the player. They also never
   share the plane the character runs in: beetles climb up and down the trunks
-  of the tree line behind the player, and ants travel in file over the shaded
+  of the tree line behind the player — climbing into the leaves at the top of
+  the climb, where they stay out of sight a while before coming back down —
+  and ants travel in file over the shaded
   plane where the flowers grow (see R35), behind its grass and ferns. Where
   there are ants there is their hill: a mound of needles and twigs stands at
   one end of every trail, on the same plane, so the ants are doing something

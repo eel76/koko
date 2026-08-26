@@ -407,7 +407,7 @@ export class GameScene extends Phaser.Scene {
         // Beetles live in the nearest tree line, on the trunks that are bare
         // for a good stretch — the spruce's is hidden under its needles.
         if (l === layers.length - 1 && key !== 'woods-spruce' && n > 0.55) {
-          this.addTrunkBeetle(tree, layer.factor, layer.depth, n);
+          this.addTrunkBeetle(tree, key, layer.factor, layer.depth, n);
         }
       }
     });
@@ -451,12 +451,24 @@ export class GameScene extends Phaser.Scene {
   // whatever moves behind it is just the forest living its life.
   private addTrunkBeetle(
     tree: Phaser.GameObjects.Image,
+    key: string,
     factor: number,
     depth: number,
     n: number,
   ): void {
-    const foot = tree.y - tree.displayHeight * 0.12;
-    const head = tree.y - tree.displayHeight * 0.45;
+    // The tree's own crown is drawn a second time, just in front of the
+    // beetle: it climbs up the bare trunk, disappears into the leaves at the
+    // top of its climb, waits there out of sight, and comes back down.
+    this.add
+      .image(tree.x, tree.y, `${key}-crown`)
+      .setOrigin(0.5, 1)
+      .setScale(tree.scaleX, tree.scaleY)
+      .setScrollFactor(factor, 1)
+      .setDepth(depth + 0.2)
+      .setAlpha(tree.alpha)
+      .setTint(tree.tintTopLeft);
+    const foot = tree.y - tree.displayHeight * 0.1;
+    const head = tree.y - tree.displayHeight * 0.72;
     // Drawn facing left, so a quarter turn points it up the trunk.
     const beetle = this.add
       .sprite(tree.x, foot, 'beetle-0')
@@ -465,7 +477,7 @@ export class GameScene extends Phaser.Scene {
       .setScale(Math.min(tree.scaleY, 0.9))
       .setAngle(90)
       .setScrollFactor(factor, 1)
-      .setDepth(depth);
+      .setDepth(depth + 0.1);
     beetle.play('beetle-crawl');
     this.tweens.add({
       targets: beetle,
@@ -473,8 +485,10 @@ export class GameScene extends Phaser.Scene {
       duration: ((foot - head) / C.BEETLE_CLIMB_SPEED) * 1000,
       yoyo: true,
       repeat: -1,
-      hold: 700,
-      repeatDelay: 1100,
+      // A long wait at the top: the beetle is out of sight up there, and
+      // coming straight back down would give the trick away.
+      hold: 2600 + n * 2200,
+      repeatDelay: 1400,
       delay: n * 3000,
       onYoyo: () => beetle.setAngle(-90),
       onRepeat: () => beetle.setAngle(90),
