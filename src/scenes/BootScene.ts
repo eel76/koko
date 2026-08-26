@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import * as C from '../config';
 
 // Generates every texture at runtime — the game ships zero image assets.
 export class BootScene extends Phaser.Scene {
@@ -480,6 +481,25 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('leaf', 14, 10);
     g.clear();
 
+    // A hint of sky over the treetops: a strip that fades from daylight blue
+    // at the very top of the world down into the dark of the forest, so it
+    // meets the background without an edge. Drawn behind everything and fixed
+    // in the world, so jumping high brings more of it into view.
+    for (let y = 0; y < C.WOODS_SKY_DEPTH; y++) {
+      const t = y / (C.WOODS_SKY_DEPTH - 1);
+      g.fillStyle(
+        Phaser.Display.Color.Interpolate.ColorWithColor(
+          Phaser.Display.Color.ValueToColor(C.WOODS_SKY_TOP_COLOR),
+          Phaser.Display.Color.ValueToColor(C.WOODS_BG_COLOR),
+          100,
+          Math.round(t * 100),
+        ).color,
+      );
+      g.fillRect(0, y, 8, 1);
+    }
+    g.generateTexture('woods-sky', 8, C.WOODS_SKY_DEPTH);
+    g.clear();
+
     // Canopy: the foliage hanging into the top of the picture, in the one
     // plane in front of the character. Being the nearest thing on screen it is
     // drawn as what it really is — single leaves on thin twigs, never whole
@@ -488,14 +508,16 @@ export class BootScene extends Phaser.Scene {
     // side. Its top and bottom rows stay empty, so the tiling can never blend
     // the two into a hairline across the screen.
     const canopyW = 640;
-    const canopyH = 260;
+    const canopyH = 280;
     let canopySeed = 20260826;
     const rnd = (): number => {
       canopySeed = (canopySeed * 1103515245 + 12345) % 2147483648;
       return canopySeed / 2147483648;
     };
     const between = (lo: number, hi: number): number => lo + rnd() * (hi - lo);
-    const canopyGreens = [0x16381b, 0x1b431f, 0x214f25, 0x275b2b];
+    // Almost black: this foliage hangs closest to the eye, in the shadow of
+    // everything above it, and it must never compete with the character.
+    const canopyGreens = [0x080f09, 0x0c150d, 0x101c12, 0x152317];
     // One leaf: a pointed oval that can lie at any angle on its twig
     const leaf = (cx: number, cy: number, len: number, wide: number, angle: number): void => {
       const cos = Math.cos(angle);
@@ -511,19 +533,25 @@ export class BootScene extends Phaser.Scene {
       g.fillPoints(pts, true);
     };
     // A twig hanging out of the roof, with leaves along it at odd intervals
-    const twig = (x0: number, y0: number, len: number, sway: number): void => {
+    // The deeper a leaf hangs the more it is seen through: what reaches into
+    // the middle of the picture must never hide what happens behind it.
+    const depthAlpha = (y: number): number => Phaser.Math.Clamp(1.05 - y / 340, 0.4, 1);
+    const twig = (x0: number, y0: number, len: number, sway: number, grow = 1): void => {
       for (const offset of [-canopyW, 0, canopyW]) {
         const x = x0 + offset;
         const path = curvePoints(x, y0, x + sway, y0 + len * 0.55, x + sway * 0.3, y0 + len);
-        g.lineStyle(between(1.5, 2.6), 0x16381b);
+        g.lineStyle(between(1.5, 2.6) * grow, 0x080f09, depthAlpha(y0 + len * 0.5));
         g.strokePoints(path, false);
         for (let i = 1; i < path.length; i++) {
           if (rnd() < 0.28) continue;
           const side = rnd() < 0.5 ? -1 : 1;
-          const size = between(13, 26);
-          g.fillStyle(canopyGreens[Math.floor(rnd() * canopyGreens.length)]);
+          const size = between(13, 26) * grow;
+          g.fillStyle(
+            canopyGreens[Math.floor(rnd() * canopyGreens.length)],
+            depthAlpha(path[i].y!),
+          );
           leaf(
-            path[i].x! + side * between(4, 9),
+            path[i].x! + side * between(4, 9) * grow,
             path[i].y! + between(-3, 3),
             size,
             size * between(0.38, 0.52),
@@ -539,16 +567,24 @@ export class BootScene extends Phaser.Scene {
       [63, 74, 44, -9],
       [104, 56, 132, 22],
       [162, 66, 70, -16],
-      [223, 54, 110, 10],
       [258, 82, 52, 18],
       [316, 58, 138, -20],
       [372, 72, 78, 12],
-      [430, 56, 120, -12],
       [468, 80, 48, 16],
       [523, 60, 128, 20],
       [586, 70, 88, -14],
     ] as const) {
       twig(x0, y0, len, sway);
+    }
+    // Three heavy boughs per tile that reach right down into the picture. At
+    // roughly one per screen they push across the view now and then as the
+    // player runs, which is what makes the plane read as being in front.
+    for (const [x0, y0, len, sway] of [
+      [222, 52, 168, 12],
+      [428, 56, 152, -18],
+      [604, 60, 176, 16],
+    ] as const) {
+      twig(x0, y0, len, sway, 1.7);
     }
     // A few loose sprays of leaves, as if from branches out of frame
     for (const [cx, cy] of [
@@ -563,7 +599,7 @@ export class BootScene extends Phaser.Scene {
         const count = Math.floor(between(2, 5));
         for (let i = 0; i < count; i++) {
           const size = between(14, 24);
-          g.fillStyle(canopyGreens[Math.floor(rnd() * canopyGreens.length)]);
+          g.fillStyle(canopyGreens[Math.floor(rnd() * canopyGreens.length)], depthAlpha(cy));
           leaf(
             cx + offset + between(-22, 22),
             cy + between(-16, 16),

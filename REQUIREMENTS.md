@@ -102,19 +102,31 @@ the appropriate section. Requirement IDs are stable and never reused.
   thing in front of its plane is the leaf roof overhead (R39).
 - **R39** — The leaf roof hangs in the one plane in front of the character.
   Being the nearest thing on screen it is drawn as what it really is — single
-  leaves on thin twigs, never whole tree shapes — thin and translucent enough
-  to see the woods through it, and irregular enough that the eye cannot find
-  the beat of its repeat. It sweeps past faster than the world horizontally,
-  because it hangs nearer than the character, and barely moves vertically, so
-  no jump ever slides it out of the top of the screen. It hangs deep enough to
-  frame the picture but stops short of the height the flying enemies patrol at:
-  leaves in front of the player may cover scenery, never a hazard.
+  leaves on thin twigs, never whole tree shapes — irregular enough that the eye
+  cannot find the beat of its repeat. It is almost black: closest to the eye
+  and in the shadow of everything above it, it must never compete with the
+  character. Among the twigs hang a few heavy boughs that reach right down into
+  the picture, about one per screen, so that now and then foliage pushes across
+  the view as the player runs — which is what makes the plane read as being in
+  front. The deeper a leaf hangs the more it is seen through, so what reaches
+  into the middle of the picture can never hide a hazard behind it. The roof
+  sweeps past faster than the world horizontally, because it hangs nearer than
+  the character, and barely moves vertically, so no jump ever slides it out of
+  the top of the screen.
 - **R40** — The woods do not open onto a sky. Looking into them, everything
   grows darker with distance: each parallax band is drawn darker than the one
   in front of it, its ground line darker still, and where the trees finally run
   out there is forest dark rather than blue. Only the plane the character runs
   in keeps its full daylight colour, so the character, the enemies and
   everything else that matters to play stand out against that depth.
+- **R41** — Above the treetops the daylight is still there, only hinted at: at
+  the very top of the world the forest dark gives way to sky blue in a soft
+  gradient. It is fixed in the world, so at a run barely its darkest edge is
+  visible and a high jump brings the blue into view — a reward for looking up,
+  and a reminder of how deep under the canopy the level is played.
+- **R42** — The trees are drawn big against the character. The point is the
+  size difference: a small figure in a large, dark forest, which is what makes
+  the woods feel like a place to be lost in rather than a backdrop to run past.
 - **R36** — It must be obvious at a glance what is dangerous. The rule the
   woods follow: everything that moves in the plane the character runs in is a
   hazard, and everything harmless lives in a plane behind it. No badge, marker

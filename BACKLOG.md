@@ -73,6 +73,13 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B14** — ~~The woods should go further: near-black foliage in front, leaves
+  pushing across the view now and then, bigger trees, and a hint of blue sky
+  above the crowns.~~ Done: the foliage in the front plane is near-black and
+  carries heavy boughs that reach into the picture, the trees grew by about a
+  third, and a gradient at the top of the world fades from forest dark to sky
+  blue (see R39, R41, R42).
+
 - **B13** — ~~A hairline runs across the picture, the leaf roof looks like tree
   shapes rather than leaves, too regular and too solid, and the woods fade to
   blue sky instead of getting darker with depth.~~ Fixed: the hairline was the

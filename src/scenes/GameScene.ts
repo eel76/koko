@@ -340,6 +340,13 @@ export class GameScene extends Phaser.Scene {
   // Nothing is drawn in front of the player.
   private addWoodsBackdrop(from: number, to: number): void {
     const surfaceY = this.levelHeight - 2 * C.TILE;
+    // Over the treetops the forest gives way to daylight. The strip is fixed
+    // in the world, so at a run only its darkest edge shows and a high jump
+    // brings the blue into view (see R41).
+    this.add
+      .tileSprite(from, 0, to - from, C.WOODS_SKY_DEPTH, 'woods-sky')
+      .setOrigin(0, 0)
+      .setDepth(-20);
     const trees = ['woods-tree-0', 'woods-tree-1', 'woods-tree-2'];
     // Every band stands on a ground line of its own, each a little higher than
     // the one in front of it. The steps grow smaller towards the back, the way
@@ -348,10 +355,10 @@ export class GameScene extends Phaser.Scene {
     // bank: behind that band's trees, in front of the band beyond it.
     const layers = [
       // Farthest band first, nearest last
-      { step: 82, factor: 0.3, scale: 0.42, alpha: 0.6 },
-      { step: 116, factor: 0.55, scale: 0.62, alpha: 0.85 },
+      { step: 96, factor: 0.3, scale: 0.56, alpha: 0.6 },
+      { step: 136, factor: 0.55, scale: 0.82, alpha: 0.85 },
       // Nearest band, right behind the plane the flowers and ants live on
-      { step: 166, factor: 0.82, scale: 0.88, alpha: 1 },
+      { step: 195, factor: 0.82, scale: 1.18, alpha: 1 },
     ].map((band, l) => ({
       ...band,
       tint: C.WOODS_BAND_TINT[l],
@@ -434,7 +441,9 @@ export class GameScene extends Phaser.Scene {
     // Drawn facing left, so a quarter turn points it up the trunk.
     const beetle = this.add
       .sprite(tree.x, foot, 'beetle-0')
-      .setScale(tree.scaleY)
+      // Grows with its tree, but only so far: a beetle the size of a fist
+      // would read as something to worry about.
+      .setScale(Math.min(tree.scaleY, 0.9))
       .setAngle(90)
       .setScrollFactor(factor, 1)
       .setDepth(depth);

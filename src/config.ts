@@ -78,14 +78,14 @@ export const FOREST_BG_COLOR = 0x74975f;
 // Ordinary woods: no sky at all behind the trees. A forest does not open onto
 // blue — the deeper you look, the darker and denser it gets, and this is what
 // is left where the trees run out (see R40).
-export const WOODS_BG_COLOR = 0x2a4a35;
+export const WOODS_BG_COLOR = 0x16321f;
 export const NIGHT_COLOR = 0x1a1a2e;
 
 // How the woods recede: one tint and one grass colour per parallax band,
 // ordered from the furthest band to the nearest. Kept here so the whole depth
 // palette can be judged — and changed — in one place.
-export const WOODS_BAND_TINT = [0x5f7d62, 0x9fbf9a, 0xf0fae8];
-export const WOODS_BAND_GRASS = [0x143c1c, 0x1e5527, 0x2c7434];
+export const WOODS_BAND_TINT = [0x44604a, 0x83a37f, 0xe8f4e0];
+export const WOODS_BAND_GRASS = [0x0e2d14, 0x17451e, 0x27682b];
 
 // The woods have a shaded plane behind the character: the flowers that do not
 // crowd the player grow there, and the harmless ants crawl there. Everything
@@ -107,12 +107,18 @@ export const BEETLE_CLIMB_SPEED = 14;
 // the screen and show open sky above the forest.
 export const WOODS_CANOPY_FACTOR_X = 1.15;
 export const WOODS_CANOPY_FACTOR_Y = 0.2;
-export const WOODS_CANOPY_ALPHA = 0.7;
+export const WOODS_CANOPY_ALPHA = 0.86;
+// A hint of sky above the crowns: from this world y down to the depth of the
+// forest, the background lightens towards blue. It is fixed in the world, so
+// the higher the character jumps the more of it comes into view.
+export const WOODS_SKY_TOP_COLOR = 0x8fc8e8;
+export const WOODS_SKY_DEPTH = 260;
+
 // World y of the roof's upper edge, and how tall the strip is. The roof hangs
 // deep enough to frame the picture but stops short of the height Fliegi flies
 // at: leaves in front of the player may cover scenery, never a hazard.
-export const WOODS_CANOPY_TOP = 20;
-export const WOODS_CANOPY_HEIGHT = 256;
+export const WOODS_CANOPY_TOP = 37;
+export const WOODS_CANOPY_HEIGHT = 276;
 
 // The stick-figure player is drawn white and tinted to contrast the theme
 export const PLAYER_TINT_DARK = 0x26262e;
