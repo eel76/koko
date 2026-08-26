@@ -73,6 +73,13 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B18** — ~~The music of level 1 is not right yet: the wind sounds more like
+  the sea, and the whole mood could be more mysterious, more mystical and a
+  little darker.~~ Done: the soundtrack moved from D major to a modal D minor
+  over a drone that never stops, the melody is struck bell notes in a long
+  reverb, the birdsong became the odd owl call, and the wind is gusts of
+  short, high, irregular rustling instead of one slow broad swell (see R45).
+
 - **B17** — ~~The beetles climb over the leaves of their tree instead of
   disappearing behind them.~~ Fixed: each beetle's tree carries its crown a
   second time, drawn just in front of the beetle, so the beetle climbs the bare
