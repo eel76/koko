@@ -340,21 +340,37 @@ export class GameScene extends Phaser.Scene {
   // ground line, and a few near trunks passing in front of the player.
   private addWoodsBackdrop(from: number, to: number): void {
     const surfaceY = this.levelHeight - 2 * C.TILE;
-    // Everything rooted behind the character stands on the bank of the plane
-    // behind it, not on the ground the character runs on (see R38).
-    const backY = surfaceY - C.WOODS_BACK_PLANE_LIFT;
     const trees = ['woods-tree-0', 'woods-tree-1', 'woods-tree-2'];
+    // Every band stands on a ground line of its own, each a little higher than
+    // the one in front of it. The steps grow smaller towards the back, the way
+    // ground lines crowd together as they near the horizon, and the grass on
+    // them hazes out with the distance. `ground` is the depth of a band's own
+    // bank: behind that band's trees, in front of the band beyond it.
     const layers = [
-      { step: 82, factor: 0.3, scale: 0.42, alpha: 0.6, tint: 0x9dc0a6, depth: -6 },
-      { step: 116, factor: 0.55, scale: 0.62, alpha: 0.85, tint: 0xc5dcbf, depth: -5 },
-      { step: 166, factor: 0.82, scale: 0.88, alpha: 1, tint: 0xffffff, depth: -4 },
-    ];
+      // Farthest band: the highest ground line, hazed out the most
+      { step: 82, factor: 0.3, scale: 0.42, alpha: 0.6, tint: 0x9dc0a6 },
+      { step: 116, factor: 0.55, scale: 0.62, alpha: 0.85, tint: 0xc5dcbf },
+      // Nearest band, right behind the plane the flowers and ants live on
+      { step: 166, factor: 0.82, scale: 0.88, alpha: 1, tint: 0xffffff },
+    ].map((band, l) => ({
+      ...band,
+      lift: [17, 15, 12][l],
+      grass: [0x63ab68, 0x4a9a51, 0x35893c][l],
+      depth: [-15, -12, -10][l],
+      ground: [-16, -13, -11][l],
+    }));
+    const treeLine = surfaceY - layers[layers.length - 1].lift;
     layers.forEach((layer, l) => {
+      const line = surfaceY - layer.lift;
+      this.add
+        .rectangle(from, line, to - from, this.levelHeight - line, layer.grass)
+        .setOrigin(0, 0)
+        .setDepth(layer.ground);
       for (let x = from + l * 41, i = 0; x < to; x += layer.step, i++) {
         const n = GameScene.noise(x + l * 100);
         const key = trees[(i + l) % trees.length];
         const tree = this.add
-          .image(x + n * 24, backY + 6 + (i % 3) * 4, key)
+          .image(x + n * 24, line + 6 + (i % 3) * 4, key)
           .setOrigin(0.5, 1)
           .setScale(layer.scale * (0.85 + n * 0.35))
           .setScrollFactor(layer.factor, 1)
@@ -383,11 +399,11 @@ export class GameScene extends Phaser.Scene {
     for (let x = from + 60, i = 0; x < to; x += 104, i++) {
       const n = GameScene.noise(x * 0.5);
       this.add
-        .image(x, backY + 4, n > 0.5 ? 'woods-bush' : 'woods-fern')
+        .image(x, treeLine + 4, n > 0.5 ? 'woods-bush' : 'woods-fern')
         .setOrigin(0.5, 1)
         .setScale(0.7 + n * 0.5)
         .setScrollFactor(0.82, 1)
-        .setDepth(-4);
+        .setDepth(-10);
     }
 
     // The leaf roof overhead: the level is played under the canopy, not in
@@ -398,7 +414,7 @@ export class GameScene extends Phaser.Scene {
         .setOrigin(0.5, 1)
         .setScale(1.1, 1.4)
         .setScrollFactor(0.45, 1)
-        .setDepth(-6)
+        .setDepth(-14)
         .setTint(0xdff0d8);
     }
     for (let x = from + 90, i = 0; x < to; x += 300, i++) {

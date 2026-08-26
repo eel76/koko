@@ -88,13 +88,15 @@ the appropriate section. Requirement IDs are stable and never reused.
 - **R37** — Signs in the world speak in pictures, not in words: a wanted poster
   rather than a boss's name, an arrow rather than "exit". Nothing on them ever
   needs translating, and a player of any age or language reads them at once.
-- **R38** — The plane behind the character has ground of its own: a bank a few
-  pixels higher than the ground the character runs on, in that plane's shaded
-  colours. Everything rooted behind the character stands on it — the flowers
-  and ants of that plane as well as the undergrowth and the tree line — so
-  nothing back there hangs in the air and the woods read as two receding
-  ground lines instead of one. The bank runs on behind brooks and streams:
-  what shows above the water there is its far side.
+- **R38** — The woods recede in planes, and every plane has ground of its own:
+  a bank a little higher than the one in front of it, in that plane's own
+  colours. The steps shrink towards the back — eight pixels for the plane just
+  behind the character, then four, three and two for the three tree bands —
+  the way ground lines crowd together as they near the horizon, and the grass
+  on them hazes out with the distance. Everything is rooted on the bank of its
+  own plane, so nothing behind the character hangs in the air. The banks run on
+  behind brooks and streams: what shows above the water there are their far
+  sides.
 - **R36** — It must be obvious at a glance what is dangerous. The rule the
   woods follow: everything that moves in the plane the character runs in is a
   hazard, and everything harmless lives in a plane behind it. No badge, marker
