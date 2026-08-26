@@ -665,6 +665,68 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('canopy-front', canopyW, canopyH);
     g.clear();
 
+    // Woods platforms are boughs, not masonry: a branch that has grown out
+    // over the path and flattened towards its end. Three tiles make any
+    // length — a thick root end, straight middle, tapering tip — and each
+    // only fills the upper half of its tile, so the branch stays slender
+    // while the ground the player walks on is still the tile's top edge.
+    const bough = (name: string, thick: number, thin: number, tip: boolean): void => {
+      const body = [
+        { x: 0, y: 0 },
+        { x: 32, y: tip ? 6 : 0 },
+        { x: 32, y: tip ? 6 + thin : thin },
+        { x: 0, y: thick },
+      ];
+      g.fillStyle(0x4a3620);
+      g.fillPoints(body, true);
+      g.fillStyle(0x5f4629);
+      g.fillRect(2, thick * 0.45, 26, 2);
+      g.fillStyle(0x3a2a19);
+      g.fillRect(8, thick * 0.7, 12, 2);
+      // Moss along the top, where the light and the rain reach it
+      g.fillStyle(0x2f6b2f);
+      g.fillRect(0, 0, 32, 6);
+      g.fillStyle(0x3d8b3a);
+      g.fillRect(0, 0, 32, 3);
+      g.fillCircle(7, 4, 3);
+      g.fillCircle(22, 3, 4);
+      if (tip) {
+        g.fillStyle(0x4a3620);
+        g.fillEllipse(30, 9, 8, 7);
+      }
+      g.generateTexture(name, 32, 32);
+      g.clear();
+    };
+    bough('bough-root', 22, 20, false);
+    bough('bough-mid', 20, 19, false);
+    bough('bough-tip', 19, 9, true);
+
+    // Ant hill: a mound of needles and twigs, as tall as the ants are small
+    g.fillStyle(0x4a3520);
+    g.fillEllipse(33, 40, 66, 26);
+    g.fillStyle(0x5c4326);
+    g.fillTriangle(33, 2, 4, 42, 62, 42);
+    g.fillStyle(0x6b4f2c);
+    g.fillTriangle(29, 8, 10, 42, 44, 42);
+    g.fillStyle(0x3f2d1a);
+    for (const [nx, ny, len] of [
+      [16, 30, 9],
+      [24, 20, 7],
+      [40, 26, 8],
+      [46, 34, 10],
+      [33, 12, 6],
+      [21, 38, 8],
+      [45, 16, 7],
+    ] as const) {
+      g.fillRect(nx, ny, 2, len);
+      g.fillRect(nx - len * 0.4, ny + len * 0.5, len, 2);
+    }
+    g.fillStyle(0x2f6b2f);
+    g.fillEllipse(8, 40, 14, 7);
+    g.fillEllipse(58, 41, 12, 6);
+    g.generateTexture('ant-hill', 66, 44);
+    g.clear();
+
     // Mossy log tile (woods platforms)
     g.fillStyle(0x8a6035);
     g.fillRect(0, 0, 32, 32);

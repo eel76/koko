@@ -121,9 +121,13 @@ export class GameScene extends Phaser.Scene {
             break;
           }
           case 'B': {
+            // In the woods a platform is a bough: the run's first tile is the
+            // thick end it grew from, the last one its tapering tip.
+            const woodsBough = row[c - 1] !== 'B' ? 'bough-root' : row[c + 1] === 'B' ? 'bough-mid' : 'bough-tip';
             const platform =
-              theme === 'forest' ? 'log' : theme === 'woods' ? 'log-moss' : 'brick';
-            this.solids.create(x, y, platform);
+              theme === 'forest' ? 'log' : theme === 'woods' ? woodsBough : 'brick';
+            const tile = this.solids.create(x, y, platform) as Phaser.Physics.Arcade.Sprite;
+            if (theme === 'woods') tile.setDepth(1);
             this.solidTiles.add(`${c},${r}`);
             break;
           }
@@ -212,6 +216,7 @@ export class GameScene extends Phaser.Scene {
     this.addEdgePadding(rows, theme, levelWidth);
     if (theme === 'woods') {
       this.addWoodsGroundCover(rows, levelWidth);
+      this.addWoodsBoughSupports(rows);
     }
 
     this.addFloatLogs(rows, logSpawns);
@@ -353,9 +358,23 @@ export class GameScene extends Phaser.Scene {
     // ground lines crowd together as they near the horizon, and the grass on
     // them hazes out with the distance. `ground` is the depth of a band's own
     // bank: behind that band's trees, in front of the band beyond it.
+    // Furthest of all: a band that does not move at all, drawn nearly in the
+    // colour of the forest itself. It is the suggestion of trees behind the
+    // trees — what the eye fills in rather than sees (see R43).
+    for (let i = 0; i < 11; i++) {
+      const n = GameScene.noise(i * 31 + 7);
+      this.add
+        .image(150 + i * 66 + n * 30, 372 + (i % 3) * 6, trees[(i * 2) % trees.length])
+        .setOrigin(0.5, 1)
+        .setScale(0.3 + n * 0.14)
+        .setScrollFactor(0, 0)
+        .setDepth(-18)
+        .setAlpha(0.75)
+        .setTint(C.WOODS_STILL_BAND_TINT);
+    }
     const layers = [
       // Farthest band first, nearest last
-      { step: 96, factor: 0.3, scale: 0.56, alpha: 0.6 },
+      { step: 78, factor: 0.3, scale: 0.56, alpha: 0.6 },
       { step: 136, factor: 0.55, scale: 0.82, alpha: 0.85 },
       // Nearest band, right behind the plane the flowers and ants live on
       { step: 195, factor: 0.82, scale: 1.18, alpha: 1 },
@@ -555,6 +574,79 @@ export class GameScene extends Phaser.Scene {
     this.addWoodsCritters(surfaceRow, maxCols);
   }
 
+  // Every platform in the woods is the flattened end of a branch, so every
+  // one of them grows out of the forest floor: a bough leaning up from the
+  // ground, thick at its foot and thin where it meets the platform, with a
+  // little foliage at the joint. Nothing here is solid — the branch explains
+  // the platform, the tiles carry the player.
+  private addWoodsBoughSupports(rows: string[]): void {
+    const g = this.add.graphics().setDepth(0);
+    const quad = (
+      p0: number[],
+      p1: number[],
+      p2: number[],
+      t: number,
+    ): { x: number; y: number } => {
+      const u = 1 - t;
+      return {
+        x: u * u * p0[0] + 2 * u * t * p1[0] + t * t * p2[0],
+        y: u * u * p0[1] + 2 * u * t * p1[1] + t * t * p2[1],
+      };
+    };
+
+    rows.forEach((row, r) => {
+      for (let c = 0; c < row.length; c++) {
+        if (row[c] !== 'B' || row[c - 1] === 'B') continue;
+        // The ground this bough grew from, straight below the run's foot
+        let g0 = r + 1;
+        while (g0 < rows.length && rows[g0][c] !== '#') g0++;
+        if (g0 >= rows.length) continue;
+
+        const groundY = g0 * C.TILE + 4;
+        const topY = r * C.TILE;
+        const lean = GameScene.noise(c) < 0.5 ? -1 : 1;
+        const foot = [c * C.TILE + 16 + lean * 52, groundY];
+        const head = [c * C.TILE + 10, topY + 18];
+        // Control point straight above the foot, level with the head: the
+        // bough leaves the ground steeply and flattens out where the platform
+        // begins, instead of arching over like a bow.
+        const bend = [foot[0] + lean * 2, head[1] + 4];
+
+        // A tapered ribbon along the curve: thick at the foot, thin at the top
+        const front: Phaser.Types.Math.Vector2Like[] = [];
+        const back: Phaser.Types.Math.Vector2Like[] = [];
+        const steps = 10;
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const p = quad(foot, bend, head, t);
+          const n = quad(foot, bend, head, Math.min(1, t + 0.01));
+          const dx = n.x - p.x;
+          const dy = n.y - p.y;
+          const l = Math.hypot(dx, dy) || 1;
+          const half = (11 - t * 6) / 2;
+          front.push({ x: p.x - (dy / l) * half, y: p.y + (dx / l) * half });
+          back.unshift({ x: p.x + (dy / l) * half, y: p.y - (dx / l) * half });
+        }
+        g.fillStyle(0x4a3620);
+        g.fillPoints([...front, ...back], true);
+        g.fillStyle(0x5f4629);
+        g.fillPoints(front.concat(back.slice(0, 3)), true);
+
+        // Leaves where the bough turns into the platform, and a tuft at its foot
+        for (const [lx, ly, size] of [
+          [head[0] - lean * 14, head[1] + 6, 17],
+          [head[0] - lean * 6, head[1] + 16, 14],
+          [foot[0] - lean * 10, groundY - 10, 15],
+        ] as const) {
+          g.fillStyle(0x2f6b2f);
+          g.fillEllipse(lx, ly, size, size * 0.55);
+          g.fillStyle(0x3d8b3a);
+          g.fillEllipse(lx - 2, ly - 2, size * 0.5, size * 0.3);
+        }
+      }
+    });
+  }
+
   // The plane behind the character needs ground of its own. Without it the
   // flowers and ants standing on it hang in mid-air; with it the woods gain a
   // second bank, a step further back and a little higher than the ground the
@@ -609,6 +701,23 @@ export class GameScene extends Phaser.Scene {
       if (n < 0.45) continue;
       const x = c * C.TILE + 16;
       const range = 60;
+      // Where the ants are, their hill is: it stands at one end of their
+      // trail, on the same shaded plane, and explains what they are up to.
+      // It only goes up where the ground carries on at the same height —
+      // never over a brook or off the edge of a bank.
+      const hillCol = surfaceRow.get(c + 3) === row ? c + 3 : surfaceRow.get(c - 3) === row ? c - 3 : undefined;
+      if (hillCol !== undefined) {
+        this.add
+          .image(
+            hillCol * C.TILE + 16,
+            row * C.TILE - C.WOODS_BACK_PLANE_LIFT + 3,
+            'ant-hill',
+          )
+          .setOrigin(0.5, 1)
+          .setScale(0.85 + n * 0.3)
+          .setDepth(-1)
+          .setTint(C.WOODS_BACK_PLANE_TINT);
+      }
       // Ants travel in file: a little trail of them reads as ants going about
       // their business, never as something out to get the player.
       for (let i = 0; i < (n > 0.75 ? 3 : 2); i++) {

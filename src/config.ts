@@ -85,6 +85,9 @@ export const NIGHT_COLOR = 0x1a1a2e;
 // ordered from the furthest band to the nearest. Kept here so the whole depth
 // palette can be judged — and changed — in one place.
 export const WOODS_BAND_TINT = [0x44604a, 0x83a37f, 0xe8f4e0];
+// The band furthest back does not move at all and is drawn almost in the
+// colour of the forest behind it: trees one only half sees.
+export const WOODS_STILL_BAND_TINT = 0x2c4232;
 export const WOODS_BAND_GRASS = [0x0e2d14, 0x17451e, 0x27682b];
 
 // The woods have a shaded plane behind the character: the flowers that do not

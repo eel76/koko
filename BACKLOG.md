@@ -73,6 +73,13 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B16** — ~~The woods need an ant hill where the ants are, have blocks to hit
+  from below and platforms that float, and could use more faint trees far
+  back.~~ Done: every ant trail now ends at a hill, the coin blocks are gone
+  from level 1 (their coins remain, free-standing), every platform grows out
+  of the ground on a bough, and a still band of half-seen trees stands behind
+  everything (see R32, R43, R44).
+
 - **B15** — ~~Birches make no sense in a dark forest and never looked good, and
   the roof's branches all hang straight down.~~ Fixed: the birch is replaced by
   a beech — a smooth grey column that carries its crown high, the tree of a

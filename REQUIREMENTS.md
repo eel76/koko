@@ -87,7 +87,10 @@ the appropriate section. Requirement IDs are stable and never reused.
   alive. They are pure decoration and never hurt the player. They also never
   share the plane the character runs in: beetles climb up and down the trunks
   of the tree line behind the player, and ants travel in file over the shaded
-  plane where the flowers grow (see R35), behind its grass and ferns.
+  plane where the flowers grow (see R35), behind its grass and ferns. Where
+  there are ants there is their hill: a mound of needles and twigs stands at
+  one end of every trail, on the same plane, so the ants are doing something
+  rather than merely walking about.
 - **R37** — Signs in the world speak in pictures, not in words: a wanted poster
   rather than a boss's name, an arrow rather than "exit". Nothing on them ever
   needs translating, and a player of any age or language reads them at once.
@@ -130,6 +133,15 @@ the appropriate section. Requirement IDs are stable and never reused.
 - **R42** — The trees are drawn big against the character. The point is the
   size difference: a small figure in a large, dark forest, which is what makes
   the woods feel like a place to be lost in rather than a backdrop to run past.
+- **R43** — Behind the parallax bands stands one more that does not move at
+  all: pale, almost lost trees in the colour of the forest itself. Being
+  perfectly still it reads as infinitely far away — the suggestion of a forest
+  going on beyond the one that can be seen.
+- **R44** — Nothing in the woods is built. There are no blocks to be hit from
+  below for coins — that is a mason's idea, not a forest's — and no platform
+  floats. Every platform is the flattened end of a bough that leaves the
+  forest floor steeply, bends over and runs out level, thick where it comes
+  out of the ground and tapering to its tip.
 - **R36** — It must be obvious at a glance what is dangerous. The rule the
   woods follow: everything that moves in the plane the character runs in is a
   hazard, and everything harmless lives in a plane behind it. No badge, marker
