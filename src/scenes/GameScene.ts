@@ -105,6 +105,7 @@ export class GameScene extends Phaser.Scene {
     let spawnY = 64;
     const enemySpawns: { x: number; y: number }[] = [];
     const sparkySpawns: { x: number; y: number }[] = [];
+    const logSpawns: { col: number; row: number }[] = [];
     let flagZone: Phaser.GameObjects.Zone | undefined;
 
     rows.forEach((row, r) => {
@@ -159,7 +160,7 @@ export class GameScene extends Phaser.Scene {
             break;
           }
           case 'L':
-            this.spawnFloatLog(x, (r + 1) * C.TILE);
+            logSpawns.push({ col: c, row: r });
             break;
           case 'X':
             this.spawnFish(x, (r + 1) * C.TILE);
@@ -212,6 +213,8 @@ export class GameScene extends Phaser.Scene {
     if (theme === 'woods') {
       this.addWoodsGroundCover(rows, levelWidth);
     }
+
+    this.addFloatLogs(rows, logSpawns);
 
     for (const spawn of enemySpawns) {
       const enemy = this.enemies.create(spawn.x, spawn.y, 'enemy') as Phaser.Physics.Arcade.Sprite;
@@ -693,26 +696,68 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  // Floating log: a trunk drifting on the water that the player rides across.
+  // Floating logs. A log belongs to the stretch of water under its marker and
+  // never leaves it: the logs of one stream are spread evenly over that water,
+  // and the room left over beside them is exactly how far they may swing. A
+  // log therefore drifts on the open water alone and never slides into a bank.
+  private addFloatLogs(rows: string[], spawns: { col: number; row: number }[]): void {
+    interface Stream {
+      left: number;
+      right: number;
+      surfaceY: number;
+      logs: number;
+    }
+    const streams = new Map<string, Stream>();
+    for (const { col, row } of spawns) {
+      const water = rows[row + 1];
+      if (!water || water[col] !== 'W') continue;
+      let from = col;
+      let to = col;
+      while (from > 0 && water[from - 1] === 'W') from--;
+      while (to + 1 < water.length && water[to + 1] === 'W') to++;
+      const key = `${row},${from}`;
+      const stream = streams.get(key) ?? {
+        left: from * C.TILE,
+        right: (to + 1) * C.TILE,
+        surfaceY: (row + 1) * C.TILE,
+        logs: 0,
+      };
+      stream.logs++;
+      streams.set(key, stream);
+    }
+
+    for (const stream of streams.values()) {
+      const step = (stream.right - stream.left) / (stream.logs + 1);
+      for (let i = 0; i < stream.logs; i++) {
+        this.spawnFloatLog(stream.left + step * (i + 1), stream.surfaceY, step);
+      }
+    }
+  }
+
+  // A single log: a trunk drifting on the water that the player rides across.
   // Its deck sits exactly at bank height, so stepping on and off is seamless.
-  private spawnFloatLog(x: number, surfaceY: number): void {
-    const log = this.logs.create(x, surfaceY + 9, 'float-log') as Phaser.Physics.Arcade.Sprite;
+  private spawnFloatLog(homeX: number, surfaceY: number, step: number): void {
+    const log = this.logs.create(homeX, surfaceY + 9, 'float-log') as Phaser.Physics.Arcade.Sprite;
     log.setSize(94, 14).setOffset(2, 6).setDepth(9);
-    log.setData('homeX', x);
+    // Half the open water beside the log, minus a hand's breadth so it never
+    // quite touches the bank — and never more than the drift the game allows.
+    const room = step - log.displayWidth / 2 - C.LOG_BANK_MARGIN;
+    log.setData('homeX', homeX);
+    log.setData('range', Phaser.Math.Clamp(room, 0, C.LOG_RANGE_X));
     log.setData('dx', 0);
   }
 
-  // Every log follows the same sine, so neighbouring logs keep their spacing
-  // and drift as one raft of stepping stones.
+  // Every log follows the same sine, so the logs of one stream keep their
+  // spacing and drift as one raft of stepping stones.
   private updateLogs(delta: number): void {
     const logs = this.logs.getChildren();
     if (logs.length === 0) return;
     this.logPhase += (delta / C.LOG_PERIOD_MS) * Math.PI * 2;
-    const offset = Math.sin(this.logPhase) * C.LOG_RANGE_X;
+    const wave = Math.sin(this.logPhase);
     for (const child of logs) {
       const log = child as Phaser.Physics.Arcade.Sprite;
       const previous = log.x;
-      log.x = (log.getData('homeX') as number) + offset;
+      log.x = (log.getData('homeX') as number) + wave * (log.getData('range') as number);
       log.setData('dx', log.x - previous);
     }
   }

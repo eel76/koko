@@ -45,8 +45,11 @@ export const FISH_PAUSE_MS = 1000;
 
 // Floating logs drift back and forth over the water and carry the player.
 // Every log follows the same sine, so neighbouring logs keep their distance
-// and never drift into each other.
+// and never drift into each other. How far a log really swings is decided by
+// the water it floats on — LOG_RANGE_X is only the upper limit, and
+// LOG_BANK_MARGIN the gap it keeps to the bank at the end of its swing.
 export const LOG_RANGE_X = 64;
+export const LOG_BANK_MARGIN = 4;
 export const LOG_PERIOD_MS = 3400;
 
 export const COIN_SCORE = 10;

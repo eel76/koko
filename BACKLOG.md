@@ -68,6 +68,12 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B5** — ~~The logs in the brooks and streams drift into the bank, which makes
+  no sense: a log must always stay on the water surface.~~ Fixed: every log is
+  tied to the stretch of water under it and swings only as far as the open
+  water beside it; each of level 1's two streams now carries a single log
+  drifting in the middle (see R30).
+
 - **B4** — ~~In the woods the spruces' light triangles stick out over the edge
   of the tier they sit on, so the trees look slightly broken.~~ Fixed: every
   tier's mid tone and highlight are now measured from that tier's own width,

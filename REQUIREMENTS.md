@@ -53,8 +53,11 @@ the appropriate section. Requirement IDs are stable and never reused.
   behind the point where control began, and no level content ever lies behind
   it.
 - **R30** — Floating logs drift back and forth on the water and carry the
-  player standing on them, so wider streams can be crossed by riding and
-  hopping from log to log.
+  player standing on them, so wider streams can be crossed by riding a log
+  over. A log belongs to the stretch of water it floats on and never leaves
+  it: the logs of one stream are spread evenly over that water and swing only
+  as far as the open water beside them, so a log never slides into the bank.
+  A stream is usually best served by a single log drifting in its middle.
 - **R25** — The goal flag can never be skipped: the goal is triggered
   anywhere in the flag's tile column, at any height. Jumping over the flag
   from a nearby platform finishes the level instead of leaving it
