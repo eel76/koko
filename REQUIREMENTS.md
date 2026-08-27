@@ -146,7 +146,7 @@ the appropriate section. Requirement IDs are stable and never reused.
   floats. Every platform is the flattened end of a bough that leaves the
   forest floor steeply, bends over and runs out level, thick where it comes
   out of the ground and tapering to its tip.
-- **R45** — Every plane has colours of its own. From the character's plane
+- **R46** — Every plane has colours of its own. From the character's plane
   backwards they form one unbroken ramp: the character's plane alone keeps full
   daylight colour, and each plane behind it — the plane the flowers and ants
   live on, then every tree band, down to the still band furthest back — is
@@ -233,6 +233,12 @@ the appropriate section. Requirement IDs are stable and never reused.
   It is generated at runtime like every graphic in this game, so the game
   still ships without any asset files and stays free of third-party licences.
   It can be switched off on the title screen, and that choice is remembered.
+- **R45** — The soundtrack's mood is mysterious, mystical and a little dark:
+  a low drone that never stops, slow chords in a minor, modal harmony that
+  keeps floating instead of resolving, single bell notes ringing out into a
+  long reverb, and an owl now and then instead of cheerful birdsong. The
+  wind layer must read as leaves rustling in gusts — short, high, irregular,
+  each gust its own — and never as the slow broad swell of surf.
 
 ## Developer Tools
 

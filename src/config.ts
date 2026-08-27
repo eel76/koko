@@ -86,7 +86,7 @@ export const NIGHT_COLOR = 0x1a1a2e;
 // plane just behind the character these form one unbroken ramp — every plane
 // is drawn darker than the plane in front of it, none of them shares a colour
 // with its neighbour, and the character's own plane alone keeps full daylight
-// colour (see R45). Kept here so the whole depth palette can be judged — and
+// colour (see R46). Kept here so the whole depth palette can be judged — and
 // changed — in one place.
 export const WOODS_BAND_TINT = [0x4c634b, 0x6e8a6b, 0x93ad8f];
 // The band furthest back does not move at all and is drawn almost in the

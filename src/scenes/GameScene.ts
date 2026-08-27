@@ -415,7 +415,7 @@ export class GameScene extends Phaser.Scene {
     // Undergrowth right along the tree line. It stands in front of the trunks
     // of its own band — and so in front of the beetles climbing them — and it
     // carries that band's tint, like everything else on that plane: no two
-    // planes may share the colours of the plane in front (see R45).
+    // planes may share the colours of the plane in front (see R46).
     for (let x = from + 60, i = 0; x < to; x += 104, i++) {
       const n = GameScene.noise(x * 0.5);
       this.add
