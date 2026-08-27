@@ -82,25 +82,29 @@ export const WOODS_BG_COLOR = 0x16321f;
 export const NIGHT_COLOR = 0x1a1a2e;
 
 // How the woods recede: one tint and one grass colour per parallax band,
-// ordered from the furthest band to the nearest. Kept here so the whole depth
-// palette can be judged — and changed — in one place.
-export const WOODS_BAND_TINT = [0x44604a, 0x83a37f, 0xe8f4e0];
+// ordered from the furthest band to the nearest. Together with the tint of the
+// plane just behind the character these form one unbroken ramp — every plane
+// is drawn darker than the plane in front of it, none of them shares a colour
+// with its neighbour, and the character's own plane alone keeps full daylight
+// colour (see R45). Kept here so the whole depth palette can be judged — and
+// changed — in one place.
+export const WOODS_BAND_TINT = [0x4c634b, 0x6e8a6b, 0x93ad8f];
 // The band furthest back does not move at all and is drawn almost in the
 // colour of the forest behind it: trees one only half sees.
 export const WOODS_STILL_BAND_TINT = 0x2c4232;
-export const WOODS_BAND_GRASS = [0x0e2d14, 0x17451e, 0x27682b];
+export const WOODS_BAND_GRASS = [0x134416, 0x1b5e1f, 0x247629];
 
 // The woods have a shaded plane behind the character: the flowers that do not
 // crowd the player grow there, and the harmless ants crawl there. Everything
 // on it is drawn in this tint so it reads as further into the forest.
-export const WOODS_BACK_PLANE_TINT = 0x9bb496;
+export const WOODS_BACK_PLANE_TINT = 0xbdd0b8;
 // That plane has ground of its own — a bank this many pixels higher than the
 // ground the character runs on, so nothing standing on it hangs in the air.
 // Its earth and grass are the front plane's colours under the tint above.
 export const WOODS_BACK_PLANE_LIFT = 8;
-export const WOODS_BACK_PLANE_EARTH = 0x544019;
-export const WOODS_BACK_PLANE_GRASS = 0x267b2c;
-export const WOODS_BACK_PLANE_GRASS_EDGE = 0x1d6322;
+export const WOODS_BACK_PLANE_EARTH = 0x66491f;
+export const WOODS_BACK_PLANE_GRASS = 0x2f8e35;
+export const WOODS_BACK_PLANE_GRASS_EDGE = 0x23722a;
 // How fast a beetle climbs a trunk in the tree line, in pixels per second
 export const BEETLE_CLIMB_SPEED = 14;
 

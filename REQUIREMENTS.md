@@ -86,8 +86,10 @@ the appropriate section. Requirement IDs are stable and never reused.
 - **R32** — Harmless little creatures — ants and beetles — make the woods feel
   alive. They are pure decoration and never hurt the player. They also never
   share the plane the character runs in: beetles climb up and down the trunks
-  of the tree line behind the player — climbing into the leaves at the top of
-  the climb, where they stay out of sight a while before coming back down —
+  of the tree line behind the player — each keeping to a stretch of trunk of
+  its own rather than walking it end to end, and the ones that reach the top
+  climbing into the leaves, where they stay out of sight a while before coming
+  back down —
   and ants travel in file over the shaded
   plane where the flowers grow (see R35), behind its grass and ferns. Where
   there are ants there is their hill: a mound of needles and twigs stands at
@@ -144,6 +146,13 @@ the appropriate section. Requirement IDs are stable and never reused.
   floats. Every platform is the flattened end of a bough that leaves the
   forest floor steeply, bends over and runs out level, thick where it comes
   out of the ground and tapering to its tip.
+- **R45** — Every plane has colours of its own. From the character's plane
+  backwards they form one unbroken ramp: the character's plane alone keeps full
+  daylight colour, and each plane behind it — the plane the flowers and ants
+  live on, then every tree band, down to the still band furthest back — is
+  drawn darker than the plane in front of it. No plane may share the colours of
+  its neighbour, and nothing on a plane is exempt: undergrowth, plants, ground
+  and creatures all carry the tint of the plane they stand on.
 - **R36** — It must be obvious at a glance what is dangerous. The rule the
   woods follow: everything that moves in the plane the character runs in is a
   hazard, and everything harmless lives in a plane behind it. No badge, marker

@@ -412,7 +412,10 @@ export class GameScene extends Phaser.Scene {
       }
     });
 
-    // Undergrowth right along the tree line
+    // Undergrowth right along the tree line. It stands in front of the trunks
+    // of its own band — and so in front of the beetles climbing them — and it
+    // carries that band's tint, like everything else on that plane: no two
+    // planes may share the colours of the plane in front (see R45).
     for (let x = from + 60, i = 0; x < to; x += 104, i++) {
       const n = GameScene.noise(x * 0.5);
       this.add
@@ -420,7 +423,8 @@ export class GameScene extends Phaser.Scene {
         .setOrigin(0.5, 1)
         .setScale(0.7 + n * 0.5)
         .setScrollFactor(0.82, 1)
-        .setDepth(-10);
+        .setDepth(-9.5)
+        .setTint(C.WOODS_BAND_TINT[C.WOODS_BAND_TINT.length - 1]);
     }
 
     // The leaf roof: the level is played under the canopy, not in an open
@@ -467,8 +471,13 @@ export class GameScene extends Phaser.Scene {
       .setDepth(depth + 0.2)
       .setAlpha(tree.alpha)
       .setTint(tree.tintTopLeft);
-    const foot = tree.y - tree.displayHeight * 0.1;
-    const head = tree.y - tree.displayHeight * 0.72;
+    // Every beetle keeps to a stretch of trunk of its own: some potter about
+    // low down, some climb to the crown and vanish, none of them walks the
+    // whole trunk end to end.
+    const low = 0.08 + GameScene.noise(tree.x * 7) * 0.34;
+    const high = low + 0.16 + GameScene.noise(tree.x * 13 + 5) * 0.44;
+    const foot = tree.y - tree.displayHeight * low;
+    const head = tree.y - tree.displayHeight * Math.min(high, 0.78);
     // Drawn facing left, so a quarter turn points it up the trunk.
     const beetle = this.add
       .sprite(tree.x, foot, 'beetle-0')

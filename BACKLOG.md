@@ -73,6 +73,15 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B18** — ~~Beetles walking down a trunk cover bushes that stand in front of
+  them, they all walk the full length of their trunk, the foliage overhead has
+  loose leaves hanging in mid-air and branches crossing each other, and the
+  plants behind the character have the same colours as the plants beside it.~~
+  Fixed: the tree line's undergrowth is drawn in front of the trunks it stands
+  before, each beetle keeps to a stretch of trunk of its own, the roof lost its
+  free-floating leaf sprays and carries fewer, more evenly spread branches, and
+  the tints of all the planes are now one unbroken ramp (see R32, R39, R45).
+
 - **B17** — ~~The beetles climb over the leaves of their tree instead of
   disappearing behind them.~~ Fixed: each beetle's tree carries its crown a
   second time, drawn just in front of the beetle, so the beetle climbs the bare

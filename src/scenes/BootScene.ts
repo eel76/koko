@@ -635,62 +635,32 @@ export class BootScene extends Phaser.Scene {
       }
     };
     // Branches at every angle from level to steep, of very different lengths,
-    // hanging from all along the top — so no eye finds the beat of the repeat.
+    // spread evenly along the top so they hang beside one another instead of
+    // crossing each other into a thicket. Neighbours lean opposite ways.
     for (const [x0, y0, deg, len, droop] of [
-      [10, 40, 12, 150, 46],
-      [46, 8, 66, 104, 22],
-      [88, 62, 168, 122, 38],
-      [124, 22, 38, 168, 54],
-      [168, 54, 96, 88, 12],
-      [206, 12, 148, 136, 44],
-      [246, 66, 24, 96, 30],
-      [286, 30, 74, 148, 26],
-      [330, 6, 160, 110, 40],
-      [368, 48, 44, 130, 48],
-      [412, 18, 118, 92, 20],
-      [452, 58, 8, 128, 52],
-      [498, 26, 88, 118, 18],
-      [536, 60, 138, 104, 34],
-      [576, 14, 56, 142, 44],
-      [614, 46, 172, 96, 30],
+      [24, 34, 22, 128, 44],
+      [92, 12, 78, 112, 20],
+      [150, 56, 158, 118, 40],
+      [214, 20, 44, 140, 46],
+      [278, 62, 104, 96, 16],
+      [340, 14, 150, 126, 42],
+      [402, 48, 30, 132, 50],
+      [466, 24, 88, 108, 18],
+      [528, 58, 164, 114, 36],
+      [592, 18, 60, 136, 46],
     ] as const) {
       branch(x0, y0, deg, len, droop);
     }
-    // Three heavy boughs per tile that reach right down into the picture. At
-    // roughly one per screen they push across the view now and then, which is
-    // what makes the plane read as being in front.
+    // Two heavy boughs per tile that reach right down into the picture. At
+    // roughly one every half screen they push across the view now and then,
+    // which is what makes the plane read as being in front.
     for (const [x0, y0, deg, len, droop] of [
-      [150, 16, 58, 176, 58],
-      [372, 10, 112, 168, 62],
-      [594, 20, 72, 158, 56],
+      [186, 10, 66, 170, 56],
+      [470, 8, 116, 162, 58],
     ] as const) {
       branch(x0, y0, deg, len, droop, 1.45);
     }
 
-    // A few loose sprays of leaves, as if from branches out of frame
-    for (const [cx, cy] of [
-      [88, 122],
-      [204, 158],
-      [348, 104],
-      [412, 170],
-      [556, 132],
-      [612, 96],
-    ] as const) {
-      for (const offset of [-canopyW, 0, canopyW]) {
-        const count = Math.floor(between(2, 5));
-        for (let i = 0; i < count; i++) {
-          const size = between(14, 24);
-          g.fillStyle(canopyGreens[Math.floor(rnd() * canopyGreens.length)], depthAlpha(cy));
-          leaf(
-            cx + offset + between(-22, 22),
-            cy + between(-16, 16),
-            size,
-            size * between(0.38, 0.52),
-            between(-1.4, 1.4),
-          );
-        }
-      }
-    }
     g.generateTexture('canopy-front', canopyW, canopyH);
     g.clear();
 
