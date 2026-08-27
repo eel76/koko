@@ -70,6 +70,9 @@ export const TIME_BONUS_PER_SECOND = 10;
 // edge it walks before the level ends.
 export const INTRO_LEAD_IN = 60;
 export const OUTRO_MARGIN = 80;
+// How long the walk-off waits for the character to land before setting it down
+// on the goal's ground itself: the level is left on foot, never floating.
+export const OUTRO_LANDING_MS = 1500;
 export const CONTROLS_FADE_MS = 350;
 
 export const SKY_COLOR = 0x5c94fc;

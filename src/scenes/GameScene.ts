@@ -50,6 +50,8 @@ export class GameScene extends Phaser.Scene {
   private introTargetX = 0;
   private outroWalking = false;
   private outroStarted = 0;
+  private goalZone?: Phaser.GameObjects.Zone;
+  private goalGroundY = 0;
   private logPhase = 0;
   private secondsLeft = 0;
   private timeBonus = 0;
@@ -70,6 +72,8 @@ export class GameScene extends Phaser.Scene {
     this.phase = 'intro';
     this.outroWalking = false;
     this.outroStarted = 0;
+    this.goalZone = undefined;
+    this.goalGroundY = 0;
     this.logPhase = 0;
     this.timeLeft = C.LEVEL_TIME_SECONDS;
   }
@@ -179,6 +183,8 @@ export class GameScene extends Phaser.Scene {
             // the other levels keep their flag.
             const goal = theme === 'woods' ? 'signpost' : 'flag';
             this.add.image(x, base, goal).setOrigin(0.5, 1).setDepth(5);
+            // The ground the goal stands on — where the walk-off starts
+            this.goalGroundY = base;
             // The goal zone covers the flag's whole tile column, from far above
             // the level down to the ground: jumping over the flag from a nearby
             // platform still finishes the level instead of leaving it unfinishable.
@@ -260,6 +266,7 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.sparkies, () => this.touchHazard());
     this.physics.add.overlap(this.player, this.fliegis, () => this.touchHazard());
     if (flagZone) {
+      this.goalZone = flagZone;
       this.physics.add.overlap(this.player, flagZone, () => this.reachFlag());
     }
 
@@ -1275,11 +1282,15 @@ export class GameScene extends Phaser.Scene {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     if (!this.outroWalking) {
       const landed = body.blocked.down || body.touching.down;
-      if (!landed && time - this.outroStarted < 1500) {
+      if (!landed && time - this.outroStarted < C.OUTRO_LANDING_MS) {
         this.player.setVelocityX(0);
         this.animateCharacter(false, false);
         return;
       }
+      // A character that finds no ground in that time — over water, in a pit —
+      // is set down on the goal's own ground rather than left in the air: the
+      // level is always left on foot.
+      if (!landed) this.player.y += this.goalGroundY - body.bottom;
       this.outroWalking = true;
       body.setAllowGravity(false);
       body.checkCollision.none = true;
@@ -1427,5 +1438,17 @@ export class GameScene extends Phaser.Scene {
     this.controls.conceal();
     this.cameras.main.stopFollow();
     this.player.setVelocityX(0);
+    // The goal zone has done its work, and it must not be mistaken for ground:
+    // an overlap counts as a touch from below whenever the character is on its
+    // way down, so the zone alone would tell the walk-off that a character
+    // falling past the signpost has already landed. Switching it off leaves
+    // only real ground to land on.
+    const zone = this.goalZone?.body as Phaser.Physics.Arcade.StaticBody | undefined;
+    if (zone) zone.enable = false;
+    // The touch the zone has just recorded goes with it: the physics sets those
+    // flags in the same step that brings us here, so leaving them standing
+    // would let the walk-off start in mid-air this very frame. Cleared, they
+    // are worked out again from the real world on the next one.
+    (this.player.body as Phaser.Physics.Arcade.Body).resetFlags();
   }
 }

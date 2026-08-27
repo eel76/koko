@@ -73,6 +73,13 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B23** — ~~Crossing the goal in mid-air — jumping over the signpost, for
+  instance — carries the character out of the picture to the right while it is
+  still in the air, floating.~~ Fixed: the goal zone is switched off the moment
+  it fires, and the touch it recorded with it, so the walk-off no longer reads
+  the signpost's own column as ground under the character's feet; it waits for
+  the fall and starts on the forest floor (see R29).
+
 - **B22** — ~~The trees of the still band far back keep their place on the
   screen when the character jumps — above all from a platform — so they hang
   in the air instead of standing on the forest floor.~~ Fixed: the band now

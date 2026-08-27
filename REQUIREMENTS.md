@@ -45,7 +45,9 @@ the appropriate section. Requirement IDs are stable and never reused.
   screen by itself; only then do the controls fade in, making it clear that
   the player is now in charge. On reaching the goal the controls fade out
   again and the character walks from the middle of the screen off the right
-  edge until it is out of sight.
+  edge until it is out of sight. It leaves on foot, never floating: a goal
+  reached in mid-air (see R25) is followed by the fall, and the walk-off only
+  begins once the character stands on the ground.
 - **R34** — The walk-in really starts at the leftmost point the level allows,
   not at the start marker in the map: the marker only sets the height at which
   the character enters. The spot where control is handed over is the left end
