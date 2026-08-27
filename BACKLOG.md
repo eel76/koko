@@ -73,6 +73,13 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B20** — ~~The ants never disappear into their hill, and a bright blue
+  hairline flashes across the picture when a jump brings the top of the sky
+  gradient into view.~~ Fixed: every trail now walks into its hill, which is
+  drawn in front of the ants, and the sky gradient is one stretched image
+  instead of a tiling sprite whose wrap blended its dark bottom row into its
+  bright top one (see R32, R41).
+
 - **B19** — ~~Beetles walking down a trunk cover bushes that stand in front of
   them, they all walk the full length of their trunk, the foliage overhead has
   loose leaves hanging in mid-air and branches crossing each other, and the

@@ -93,8 +93,9 @@ the appropriate section. Requirement IDs are stable and never reused.
   and ants travel in file over the shaded
   plane where the flowers grow (see R35), behind its grass and ferns. Where
   there are ants there is their hill: a mound of needles and twigs stands at
-  one end of every trail, on the same plane, so the ants are doing something
-  rather than merely walking about.
+  one end of every trail, on the same plane and drawn in front of the ants, so
+  every trail walks into its hill and out of sight, waits inside a while and
+  comes out again. Ants only live where their hill can stand.
 - **R37** — Signs in the world speak in pictures, not in words: a wanted poster
   rather than a boss's name, an arrow rather than "exit". Nothing on them ever
   needs translating, and a player of any age or language reads them at once.

@@ -348,9 +348,14 @@ export class GameScene extends Phaser.Scene {
     // Over the treetops the forest gives way to daylight. The strip is fixed
     // in the world, so at a run only its darkest edge shows and a high jump
     // brings the blue into view (see R41).
+    // Drawn as one stretched image rather than a tiling sprite: a tile sprite
+    // repeats its texture, and at its lower edge the wrap blends the dark
+    // bottom row into the bright top one — a hairline of sky blue that flashes
+    // across the picture the moment a jump brings that edge into view.
     this.add
-      .tileSprite(from, 0, to - from, C.WOODS_SKY_DEPTH, 'woods-sky')
+      .image(from, 0, 'woods-sky')
       .setOrigin(0, 0)
+      .setDisplaySize(to - from, C.WOODS_SKY_DEPTH)
       .setDepth(-20);
     const trees = ['woods-oak', 'woods-beech', 'woods-spruce'];
     // Every band stands on a ground line of its own, each a little higher than
@@ -723,47 +728,53 @@ export class GameScene extends Phaser.Scene {
       const n = GameScene.noise(c * 5);
       if (n < 0.45) continue;
       const x = c * C.TILE + 16;
-      const range = 60;
-      // Where the ants are, their hill is: it stands at one end of their
-      // trail, on the same shaded plane, and explains what they are up to.
-      // It only goes up where the ground carries on at the same height —
-      // never over a brook or off the edge of a bank.
-      const hillCol = surfaceRow.get(c + 3) === row ? c + 3 : surfaceRow.get(c - 3) === row ? c - 3 : undefined;
-      if (hillCol !== undefined) {
-        this.add
-          .image(
-            hillCol * C.TILE + 16,
-            row * C.TILE - C.WOODS_BACK_PLANE_LIFT + 3,
-            'ant-hill',
-          )
-          .setOrigin(0.5, 1)
-          .setScale(0.85 + n * 0.3)
-          .setDepth(-1)
-          .setTint(C.WOODS_BACK_PLANE_TINT);
-      }
+      const range = 72;
+      // Ants only live where their hill can stand: the hill goes up where the
+      // ground carries on at the same height — never over a brook or off the
+      // edge of a bank — and without it there is nothing for a trail to lead
+      // to, so the whole spot is skipped.
+      const hillCol =
+        surfaceRow.get(c + 3) === row ? c + 3 : surfaceRow.get(c - 3) === row ? c - 3 : undefined;
+      if (hillCol === undefined) continue;
+
+      const groundY = row * C.TILE - C.WOODS_BACK_PLANE_LIFT;
+      const hillX = hillCol * C.TILE + 16;
+      const dir = Math.sign(hillX - x);
+      // The hill is drawn in front of the ants, so a trail that walks into it
+      // walks out of sight — which is what ants do.
+      this.add
+        .image(hillX, groundY + 3, 'ant-hill')
+        .setOrigin(0.5, 1)
+        .setScale(0.85 + n * 0.3)
+        .setDepth(-0.6)
+        .setTint(C.WOODS_BACK_PLANE_TINT);
+
       // Ants travel in file: a little trail of them reads as ants going about
-      // their business, never as something out to get the player.
+      // their business, never as something out to get the player. Every one of
+      // them ends its walk inside the hill and comes back out later.
       for (let i = 0; i < (n > 0.75 ? 3 : 2); i++) {
+        const end = hillX + dir * (10 - i * 19);
         // Ants are drawn facing left, so they are flipped while crawling right.
         const ant = this.add
-          .sprite(x - i * 19, row * C.TILE - C.WOODS_BACK_PLANE_LIFT + 2, 'ant-0')
+          .sprite(end - dir * range, groundY + 2, 'ant-0')
           .setOrigin(0.5, 1)
           .setDepth(-1)
           .setScale(0.7)
           .setTint(C.WOODS_BACK_PLANE_TINT)
-          .setFlipX(true);
+          .setFlipX(dir > 0);
         ant.play('ant-crawl');
         this.tweens.add({
           targets: ant,
-          x: ant.x + range,
+          x: end,
           duration: (range / 22) * 1000,
           yoyo: true,
           repeat: -1,
-          hold: 400,
-          repeatDelay: 700,
+          // Long enough inside the hill to have been somewhere
+          hold: 1400,
+          repeatDelay: 900,
           delay: (c * 137) % 2600,
-          onYoyo: () => ant.setFlipX(false),
-          onRepeat: () => ant.setFlipX(true),
+          onYoyo: () => ant.setFlipX(dir < 0),
+          onRepeat: () => ant.setFlipX(dir > 0),
         });
       }
     }
