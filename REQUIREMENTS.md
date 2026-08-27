@@ -90,12 +90,17 @@ the appropriate section. Requirement IDs are stable and never reused.
   its own rather than walking it end to end, and the ones that reach the top
   climbing into the leaves, where they stay out of sight a while before coming
   back down —
-  and ants travel in file over the shaded
+  and ants trail over the shaded
   plane where the flowers grow (see R35), behind its grass and ferns. Where
   there are ants there is their hill: a mound of needles and twigs stands at
   one end of every trail, on the same plane and drawn in front of the ants, so
   every trail walks into its hill and out of sight, waits inside a while and
-  comes out again. Ants only live where their hill can stand.
+  comes out again. Ants only live where their hill can stand. They are
+  hardworking creatures and cover real distances: a trail runs away from its
+  hill for as far as the forest floor carries on at the same height. And an ant
+  hill is a disorderly place — every ant walks a stretch of its own, at a pace
+  of its own, and rests inside the hill as long as it pleases, so a trail is a
+  coming and going of single ants rather than a column marching in file.
 - **R37** — Signs in the world speak in pictures, not in words: a wanted poster
   rather than a boss's name, an arrow rather than "exit". Nothing on them ever
   needs translating, and a player of any age or language reads them at once.

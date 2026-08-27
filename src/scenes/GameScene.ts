@@ -728,7 +728,6 @@ export class GameScene extends Phaser.Scene {
       const n = GameScene.noise(c * 5);
       if (n < 0.45) continue;
       const x = c * C.TILE + 16;
-      const range = 72;
       // Ants only live where their hill can stand: the hill goes up where the
       // ground carries on at the same height — never over a brook or off the
       // edge of a bank — and without it there is nothing for a trail to lead
@@ -740,6 +739,15 @@ export class GameScene extends Phaser.Scene {
       const groundY = row * C.TILE - C.WOODS_BACK_PLANE_LIFT;
       const hillX = hillCol * C.TILE + 16;
       const dir = Math.sign(hillX - x);
+      // Ants are tireless walkers, so a trail is as long as the ground lets it
+      // be: it leads away from the hill for as far as the forest floor carries
+      // on at the same height, up to eight tiles. Where only a couple of tiles
+      // are left there is no distance worth walking, and the spot is dropped.
+      let far = hillCol;
+      while (Math.abs(far - hillCol) < 8 && surfaceRow.get(far - dir) === row) far -= dir;
+      const reach = Math.abs(far - hillCol) * C.TILE;
+      if (reach < 4 * C.TILE) continue;
+
       // The hill is drawn in front of the ants, so a trail that walks into it
       // walks out of sight — which is what ants do.
       this.add
@@ -749,30 +757,41 @@ export class GameScene extends Phaser.Scene {
         .setDepth(-0.6)
         .setTint(C.WOODS_BACK_PLANE_TINT);
 
-      // Ants travel in file: a little trail of them reads as ants going about
-      // their business, never as something out to get the player. Every one of
-      // them ends its walk inside the hill and comes back out later.
-      for (let i = 0; i < (n > 0.75 ? 3 : 2); i++) {
-        const end = hillX + dir * (10 - i * 19);
+      // An ant hill is a busy and disorderly place: every ant walks a stretch
+      // of its own, at a pace of its own, and stays inside the hill for as
+      // long as it pleases. So a trail is a coming and going of single ants
+      // that meet and overtake each other, never a column marching in step.
+      // Every one of them ends its walk inside the hill and comes back out
+      // later.
+      for (let i = 0; i < (n > 0.7 ? 4 : 3); i++) {
+        const wander = GameScene.noise(c * 5 + i * 37 + 1);
+        const pace = GameScene.noise(c * 5 + i * 37 + 2);
+        const rest = GameScene.noise(c * 5 + i * 37 + 3);
+        // Each ant covers a good part of the trail, but none the same part,
+        // and each slips into the hill at a doorway of its own.
+        const range = reach * (0.5 + 0.5 * wander);
+        const end = hillX + dir * (12 - i * 9 - wander * 8);
         // Ants are drawn facing left, so they are flipped while crawling right.
         const ant = this.add
-          .sprite(end - dir * range, groundY + 2, 'ant-0')
+          .sprite(end - dir * range, groundY + 2 - Math.round(rest * 2), 'ant-0')
           .setOrigin(0.5, 1)
           .setDepth(-1)
-          .setScale(0.7)
+          .setScale(0.62 + pace * 0.16)
           .setTint(C.WOODS_BACK_PLANE_TINT)
           .setFlipX(dir > 0);
         ant.play('ant-crawl');
+        // Even the legs are out of step with each other
+        ant.anims.setProgress(wander);
         this.tweens.add({
           targets: ant,
           x: end,
-          duration: (range / 22) * 1000,
+          duration: (range / (16 + pace * 14)) * 1000,
           yoyo: true,
           repeat: -1,
           // Long enough inside the hill to have been somewhere
-          hold: 1400,
-          repeatDelay: 900,
-          delay: (c * 137) % 2600,
+          hold: 900 + rest * 2400,
+          repeatDelay: 500 + wander * 2200,
+          delay: (c * 137 + i * 911) % 4300,
           onYoyo: () => ant.setFlipX(dir < 0),
           onRepeat: () => ant.setFlipX(dir > 0),
         });

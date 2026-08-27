@@ -73,6 +73,13 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B21** — ~~Walking the ants into their hill made their trails much shorter,
+  and the two or three ants of a hill always walk in one file, in step.~~
+  Fixed: a trail now runs away from its hill for as far as the ground carries
+  on at the same height, and every ant of a hill walks a stretch of its own at
+  a pace of its own, with a rest inside the hill as long as it pleases (see
+  R32).
+
 - **B20** — ~~The ants never disappear into their hill, and a bright blue
   hairline flashes across the picture when a jump brings the top of the sky
   gradient into view.~~ Fixed: every trail now walks into its hill, which is
