@@ -363,16 +363,22 @@ export class GameScene extends Phaser.Scene {
     // ground lines crowd together as they near the horizon, and the grass on
     // them hazes out with the distance. `ground` is the depth of a band's own
     // bank: behind that band's trees, in front of the band beyond it.
-    // Furthest of all: a band that does not move at all, drawn nearly in the
+    // Furthest of all: a band that stands still sideways, drawn nearly in the
     // colour of the forest itself. It is the suggestion of trees behind the
-    // trees — what the eye fills in rather than sees (see R43).
+    // trees — what the eye fills in rather than sees (see R43). It holds still
+    // sideways only: vertically it is rooted in the world like every other
+    // plane, because a plane that ignores the camera's height lets go of the
+    // ground the moment a jump lifts the view, and its trees hang in the air
+    // (see R38). Its feet stand a little below the bank in front of it, which
+    // covers them whatever the camera does.
+    const stillLine = surfaceY - 14;
     for (let i = 0; i < 11; i++) {
       const n = GameScene.noise(i * 31 + 7);
       this.add
-        .image(150 + i * 66 + n * 30, 372 + (i % 3) * 6, trees[(i * 2) % trees.length])
+        .image(150 + i * 66 + n * 30, stillLine + (i % 3) * 6, trees[(i * 2) % trees.length])
         .setOrigin(0.5, 1)
         .setScale(0.3 + n * 0.14)
-        .setScrollFactor(0, 0)
+        .setScrollFactor(0, 1)
         .setDepth(-18)
         .setAlpha(0.75)
         .setTint(C.WOODS_STILL_BAND_TINT);

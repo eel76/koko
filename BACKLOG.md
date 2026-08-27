@@ -73,6 +73,13 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B22** — ~~The trees of the still band far back keep their place on the
+  screen when the character jumps — above all from a platform — so they hang
+  in the air instead of standing on the forest floor.~~ Fixed: the band now
+  holds still sideways only and is rooted in the world vertically, like every
+  other plane, so its feet stay buried in the bank in front of it whatever the
+  camera does (see R38, R43).
+
 - **B21** — ~~Walking the ants into their hill made their trails much shorter,
   and the two or three ants of a hill always walk in one file, in step.~~
   Fixed: a trail now runs away from its hill for as far as the ground carries

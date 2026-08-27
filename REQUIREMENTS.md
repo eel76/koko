@@ -143,10 +143,13 @@ the appropriate section. Requirement IDs are stable and never reused.
 - **R42** — The trees are drawn big against the character. The point is the
   size difference: a small figure in a large, dark forest, which is what makes
   the woods feel like a place to be lost in rather than a backdrop to run past.
-- **R43** — Behind the parallax bands stands one more that does not move at
-  all: pale, almost lost trees in the colour of the forest itself. Being
-  perfectly still it reads as infinitely far away — the suggestion of a forest
-  going on beyond the one that can be seen.
+- **R43** — Behind the parallax bands stands one more that does not move
+  sideways at all: pale, almost lost trees in the colour of the forest itself.
+  Standing still as the woods sweep past reads as infinitely far away — the
+  suggestion of a forest going on beyond the one that can be seen. It holds
+  still sideways only: like every other plane it is rooted in the world
+  vertically (see R38), because a plane that ignored the camera's height would
+  let go of the ground the moment a jump lifts the view.
 - **R44** — Nothing in the woods is built. There are no blocks to be hit from
   below for coins — that is a mason's idea, not a forest's — and no platform
   floats. Every platform is the flattened end of a bough that leaves the
