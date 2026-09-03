@@ -73,6 +73,13 @@ Rough thoughts, not decided yet — a parking spot so nothing gets lost.
 Implemented items, newest first. Kept for the record so the IDs stay
 traceable.
 
+- **B24** — ~~Collecting a coin in mid-air allows another jump: the coin is
+  treated like a platform or any other solid thing to push off from.~~ Fixed:
+  Arcade physics records a pickup that separates nothing as a contact all the
+  same, and the ground test read that contact as a foothold. It now asks what
+  really carries the character — solid ground below it, or the deck of a log —
+  so a coin gives points and nothing else (see R47).
+
 - **B23** — ~~Crossing the goal in mid-air — jumping over the signpost, for
   instance — carries the character out of the picture to the right while it is
   still in the air, floating.~~ Fixed: the goal zone is switched off the moment
