@@ -36,6 +36,11 @@ the appropriate section. Requirement IDs are stable and never reused.
   Super Mario Bros.: running, jumping, collecting coins, defeating ground
   enemies by jumping on them, reaching the goal marker at the end of the
   level; lives and a locally stored highscore.
+- **R47** — A jump needs ground under the character's feet: solid terrain, a
+  platform, or a floating log (plus the brief coyote time just after stepping
+  off one). Things the character merely passes through — a coin above all,
+  but also an enemy or the goal marker — are no foothold and never allow a
+  second jump in mid-air.
 - **R19** — Each level has a timer: the level must be finished within the
   time limit. Finishing early grants a bonus — the more seconds remain, the
   more bonus points are awarded. The timer only runs while the player is

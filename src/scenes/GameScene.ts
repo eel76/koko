@@ -1040,16 +1040,32 @@ export class GameScene extends Phaser.Scene {
   // Arcade physics does not move riders along with a platform, so a player
   // standing on a log is shifted by the same amount as the log itself.
   private carryOnLog(): void {
+    const log = this.logUnderfoot();
+    if (log) this.player.x += log.getData('dx') as number;
+  }
+
+  // Ground under the character's feet. Arcade physics records every contact in
+  // `touching`, an overlap that separates nothing included, so a coin taken in
+  // mid-air would read as ground and hand out a second jump. Only what really
+  // carries the character counts: something solid blocking it from below —
+  // which overlaps never set — or the deck of a log, since a log is a moving
+  // body and so never sets `blocked` either.
+  private isGrounded(): boolean {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
-    if (!body.blocked.down && !body.touching.down) return;
+    return body.blocked.down || this.logUnderfoot() !== null;
+  }
+
+  // The log the character stands on, or null if no log carries it.
+  private logUnderfoot(): Phaser.Physics.Arcade.Sprite | null {
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
     for (const child of this.logs.getChildren()) {
       const log = child as Phaser.Physics.Arcade.Sprite;
       const deck = log.body as Phaser.Physics.Arcade.Body;
       if (body.bottom < deck.top - 2 || body.bottom > deck.top + 16) continue;
       if (body.right < deck.left || body.left > deck.right) continue;
-      this.player.x += log.getData('dx') as number;
-      return;
+      return log;
     }
+    return null;
   }
 
   // Fliegi: flies one continuous figure-eight around its spawn point
@@ -1215,7 +1231,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     // Jumping with coyote time and a small input buffer
-    const grounded = body.blocked.down || body.touching.down;
+    const grounded = this.isGrounded();
 
     this.animateCharacter(grounded, body.velocity.x !== 0);
     if (grounded) this.lastGrounded = time;
@@ -1259,9 +1275,8 @@ export class GameScene extends Phaser.Scene {
   // Walking into the level: the character strolls in from the level's left end
   // and hands over to the player once it stands in the middle of the screen.
   private updateIntro(): void {
-    const body = this.player.body as Phaser.Physics.Arcade.Body;
     this.player.setVelocityX(C.PLAYER_SPEED);
-    this.animateCharacter(body.blocked.down || body.touching.down, true);
+    this.animateCharacter(this.isGrounded(), true);
     // Failsafe: should the ground give way during the walk-in, hand over
     // right away instead of staying stuck in the intro.
     if (this.player.y > this.levelHeight) {
@@ -1281,7 +1296,7 @@ export class GameScene extends Phaser.Scene {
   private updateOutro(time: number): void {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     if (!this.outroWalking) {
-      const landed = body.blocked.down || body.touching.down;
+      const landed = this.isGrounded();
       if (!landed && time - this.outroStarted < C.OUTRO_LANDING_MS) {
         this.player.setVelocityX(0);
         this.animateCharacter(false, false);
@@ -1351,7 +1366,9 @@ export class GameScene extends Phaser.Scene {
 
   private hitBlock(player: Phaser.Physics.Arcade.Sprite, block: Phaser.Physics.Arcade.Sprite): void {
     const playerBody = player.body as Phaser.Physics.Arcade.Body;
-    if (!playerBody.touching.up || block.getData('used')) return;
+    // Same as for the ground below (see isGrounded): only a real collision
+    // from underneath counts, never an overlap the character happens to be in.
+    if (!playerBody.blocked.up || block.getData('used')) return;
 
     block.setData('used', true);
     block.setTexture('block-used');
